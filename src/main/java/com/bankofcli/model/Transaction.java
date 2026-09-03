@@ -12,6 +12,10 @@ import java.util.Objects;
  *   - DEPOSIT:  src = null,       dst = account being credited
  *   - WITHDRAW: src = account,    dst = null
  *   - TRANSFER: src = sender,     dst = receiver
+ *
+ * amount is stored in extended cents, same convention as accounts.balance
+ * in the SQLite schema, to avoid floating point rounding errors.
+ * $10.00 is stored as 1000.
  */
 public class Transaction {
 
@@ -24,7 +28,7 @@ public class Transaction {
     private long transactionID;
     private Type type;
     private LocalDateTime timeComplete;
-    private double amount;
+    private long amount;
     private Long accountSrc;
     private Long accountDst;
 
@@ -32,11 +36,11 @@ public class Transaction {
      * @param transactionID Unique ID for this transaction (primary key once persisted)
      * @param type DEPOSIT, WITHDRAW, or TRANSFER
      * @param timeComplete When the transaction happened
-     * @param amount Amount moved, always stored as positive
+     * @param amount Amount moved in extended cents, always stored as positive
      * @param accountSrc Account funds are leaving, null for a deposit
      * @param accountDst Account funds are landing in, null for a withdraw
      */
-    public Transaction(long transactionID, Type type, LocalDateTime timeComplete, double amount,
+    public Transaction(long transactionID, Type type, LocalDateTime timeComplete, long amount,
                         Long accountSrc, Long accountDst) {
         this.transactionID = transactionID;
         this.type = type;
@@ -70,11 +74,11 @@ public class Transaction {
         this.timeComplete = timeComplete;
     }
 
-    public double getAmount() {
+    public long getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(long amount) {
         this.amount = amount;
     }
 
