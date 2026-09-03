@@ -125,7 +125,7 @@ public class Transaction {
                 "transactionID=" + transactionID +
                 ", type=" + type +
                 ", timeComplete=" + timeComplete +
-                ", amount=" + amount +
+                ", amount=$" + String.format("%.2f", amount / 100.0) +
                 ", accountSrc=" + accountSrc +
                 ", accountDst=" + accountDst +
                 '}';
