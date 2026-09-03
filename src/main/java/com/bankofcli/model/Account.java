@@ -9,17 +9,17 @@ import java.util.Objects;
 public class Account {
 
     private long accountID;
-    private int pinHash;
+    private int pin;
     private double balance;
 
     /**
      * Constructor for Account Data Class
      * @param accountID Unique Account ID used at login
-     * @param pinHash Pin/Password for Account
+     * @param pin Pin/Password for Account
      * @param balance Current balance of account
      */
-    public Account(long accountID, int pinHash, double balance) {
-        this.pinHash = pinHash;
+    public Account(long accountID, int pin, double balance) {
+        this.pin = pin;
         this.accountID = accountID;
         this.balance = balance;
     }
@@ -32,14 +32,14 @@ public class Account {
         this.accountID = accountID;
     }
 
-    public int getPinHash() {
-        return pinHash;
+    public int getPin() {
+        return pin;
     }
 
     //Ideally would have AccountServices generate a pin hash for account and then
     //temporary store it in Account Object to be updated in Database as well
-    public void setPinHash(int pinHash) {
-        this.pinHash = pinHash;
+    public void setPin(int pin) {
+        this.pin = pin;
     }
 
     public double getBalance() {
