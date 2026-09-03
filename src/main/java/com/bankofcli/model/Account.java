@@ -1,5 +1,7 @@
 package com.bankofcli.model;
 
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -75,9 +77,11 @@ public class Account {
      */
     @Override
     public String toString() {
+        String dollarAmount = NumberFormat.getCurrencyInstance(Locale.US).format(balanceExtendedCents / 100);
         return "Account{" +
                 "accountID=" + accountID +
-                ", balance=" + balanceExtendedCents +
+                ", balance=" + dollarAmount +
                 '}';
     }
+
 }
