@@ -1,9 +1,6 @@
 package com.bankofcli.service;
 
-import com.bankofcli.exception.AccountAlreadyExistsException;
-import com.bankofcli.exception.AccountNotFoundException;
-import com.bankofcli.exception.InvalidAccountIDException;
-import com.bankofcli.exception.InvalidPinException;
+import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
 import org.junit.jupiter.api.Assertions;
@@ -45,13 +42,13 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void registerAccountAlreadyExistsException(){
+    public void registerDuplicateExistsException(){
         long accID = 11111L;
         int pin = 1111;
         String expectedMessage = "Account ID already exists";
         Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, pin, 0));
-        AccountAlreadyExistsException ex =
-                Assertions.assertThrows(AccountAlreadyExistsException.class,
+        DuplicateAccountException ex =
+                Assertions.assertThrows(DuplicateAccountException.class,
                         () -> accServ.register(accID, pin));
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }

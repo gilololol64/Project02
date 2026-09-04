@@ -1,9 +1,6 @@
 package com.bankofcli.service;
 
-import com.bankofcli.exception.AccountAlreadyExistsException;
-import com.bankofcli.exception.AccountNotFoundException;
-import com.bankofcli.exception.InvalidAccountIDException;
-import com.bankofcli.exception.InvalidPinException;
+import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
 
@@ -29,7 +26,7 @@ public class AccountService {
         Account existingAccount = accountRepository.findByID(accountID);
 
         if (existingAccount != null) {
-            throw new AccountAlreadyExistsException("Account ID already exists");
+            throw new DuplicateAccountException("Account ID already exists");
         }
 
         Account newAccount = new Account(accountID, pin, 0);
