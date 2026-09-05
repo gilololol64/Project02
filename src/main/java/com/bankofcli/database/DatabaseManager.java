@@ -8,6 +8,10 @@ public class DatabaseManager {
 	
 	private static final String url="jdbc:sqlite:BigBankersBank.db";
 	
+	public static void main(String[] args) {
+		new DatabaseManager().init();
+	}
+	
 	public Connection open() {
 		//returns a open connection to the SQLite Database
 		try {
@@ -29,17 +33,17 @@ public class DatabaseManager {
 	
 	public void init() {
 		var sqlCreateAccount ="CREATE TABLE IF NOT EXISTS accounts ("
-						+ "    account_id VARCHAR PRIMARY KEY,"
+						+ "    account_id BIGINT PRIMARY KEY,"
 						+ "    pin INT NOT NULL,"
 						+ "    balance INT NOT NULL"
 						+ ");";
 		var sqlCreateTransactions ="CREATE TABLE IF NOT EXISTS transactions ("
-							+ "	transaction_id VARCHAR PRIMARY KEY,"
+							+ "	transaction_id BIGINT PRIMARY KEY,"
 							+ " trans_type TEXT NOT NULL CHECK (trans_type IN ('DEPOSIT', 'WITHDRAW', 'TRANSFER')),"
 							+ "	time_complete TEXT NOT NULL DEFAULT (datetime('now')),"
 							+ " amount INT NOT NULL,"
-							+ "	account_src VARCHAR NOT NULL,"
-							+ "	account_dst VARCHAR,"
+							+ "	account_src BIGINT NOT NULL,"
+							+ "	account_dst BIGINT,"
 							+ "	FOREIGN KEY (account_src) REFERENCES account(account_id),"
 							+ "	FOREIGN KEY (account_dst) REFERENCES account(account_id)"
 							+ ");";
