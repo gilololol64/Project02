@@ -1,5 +1,6 @@
 package com.bankofcli.service;
 
+import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
 
@@ -15,17 +16,17 @@ public class AccountService {
     public Account register(long accountID, int pin) {
 
         if (accountID <= 0) {
-            throw new IllegalArgumentException("Account ID must be positive.");
+            throw new InvalidAccountIDException("Account ID must be positive.");
         }
 
         if (!isValidPin(pin)) {
-            throw new IllegalArgumentException("PIN must be 4 digits.");
+            throw new InvalidPinException("PIN must be 4 digits.");
         }
 
         Account existingAccount = accountRepository.findByID(accountID);
 
         if (existingAccount != null) {
-            throw new IllegalArgumentException("Account ID already exists");
+            throw new DuplicateAccountException("Account ID already exists");
         }
 
         Account newAccount = new Account(accountID, pin, 0);
@@ -41,11 +42,11 @@ public class AccountService {
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
-            throw new IllegalArgumentException("Account not found.");
+            throw new AccountNotFoundException("Account not found.");
         }
 
         if (account.getPin() != pin) {
-            throw new IllegalArgumentException("Incorrect PIN.");
+            throw new InvalidPinException("Incorrect PIN.");
         }
 
         return account;
@@ -56,7 +57,7 @@ public class AccountService {
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
-            throw new IllegalArgumentException("Account not found.");
+            throw new AccountNotFoundException("Account not found.");
         }
 
         return account.getBalanceExtendedCents();
