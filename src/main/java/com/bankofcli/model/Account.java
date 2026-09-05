@@ -1,5 +1,7 @@
 package com.bankofcli.model;
 
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -10,18 +12,19 @@ public class Account {
 
     private long accountID;
     private int pin;
-    private double balance;
+    private int balanceExtendedCents;
 
     /**
      * Constructor for Account Data Class
      * @param accountID Unique Account ID used at login
      * @param pin Pin/Password for Account
-     * @param balance Current balance of account
+     * @param balanceExtendedCents Current balance of account representing as extended cents
+     *                             (i.e. $10.00 = 1000)
      */
-    public Account(long accountID, int pin, double balance) {
+    public Account(long accountID, int pin, int balanceExtendedCents) {
         this.pin = pin;
         this.accountID = accountID;
-        this.balance = balance;
+        this.balanceExtendedCents = balanceExtendedCents;
     }
 
     public long getAccountID() {
@@ -42,12 +45,13 @@ public class Account {
         this.pin = pin;
     }
 
-    public double getBalance() {
-        return balance;
+    public int getBalanceExtendedCents() {
+        return balanceExtendedCents;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
+    //
+    public void setBalanceExtendedCents(int balanceExtendedCents) {
+        this.balanceExtendedCents = balanceExtendedCents;
     }
 
     /**
@@ -73,9 +77,11 @@ public class Account {
      */
     @Override
     public String toString() {
+        String dollarAmount = NumberFormat.getCurrencyInstance(Locale.US).format(balanceExtendedCents / 100);
         return "Account{" +
                 "accountID=" + accountID +
-                ", balance=" + balance +
+                ", balance=" + dollarAmount +
                 '}';
     }
+
 }
