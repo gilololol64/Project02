@@ -17,7 +17,7 @@ public class AccountRepository {
 	
 	}	
 	
-	public Account findById(UUID accountID) {
+	public Account findByID(Long accountID) {
 		
 		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
 		try(var conn = db.open()){
@@ -25,7 +25,7 @@ public class AccountRepository {
 			var stmt= conn.prepareStatement(sql);
 			stmt.setString(1, accountID.toString());
 			ResultSet rs =stmt.executeQuery();
-			Account found = new Account(rs.getString("account_id"), rs.getInt("pin"), rs.getDouble("balance"));
+			Account found = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getInt("balance"));
 			return found;
 		}catch(SQLException e) {
 			System.out.print("failure: " + e.getMessage());
@@ -38,8 +38,8 @@ public class AccountRepository {
 		try(var conn =db.open()) {
 			var stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, toBeSaved.getPin());
-			stmt.setDouble(2, toBeSaved.getBalance());
-			stmt.setString(3, toBeSaved.getAccountID());
+			stmt.setDouble(2, toBeSaved.getBalanceExtendedCents());
+			stmt.setLong(3, toBeSaved.getAccountID());
 			stmt.executeUpdate();
 		} catch (Exception e) {
 			System.out.print("failure: " + e.getMessage());
@@ -55,9 +55,9 @@ public class AccountRepository {
 		
 		try(var conn =db.open()) {
 			var stmt = conn.prepareStatement(sql);
-			stmt.setString(1, toBeSaved.getAccountID());
+			stmt.setLong(1, toBeSaved.getAccountID());
 			stmt.setInt(2, toBeSaved.getPin());
-			stmt.setDouble(3, toBeSaved.getBalance());
+			stmt.setDouble(3, toBeSaved.getBalanceExtendedCents());
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.print("failure: " + e.getMessage());
