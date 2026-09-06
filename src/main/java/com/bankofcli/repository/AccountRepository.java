@@ -16,14 +16,7 @@ public class AccountRepository {
 		db = new DatabaseManager();
 		
 	}
-	public static void main(String[] args) {
-		Account test =new Account(123456, 1234, 5000);
-		AccountRepository stuff = new AccountRepository();
-		stuff.save(test);
-		System.out.print(stuff.findByID(test.getAccountID()).getBalanceExtendedCents());
-		
-	}
-	
+	// Test Account with id 123456 in DB
 	public Account findByID(Long accountID) {
 		
 		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
@@ -40,21 +33,6 @@ public class AccountRepository {
 		}
 		
 	}
-	
-	/*public void save(Account toBeSaved) {
-		var sql ="UPDATE account SET pin = ?, balance = ? WHERE account_id = ?";
-		try(var conn =db.open()) {
-			var stmt = conn.prepareStatement(sql);
-			stmt.setInt(1, toBeSaved.getPin());
-			stmt.setDouble(2, toBeSaved.getBalanceExtendedCents());
-			stmt.setLong(3, toBeSaved.getAccountID());
-			stmt.executeUpdate();
-		} catch (Exception e) {
-			System.out.print("failure: " + e.getMessage());
-	        throw new RuntimeException("Could not connect to database", e);
-		}
-	}
-	*/
 	
 	public void save(Account toBeSaved) {
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
