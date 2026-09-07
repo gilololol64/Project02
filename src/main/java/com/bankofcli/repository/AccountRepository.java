@@ -36,7 +36,7 @@ public class AccountRepository {
 		
 	}
 	
-	public void saveMulti(ArrayList<Account> toBeSaved) {
+	public void save(ArrayList<Account> toBeSaved) {
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
 		
 		try(var conn =db.open()) {
