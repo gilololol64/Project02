@@ -1,8 +1,10 @@
 package com.bankofcli.repository;
 
+import java.awt.List;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.bankofcli.database.DatabaseManager;
@@ -28,6 +30,27 @@ public class AccountRepository {
 			Account found = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getInt("balance"));
 			return found;
 		}catch(SQLException e) {
+			System.out.print("failure: " + e.getMessage());
+	        throw new RuntimeException("Could not connect to database", e);
+		}
+		
+	}
+	
+	public void saveMulti(ArrayList<Account> toBeSaved) {
+		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
+		
+		try(var conn =db.open()) {
+			conn.setAutoCommit(false);
+			for (Account account : toBeSaved) {
+				var stmt = conn.prepareStatement(sql);
+				stmt.setLong(1, account.getAccountID());
+				stmt.setInt(2, account.getPin());
+				stmt.setDouble(3, account.getBalanceExtendedCents());
+				stmt.executeUpdate();
+			}
+			conn.commit();
+			
+		} catch (SQLException e) {
 			System.out.print("failure: " + e.getMessage());
 	        throw new RuntimeException("Could not connect to database", e);
 		}
