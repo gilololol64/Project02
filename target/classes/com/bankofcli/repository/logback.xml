@@ -1,0 +1,152 @@
+<configuration>
+	<property name="LOG_FILE" value ="/TransactionLogs" />
+	<appender  name="OneFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/1-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+	<appender  name="TwoFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/2-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+	<appender  name="ThreeFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/3-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+	<appender  name="FourFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/4-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+	<appender  name="FiveFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/5-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+	<appender  name="SixFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/6-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+	<appender  name="SevenFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/7-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+	<appender  name="EightFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/8-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+	<appender  name="NineFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/9-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>${LOG_FILE}.%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+		<appender  name="SQLErrors" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/logs/SQL.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %method %-5level %logger{36} - %exception </pattern>
+		</encoder>
+	</appender>
+	<appender  name="General_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/logs/error.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %method %-5level %logger{36} - %exception </pattern>
+		</encoder>
+	</appender>
+		<appender  name="AccountAction" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/logs/AccountAction.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>%d{yyyy/MM}.gz</fileNamePattern>
+	        <maxFileSize>25MB</maxFileSize>
+	        <maxHistory>90</maxHistory>
+	        <totalSizeCap>3GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %method %-5level %logger{36} - %exception </pattern>
+		</encoder>
+	</appender>
+	
+	<root level="debug">
+    	<appender-ref ref="STDOUT" />
+  	</root>
+
+</configuration>
