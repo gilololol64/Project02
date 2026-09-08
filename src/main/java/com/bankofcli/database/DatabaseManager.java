@@ -14,8 +14,7 @@ public class DatabaseManager {
 		try {
 		return DriverManager.getConnection(url);
 		}catch(SQLException e) {
-			System.out.print("failure: " + e.getMessage());
-	        throw new RuntimeException("Could not connect to database", e);
+	        throw new RuntimeException("Could not connect to database.");
 		}
 	}
 	public void close(Connection current) {
@@ -23,7 +22,9 @@ public class DatabaseManager {
 		try {
 			current.close();
 		} catch (SQLException e) {
-			 throw new RuntimeException("Could not close connection", e);
+			 throw new RuntimeException("Could not close connection.");
+		} catch(NullPointerException e){
+			throw new NullPointerException("Could not close empty database connection.");
 		}
 		
 	}
