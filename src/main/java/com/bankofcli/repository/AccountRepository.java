@@ -1,13 +1,77 @@
 package com.bankofcli.repository;
 
+import java.awt.List;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.UUID;
+
+import com.bankofcli.database.DatabaseManager;
 import com.bankofcli.model.Account;
 
 public class AccountRepository {
-    public Account findByID(long accountID) {
-        return null;
-    }
-
-    public void save(Account newAccount) {
-
-    }
+	
+	DatabaseManager db;
+	//creates a log
+	public AccountRepository() {
+		db = new DatabaseManager();
+		
+	}
+	// Test Account with id 123456 in DB
+	public Account findByID(Long accountID) {
+		
+		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
+		try(var conn = db.open()){
+			//Executes select statement and returns Account variable
+			var stmt= conn.prepareStatement(sql);
+			stmt.setString(1, accountID.toString());
+			ResultSet rs =stmt.executeQuery();
+			Account found = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getInt("balance"));
+			return found;
+		}catch(SQLException e) {
+			System.out.print("failure: " + e.getMessage());
+	        throw new RuntimeException("Could not connect to database", e);
+		}
+		
+	}
+	
+	public void save(ArrayList<Account> toBeSaved) {
+		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
+		
+		try(var conn =db.open()) {
+			conn.setAutoCommit(false);
+			for (Account account : toBeSaved) {
+				var stmt = conn.prepareStatement(sql);
+				stmt.setLong(1, account.getAccountID());
+				stmt.setInt(2, account.getPin());
+				stmt.setDouble(3, account.getBalanceExtendedCents());
+				stmt.executeUpdate();
+			}
+			conn.commit();
+			
+		} catch (SQLException e) {
+			System.out.print("failure: " + e.getMessage());
+	        throw new RuntimeException("Could not connect to database", e);
+		}
+		
+	}
+	
+	public void save(Account toBeSaved) {
+		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
+		
+		try(var conn =db.open()) {
+			var stmt = conn.prepareStatement(sql);
+			stmt.setLong(1, toBeSaved.getAccountID());
+			stmt.setInt(2, toBeSaved.getPin());
+			stmt.setDouble(3, toBeSaved.getBalanceExtendedCents());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.print("failure: " + e.getMessage());
+	        throw new RuntimeException("Could not connect to database", e);
+		}
+	}
+	
+	
+	
 }
