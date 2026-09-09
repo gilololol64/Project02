@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class AccountService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
+    private static final Logger logger = LoggerFactory.getLogger("AccountAction");
 
     private final AccountRepository accountRepository;
 

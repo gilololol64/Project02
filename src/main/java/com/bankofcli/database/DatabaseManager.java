@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class DatabaseManager {
 
-	private static final Logger logger = LoggerFactory.getLogger(DatabaseManager.class);
+	private static final Logger logger = LoggerFactory.getLogger("SQLErrors");
 
 	private static final String url="jdbc:sqlite:BigBankersBank.db";
 	

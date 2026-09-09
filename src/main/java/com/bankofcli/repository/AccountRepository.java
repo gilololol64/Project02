@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class AccountRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger(AccountRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger("SQLErrors");
 
 	DatabaseManager db;
 	//creates a log
@@ -93,7 +93,6 @@ public class AccountRepository {
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
-	
 
 
 	public void update(Account account) {
