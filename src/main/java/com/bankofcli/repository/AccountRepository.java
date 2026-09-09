@@ -8,10 +8,15 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.bankofcli.database.DatabaseManager;
+import com.bankofcli.exception.ServiceUnavailableException;
 import com.bankofcli.model.Account;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AccountRepository {
-	
+
+	private static final Logger logger = LoggerFactory.getLogger(AccountRepository.class);
+
 	DatabaseManager db;
 	//creates a log
 	public AccountRepository() {
@@ -35,8 +40,8 @@ public class AccountRepository {
 			}
 			return null;
 		}catch(SQLException e) {
-			System.out.print("failure: " + e.getMessage());
-	        throw new RuntimeException("Could not connect to database", e);
+			logger.error("Database error while looking up account {}.", accountID, e);
+			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 		
 	}
@@ -59,10 +64,11 @@ public class AccountRepository {
 				stmt.executeUpdate();
 			}
 			conn.commit();
-			
+			logger.info("Successfully saved {} account(s).", toBeSaved.size());
+
 		} catch (SQLException e) {
-			System.out.print("failure: " + e.getMessage());
-	        throw new RuntimeException("Could not connect to database", e);
+			logger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
+			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 		
 	}
@@ -81,12 +87,12 @@ public class AccountRepository {
 			stmt.setInt(2, toBeSaved.getPin());
 			stmt.setDouble(3, toBeSaved.getBalanceExtendedCents());
 			stmt.executeUpdate();
+			logger.info("Successfully saved account {}.", toBeSaved.getAccountID());
 		} catch (SQLException e) {
-			System.out.print("failure: " + e.getMessage());
-	        throw new RuntimeException("Could not connect to database", e);
+			logger.error("Database error while saving account {}.", toBeSaved.getAccountID(), e);
+			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
-	
 	
 
 }

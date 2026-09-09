@@ -4,8 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.bankofcli.exception.ServiceUnavailableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DatabaseManager {
-	
+
+	private static final Logger logger = LoggerFactory.getLogger(DatabaseManager.class);
+
 	private static final String url="jdbc:sqlite:BigBankersBank.db";
 	
 
@@ -14,7 +20,8 @@ public class DatabaseManager {
 		try {
 		return DriverManager.getConnection(url);
 		}catch(SQLException e) {
-	        throw new RuntimeException("Could not connect to database.");
+			logger.error("Could not open a connection to the database.", e);
+	        throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
 	public void close(Connection current) {
@@ -22,7 +29,8 @@ public class DatabaseManager {
 		try {
 			current.close();
 		} catch (SQLException e) {
-			 throw new RuntimeException("Could not close connection.");
+			logger.error("Could not close the database connection.", e);
+			 throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		} catch(NullPointerException e){
 			throw new NullPointerException("Could not close empty database connection.");
 		}
@@ -51,8 +59,9 @@ public class DatabaseManager {
 			 //create two tables
 			 stmtA.execute(sqlCreateAccount);
 			 stmtA.execute(sqlCreateTransactions);
+			 logger.info("Database tables verified/created successfully.");
 		 }catch(SQLException e){
-			 e.printStackTrace();
+			 logger.error("Could not initialize database tables.", e);
 		 }
 	}
 	
