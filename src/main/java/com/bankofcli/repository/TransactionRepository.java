@@ -51,7 +51,4 @@ public class TransactionRepository {
 		
 	}
 
-    public void save(Transaction transaction) {
-
-    }
 }
