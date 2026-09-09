@@ -17,7 +17,7 @@ public class AccountRepository {
 		
 	}
 	// Test Account with id 123456 in DB
-	public Account findByID(Long accountID) {
+	public Account findByID(long accountID) {
 		
 		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
 
@@ -88,7 +88,8 @@ public class AccountRepository {
 	        throw new RuntimeException("Could not connect to database", e);
 		}
 	}
-	
-	
 
+
+	public void update(Account account) {
+	}
 }

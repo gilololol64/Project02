@@ -50,4 +50,8 @@ public class TransactionRepository {
 		curLogger.info(tobeLogged.toString());
 		
 	}
+
+    public void save(Transaction transaction) {
+
+    }
 }

@@ -19,7 +19,7 @@ public class AccountRepositoryIT {
     public void setup(){
         //Set up testing variables
         int pin = 1111;
-        int balance = 0;
+        long balance = 0;
         accRepo = new AccountRepository();
         testAccountIDs = new ArrayList<>();
         accountList = new ArrayList<>();
@@ -65,7 +65,7 @@ public class AccountRepositoryIT {
                 while(rs.next()){
                     long resultAccID = rs.getLong("account_id");
                     int resultPin = rs.getInt("pin");
-                    int resultBalance = rs.getInt("balance");
+                    long resultBalance = rs.getLong("balance");
                     result = new Account(resultAccID,resultPin, resultBalance);
                 }
             }
@@ -92,7 +92,7 @@ public class AccountRepositoryIT {
                 while(rs.next()){
                     long resultAccID = rs.getLong("account_id");
                     int resultPin = rs.getInt("pin");
-                    int resultBalance = rs.getInt("balance");
+                    long resultBalance = rs.getLong("balance");
                     results.add(new Account(resultAccID,resultPin, resultBalance));
                 }
             }
@@ -143,7 +143,7 @@ public class AccountRepositoryIT {
             PreparedStatement stmt = con.prepareStatement(insertTestAccountQry)) {
             stmt.setLong(1, accId);
             stmt.setInt(2, acc.getPin());
-            stmt.setInt(3, acc.getBalanceExtendedCents());
+            stmt.setLong(3, acc.getBalanceExtendedCents());
             stmt.executeUpdate();
         }
 
