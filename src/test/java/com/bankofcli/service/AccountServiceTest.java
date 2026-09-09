@@ -97,7 +97,7 @@ public class AccountServiceTest {
     public void loginPositive(){
         long accID = 11111L;
         int pin = 1111;
-        int balance = 1000; //$10.00
+        long balance = 1000; //$10.00
         Account expectedAccount = new Account(accID, pin, balance);
         Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, pin, balance));
         Account resultAccount = accServ.login(accID, pin);
@@ -109,7 +109,6 @@ public class AccountServiceTest {
     public void loginAccountNotFoundException(){
         long accID = 11111L;
         int pin = 1111;
-        int balance = 1000; //$10.00
         String expectedMessage = "Account not found.";
         Mockito.when(accRep.findByID(accID)).thenReturn(null);
         AccountNotFoundException ex = Assertions.assertThrows(AccountNotFoundException.class,
@@ -122,7 +121,7 @@ public class AccountServiceTest {
         long accID = 11111L;
         int pin1 = 1234;
         int pin2 = 1235;
-        int balance = 1000; //$10.00
+        long balance = 1000; //$10.00
         String expectedMessage = "Incorrect PIN.";
         Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, pin1, balance));
         InvalidPinException ex = Assertions.assertThrows(InvalidPinException.class,
@@ -133,7 +132,7 @@ public class AccountServiceTest {
     @Test
     public void getBalancePositive(){
         long accID = 11111L;
-        int balance = 1000; //$10.00
+        long balance = 1000; //$10.00
         Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, 1111, balance));
         Assertions.assertEquals(accServ.getBalance(accID), balance);
     }
@@ -141,7 +140,6 @@ public class AccountServiceTest {
     @Test
     public void getBalanceAccountNotFoundException(){
         long accID = 11111L;
-        int balance = 1000; //$10.00
         String expectedMessage = "Account not found.";
         Mockito.when(accRep.findByID(accID)).thenReturn(null);
         AccountNotFoundException ex = Assertions.assertThrows(AccountNotFoundException.class,

@@ -20,13 +20,13 @@ public class AccountRepository {
 		
 	}
 	// Test Account with id 123456 in DB
-	public Account findByID(Long accountID) {
+	public Account findByID(long accountID) {
 		
 		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
 		try(var conn = db.open()){
 			//Executes select statement and returns Account variable
 			var stmt= conn.prepareStatement(sql);
-			stmt.setString(1, accountID.toString());
+			stmt.setString(1, Long.toString(accountID));
 			ResultSet rs =stmt.executeQuery();
 
 			//Check if there were any results from the query before creating empty Account object
@@ -55,7 +55,7 @@ public class AccountRepository {
 				var stmt = conn.prepareStatement(sql);
 				stmt.setLong(1, account.getAccountID());
 				stmt.setInt(2, account.getPin());
-				stmt.setDouble(3, account.getBalanceExtendedCents());
+				stmt.setLong(3, account.getBalanceExtendedCents());
 				stmt.executeUpdate();
 			}
 			conn.commit();
@@ -79,14 +79,15 @@ public class AccountRepository {
 			var stmt = conn.prepareStatement(sql);
 			stmt.setLong(1, toBeSaved.getAccountID());
 			stmt.setInt(2, toBeSaved.getPin());
-			stmt.setDouble(3, toBeSaved.getBalanceExtendedCents());
+			stmt.setLong(3, toBeSaved.getBalanceExtendedCents());
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.print("failure: " + e.getMessage());
 	        throw new RuntimeException("Could not connect to database", e);
 		}
 	}
-	
-	
 
+
+	public void update(Account account) {
+	}
 }
