@@ -25,7 +25,7 @@ public class AccountRepository {
 			var stmt = conn.prepareStatement(sql)){
 			//Executes select statement and returns Account variable
 
-			stmt.setString(1, accountID.toString());
+			stmt.setLong(1, accountID);
 			ResultSet rs = stmt.executeQuery();
 			//Check if there were any results from the query before creating empty Account object
 			if (rs.next()) {
