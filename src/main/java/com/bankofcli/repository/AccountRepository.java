@@ -1,11 +1,8 @@
 package com.bankofcli.repository;
 
 import java.util.List;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.UUID;
 
 import com.bankofcli.database.DatabaseManager;
 import com.bankofcli.model.Account;
@@ -23,12 +20,13 @@ public class AccountRepository {
 	public Account findByID(Long accountID) {
 		
 		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
-		try(var conn = db.open()){
+
+		try(var conn = db.open();
+			var stmt = conn.prepareStatement(sql)){
 			//Executes select statement and returns Account variable
-			var stmt= conn.prepareStatement(sql);
+
 			stmt.setString(1, accountID.toString());
-			ResultSet rs =stmt.executeQuery();
-			stmt.close();
+			ResultSet rs = stmt.executeQuery();
 			//Check if there were any results from the query before creating empty Account object
 			if (rs.next()) {
 				Account result = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getInt("balance"));
@@ -52,17 +50,16 @@ public class AccountRepository {
 
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
 		
-		try(var conn =db.open()) {
+		try(var conn =db.open();
+			var stmt = conn.prepareStatement(sql)) {
 			conn.setAutoCommit(false);
-			var stmt = conn.prepareStatement(sql);
 			for (Account account : toBeSaved) {
 				stmt.setLong(1, account.getAccountID());
 				stmt.setInt(2, account.getPin());
-				stmt.setDouble(3, account.getBalanceExtendedCents());
+				stmt.setLong(3, account.getBalanceExtendedCents());
 				stmt.executeUpdate();
 			}
 			conn.commit();
-			stmt.close();
 			
 		} catch (SQLException e) {
 			System.out.print("failure: " + e.getMessage());
@@ -84,7 +81,7 @@ public class AccountRepository {
 			) {
 			stmt.setLong(1, toBeSaved.getAccountID());
 			stmt.setInt(2, toBeSaved.getPin());
-			stmt.setDouble(3, toBeSaved.getBalanceExtendedCents());
+			stmt.setLong(3, toBeSaved.getBalanceExtendedCents());
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.print("failure: " + e.getMessage());
