@@ -10,8 +10,6 @@ import com.bankofcli.exception.*;
 
 import java.time.LocalDateTime;
 
-import javax.security.auth.login.AccountNotFoundException;
-
 public class TransactionService {
     
     private final AccountRepository accountRepository;
@@ -28,9 +26,14 @@ public class TransactionService {
 
         Account account = getAccountOrThrow(accountID);
 
-        long newBalance = account.getBalanceExtendedCents() + amount;
+        long newBalance = 0;
+        try {
+            newBalance = Math.addExact(account.getBalanceExtendedCents(), amount);
+        } catch (ArithmeticException e) {
+            throw new InvalidAmountException("Transaction amount too large to process");
+        }
 
-        account.setBalanceExtendedCents((int) newBalance);
+        account.setBalanceExtendedCents(newBalance);
         accountRepository.update(account);
 
         Transaction transaction = new Transaction(
@@ -60,7 +63,7 @@ public class TransactionService {
 
         long newBalance = account.getBalanceExtendedCents() - amount;
 
-        account.setBalanceExtendedCents((int) newBalance);
+        account.setBalanceExtendedCents(newBalance);
         accountRepository.update(account);
 
         Transaction transaction = new Transaction(
@@ -93,15 +96,16 @@ public class TransactionService {
             throw new InsufficientFundsException("Insufficient funds.");
         }
 
-        long destinationBalance = destination.getBalanceExtendedCents() + amount;
+        long destinationBalance = 0;
+        try {
+            destinationBalance = Math.addExact(destination.getBalanceExtendedCents(), amount);
+        } catch (ArithmeticException e) {
+            throw new InvalidAmountException("Transaction amount too large to process");
+        }
 
-        source.setBalanceExtendedCents(
-            (int) (source.getBalanceExtendedCents() - amount)
-        );
+        source.setBalanceExtendedCents(source.getBalanceExtendedCents() - amount);
 
-        destination.setBalanceExtendedCents(
-            (int) destinationBalance
-        );
+        destination.setBalanceExtendedCents(destinationBalance);
 
         accountRepository.update(source);
         accountRepository.update(destination);
@@ -111,7 +115,7 @@ public class TransactionService {
             Type.TRANSFER,
             LocalDateTime.now(),
             amount,
-            SourceAccountID,
+            sourceAccountID,
             destinationAccountID
         );
 
@@ -122,14 +126,14 @@ public class TransactionService {
 
     // Ensures transaction amount is valid
     private void validateAmount(long amount) {
-        if (amount <= 0) {
-            throw new InvalidAmountException("Transaction amount must be greater than zero.");
+        if (amount < 0) {
+            throw new InvalidAmountException("Transaction amount can not be less than zero.");
 
         }
     }
 
     private Account getAccountOrThrow(long accountID) {
-        Account account = accountRepository.findById(accountID);
+        Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
             throw new AccountNotFoundException("Account " + accountID + " was not found.");
