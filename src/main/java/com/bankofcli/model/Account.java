@@ -10,7 +10,7 @@ public class Account {
 
     private long accountID;
     private int pin;
-    private int balanceExtendedCents;
+    private long balanceExtendedCents;
 
     /**
      * Constructor for Account Data Class
@@ -19,7 +19,7 @@ public class Account {
      * @param balanceExtendedCents Current balance of account representing as extended cents
      *                             (i.e. $10.00 = 1000)
      */
-    public Account(long accountID, int pin, int balanceExtendedCents) {
+    public Account(long accountID, int pin, long balanceExtendedCents) {
         this.pin = pin;
         this.accountID = accountID;
         this.balanceExtendedCents = balanceExtendedCents;
@@ -43,12 +43,12 @@ public class Account {
         this.pin = pin;
     }
 
-    public int getBalanceExtendedCents() {
+    public long getBalanceExtendedCents() {
         return balanceExtendedCents;
     }
 
     //
-    public void setBalanceExtendedCents(int balanceExtendedCents) {
+    public void setBalanceExtendedCents(long balanceExtendedCents) {
         this.balanceExtendedCents = balanceExtendedCents;
     }
 

@@ -17,4 +17,8 @@ public class TransactionRepository {
 	public void log() {
 		
 	}
+
+    public void save(Transaction transaction) {
+
+    }
 }

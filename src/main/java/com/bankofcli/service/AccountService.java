@@ -66,7 +66,7 @@ public class AccountService {
     }
 
     // Returns the current account balance in extended cents
-    public int getBalance(long accountID) {
+    public long getBalance(long accountID) {
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
@@ -79,6 +79,6 @@ public class AccountService {
 
     // Checks that the pin contains exactly four digits
     private boolean isValidPin(int pin) {
-        return pin >= 1000 & pin <= 9999;
+        return pin >= 0 & pin <= 9999;
     }
 }
