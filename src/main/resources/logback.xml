@@ -1,0 +1,199 @@
+<configuration>
+	<property name="LOG_FILE" value="/TransactionLogs" />
+
+	<appender name="OneFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/1-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/1-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="TwoFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/2-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/2-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="ThreeFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/3-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/3-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FourFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/4-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/4-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FiveFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/5-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/5-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="SixFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/6-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/6-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="SevenFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/7-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/7-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="EightFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/8-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/8-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="NineFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}/9-Log.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}/9-Log.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS}  %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="SQLErrors" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/logs/SQL.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>/logs/SQL.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %method %-5level %logger{36} - %exception </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="General_Error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/logs/error.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>/logs/error.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %method %-5level %logger{36} - %exception </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="AccountAction" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/logs/AccountAction.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>/logs/AccountAction.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<maxFileSize>25MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %method %-5level %logger{36} - %exception </pattern>
+		</encoder>
+	</appender>
+
+	<logger name="Bank.Transaction.logback" level="INFO"/>
+	<logger name="Bank.logback.Error" level="ERROR" additivity="false">
+		<appender-ref ref="General_Error" />
+	</logger>
+	<logger name="Bank.logback.SQLError" level="ERROR" additivity="false">
+		<appender-ref ref="SQLErrors" />
+	</logger>
+	<logger name="Bank.Transaction.logback.1" level="INFO" additivity="false">
+		<appender-ref ref="OneFile" />
+	</logger>
+	<logger name="Bank.Transaction.logback.2" level="INFO" additivity="false">
+		<appender-ref ref="TwoFile" />
+	</logger>
+	<logger name="Bank.Transaction.logback.3" level="INFO" additivity="false">
+		<appender-ref ref="ThreeFile" />
+	</logger>
+	<logger name="Bank.Transaction.logback.4" level="INFO" additivity="false">
+		<appender-ref ref="FourFile" />
+	</logger>
+	<logger name="Bank.Transaction.logback.5" level="INFO" additivity="false">
+		<appender-ref ref="FiveFile" />
+	</logger>
+	<logger name="Bank.Transaction.logback.6" level="INFO" additivity="false">
+		<appender-ref ref="SixFile" />
+	</logger>
+	<logger name="Bank.Transaction.logback.7" level="INFO" additivity="false">
+		<appender-ref ref="SevenFile" />
+	</logger>
+	<logger name="Bank.Transaction.logback.8" level="INFO" additivity="false">
+		<appender-ref ref="EightFile" />
+	</logger>
+	<logger name="Bank.Transaction.logback.9" level="INFO" additivity="false">
+		<appender-ref ref="NineFile" />
+	</logger>
+
+	<root level="DEBUG">
+		<appender-ref ref="AccountAction" />
+	</root>
+
+</configuration>
