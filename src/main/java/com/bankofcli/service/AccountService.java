@@ -3,13 +3,19 @@ package com.bankofcli.service;
 import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
+import java.security.SecureRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.security.SecureRandom;
 
 public class AccountService {
 
-    private static final Logger logger = LoggerFactory.getLogger("AccountAction");
+    // Dedicated error logger - name must match a <logger> element in logback.xml
+    // to route to the general error log file instead of falling through to root.
+    private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
+
+    // General action logger - name doesn't matter, inherits from root and
+    // lands in the AccountAction log file. Only ever used for .info() calls.
+    private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
 
     private final AccountRepository accountRepository;
 
@@ -21,7 +27,7 @@ public class AccountService {
     public Account register(int pin) {
 
         if (!isValidPin(pin)) {
-            logger.error("Registration failed for account ID {}, PIN did not meet format requirements.", accountID);
+            errorLogger.error("Registration failed, PIN did not meet format requirements.");
             throw new InvalidPinException("PIN must be 4 digits.");
         }
 
@@ -38,7 +44,7 @@ public class AccountService {
 
         accountRepository.save(newAccount);
 
-        logger.info("Account {} successfully registered.", accountID);
+        actionLogger.info("Account {} successfully registered.", accountID);
 
         return newAccount;
     }
@@ -49,16 +55,16 @@ public class AccountService {
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
-            logger.error("Login failed, account ID {} not found.", accountID);
+            errorLogger.error("Login failed, account ID {} not found.", accountID);
             throw new AccountNotFoundException("Account not found.");
         }
 
         if (account.getPin() != pin) {
-            logger.error("Login failed for account {}, incorrect PIN entered.", accountID);
+            errorLogger.error("Login failed for account {}, incorrect PIN entered.", accountID);
             throw new InvalidPinException("Incorrect PIN.");
         }
 
-        logger.info("Account {} successfully logged in.", accountID);
+        actionLogger.info("Account {} successfully logged in.", accountID);
 
         return account;
     }
@@ -68,7 +74,7 @@ public class AccountService {
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
-            logger.error("Balance lookup failed, account ID {} not found.", accountID);
+            errorLogger.error("Balance lookup failed, account ID {} not found.", accountID);
             throw new AccountNotFoundException("Account not found.");
         }
 

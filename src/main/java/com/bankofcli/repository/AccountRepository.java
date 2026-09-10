@@ -12,7 +12,13 @@ import org.slf4j.LoggerFactory;
 
 public class AccountRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger("SQLErrors");
+	// Dedicated error logger - name must match logback.xml's <logger> element
+	// exactly to route to the SQL error log file instead of falling through to root.
+	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+
+	// General action logger - name doesn't matter, inherits from root and
+	// lands in the AccountAction log file. Only ever used for .info() calls.
+	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
 
 	DatabaseManager db;
 	//creates a log
@@ -41,7 +47,7 @@ public class AccountRepository {
 			rs.close();
 			return null;
 		}catch(SQLException e) {
-			logger.error("Database error while looking up account {}.", accountID, e);
+			errorLogger.error("Database error while looking up account {}.", accountID, e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 		
@@ -65,10 +71,10 @@ public class AccountRepository {
 				stmt.executeUpdate();
 			}
 			conn.commit();
-			logger.info("Successfully saved {} account(s).", toBeSaved.size());
+			actionLogger.info("Successfully saved {} account(s).", toBeSaved.size());
 
 		} catch (SQLException e) {
-			logger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
+			errorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 		
@@ -89,9 +95,9 @@ public class AccountRepository {
 			stmt.setInt(2, toBeSaved.getPin());
 			stmt.setLong(3, toBeSaved.getBalanceExtendedCents());
 			stmt.executeUpdate();
-			logger.info("Successfully saved account {}.", toBeSaved.getAccountID());
+			actionLogger.info("Successfully saved account {}.", toBeSaved.getAccountID());
 		} catch (SQLException e) {
-			logger.error("Database error while saving account {}.", toBeSaved.getAccountID(), e);
+			errorLogger.error("Database error while saving account {}.", toBeSaved.getAccountID(), e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
