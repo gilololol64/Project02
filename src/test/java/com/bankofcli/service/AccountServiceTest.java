@@ -8,6 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+
 public class AccountServiceTest {
 
     public AccountService accServ;
@@ -21,56 +24,22 @@ public class AccountServiceTest {
 
     @Test
     public void registerPositive(){
-        long accID = 11111L;
         int pin = 1111;
-        Account expectedAccount = new Account(accID, pin, 0);
-        Mockito.when(accRep.findByID(accID)).thenReturn(null);
-        Account resultAccount = accServ.register(accID, pin);
-        Assertions.assertEquals(expectedAccount, resultAccount);
+        Account expectedAccount = new Account(1, pin, 0);
+        Mockito.when(accRep.findByID(anyLong())).thenReturn(null);
+        Account resultAccount = accServ.register(pin);
+        Assertions.assertEquals(expectedAccount.getPin(), resultAccount.getPin());
         Assertions.assertEquals(expectedAccount.getBalanceExtendedCents(), resultAccount.getBalanceExtendedCents());
     }
 
     @Test
     public void registerPositiveZeroPin(){
-        long accID = 11111L;
-        int pin = 1111;
-        Account expectedAccount = new Account(accID, pin, 0);
-        Mockito.when(accRep.findByID(accID)).thenReturn(null);
-        Account resultAccount = accServ.register(accID, pin);
-        Assertions.assertEquals(expectedAccount, resultAccount);
+        int pin = 0;
+        Account expectedAccount = new Account(1,pin, 0);
+        Mockito.when(accRep.findByID(anyLong())).thenReturn(null);
+        Account resultAccount = accServ.register(pin);
+        Assertions.assertEquals(expectedAccount.getPin(), resultAccount.getPin());
         Assertions.assertEquals(expectedAccount.getBalanceExtendedCents(), resultAccount.getBalanceExtendedCents());
-    }
-
-    @Test
-    public void registerDuplicateExistsException(){
-        long accID = 11111L;
-        int pin = 1111;
-        String expectedMessage = "Account ID already exists";
-        Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, pin, 0));
-        DuplicateAccountException ex =
-                Assertions.assertThrows(DuplicateAccountException.class,
-                        () -> accServ.register(accID, pin));
-        Assertions.assertEquals(expectedMessage, ex.getMessage());
-    }
-
-    @Test
-    public void registerInvalidAccountIDExceptionZero(){
-        long accID = 0;
-        int pin = 1111;
-        String expectedMessage = "Account ID must be positive.";
-        InvalidAccountIDException ex = Assertions.assertThrows(InvalidAccountIDException.class,
-                () -> accServ.register(accID, pin));
-        Assertions.assertEquals(expectedMessage, ex.getMessage());
-    }
-
-    @Test
-    public void registerInvalidAccountIDExceptionNegative(){
-        long accID = -1;
-        int pin = 1111;
-        String expectedMessage = "Account ID must be positive.";
-        InvalidAccountIDException ex = Assertions.assertThrows(InvalidAccountIDException.class,
-                () -> accServ.register(accID, pin));
-        Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
     @Test
@@ -79,17 +48,16 @@ public class AccountServiceTest {
         int pin = -1;
         String expectedMessage = "PIN must be 4 digits.";
         InvalidPinException ex = Assertions.assertThrows(InvalidPinException.class,
-                () -> accServ.register(accID, pin));
+                () -> accServ.register(pin));
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
     @Test
     public void registerInvalidPinExceptionTooLarge(){
-        long accID = 11111L;
         int pin = 10000;
         String expectedMessage = "PIN must be 4 digits.";
         InvalidPinException ex = Assertions.assertThrows(InvalidPinException.class,
-                () -> accServ.register(accID, pin));
+                () -> accServ.register(pin));
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
