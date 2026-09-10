@@ -9,6 +9,8 @@ import com.bankofcli.repository.TransactionRepository;
 import com.bankofcli.exception.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionService {
     
@@ -104,11 +106,15 @@ public class TransactionService {
         }
 
         source.setBalanceExtendedCents(source.getBalanceExtendedCents() - amount);
-
         destination.setBalanceExtendedCents(destinationBalance);
 
-        accountRepository.update(source);
-        accountRepository.update(destination);
+        //Wrap both src and dst accounts into one list so accountRepository has to process both
+        //at same time.
+        List<Account> accounts = new ArrayList<>();
+        accounts.add(source);
+        accounts.add(destination);
+
+        accountRepository.save(accounts);
 
         Transaction transaction = new Transaction(
             0,
