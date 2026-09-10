@@ -151,3 +151,4 @@ target/classes/META-INF/MANIFEST.MF
 .settings/org.eclipse.core.resources.prefs
 data/*.db
 *.db
+target/classes/META-INF/maven/com.bankofcli/bank-of-cli/pom.properties
