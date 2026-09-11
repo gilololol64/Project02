@@ -29,7 +29,7 @@ public class AccountRepository {
 			ResultSet rs = stmt.executeQuery();
 			//Check if there were any results from the query before creating empty Account object
 			if (rs.next()) {
-				Account result = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getInt("balance"));
+				Account result = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getLong("balance"));
 				rs.close();
 				return result;
 			}
@@ -77,7 +77,7 @@ public class AccountRepository {
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
 		
 		try(var conn =db.open();
-			var stmt = conn.prepareStatement(sql);
+			var stmt = conn.prepareStatement(sql)
 			) {
 			stmt.setLong(1, toBeSaved.getAccountID());
 			stmt.setInt(2, toBeSaved.getPin());
@@ -87,9 +87,5 @@ public class AccountRepository {
 			System.out.print("failure: " + e.getMessage());
 	        throw new RuntimeException("Could not connect to database", e);
 		}
-	}
-
-
-	public void update(Account account) {
 	}
 }
