@@ -52,6 +52,13 @@ public class Account {
         this.balanceExtendedCents = balanceExtendedCents;
     }
 
+    //Method used to get the balance as a double or dollar amount
+    public double getBalance() { return this.balanceExtendedCents / 100; }
+
+    //Class method to convert normal dollar amount to extended cents
+    public static int balanceToExtendedCents(double balance) {
+        return (int) balance * 100;
+    }
     /**
      * Method to compare if two Account Objects are the same.
      * Only checks if the accountIDs of both objects match
