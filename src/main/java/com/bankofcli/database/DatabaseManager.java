@@ -7,12 +7,14 @@ import java.sql.SQLException;
 public class DatabaseManager {
 	
 	private static final String url="jdbc:sqlite:BigBankersBank.db";
-	
+	String foreignkey ="PRAGMA foreign_key = true";
 
 	public Connection open() {
 		//returns a open connection to the SQLite Database
 		try {
-		return DriverManager.getConnection(url);
+			Connection conn =DriverManager.getConnection(url);
+			conn.createStatement().execute(foreignkey);
+		return conn;
 		}catch(SQLException e) {
 	        throw new RuntimeException("Could not connect to database.");
 		}
@@ -51,6 +53,7 @@ public class DatabaseManager {
 			 //create two tables
 			 stmtA.execute(sqlCreateAccount);
 			 stmtA.execute(sqlCreateTransactions);
+			 stmtA.execute(foreignkey);
 		 }catch(SQLException e){
 			 e.printStackTrace();
 		 }
