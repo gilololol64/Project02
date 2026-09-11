@@ -1,5 +1,5 @@
 <configuration>
-	<property name="LOG_FILE" value="/TransactionLogs" />
+	<property name="LOG_FILE" value="logs/transactions" />
 
 	<appender name="OneFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_FILE}/1-Log.log</file>
@@ -119,9 +119,9 @@
 	</appender>
 
 	<appender name="SQLErrors" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/logs/SQL.log</file>
+		<file>logs/SQL.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>/logs/SQL.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<fileNamePattern>logs/SQL.%d{yyyy/MM}.%i.gz</fileNamePattern>
 			<maxFileSize>25MB</maxFileSize>
 			<maxHistory>90</maxHistory>
 			<totalSizeCap>3GB</totalSizeCap>
@@ -132,9 +132,9 @@
 	</appender>
 
 	<appender name="General_Error" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/logs/error.log</file>
+		<file>logs/error.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>/logs/error.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<fileNamePattern>logs/error.%d{yyyy/MM}.%i.gz</fileNamePattern>
 			<maxFileSize>25MB</maxFileSize>
 			<maxHistory>90</maxHistory>
 			<totalSizeCap>3GB</totalSizeCap>
@@ -145,9 +145,9 @@
 	</appender>
 
 	<appender name="AccountAction" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/logs/AccountAction.log</file>
+		<file>logs/AccountAction.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>/logs/AccountAction.%d{yyyy/MM}.%i.gz</fileNamePattern>
+			<fileNamePattern>logs/AccountAction.%d{yyyy/MM}.%i.gz</fileNamePattern>
 			<maxFileSize>25MB</maxFileSize>
 			<maxHistory>90</maxHistory>
 			<totalSizeCap>3GB</totalSizeCap>

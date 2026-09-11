@@ -54,10 +54,10 @@ public class DatabaseManager {
 							+ " trans_type TEXT NOT NULL CHECK (trans_type IN ('DEPOSIT', 'WITHDRAW', 'TRANSFER')),"
 							+ "	time_complete TEXT NOT NULL DEFAULT (datetime('now')),"
 							+ " amount BIGINT NOT NULL,"
-							+ "	account_src BIGINT NOT NULL,"
+							+ "	account_src BIGINT,"
 							+ "	account_dst BIGINT,"
-							+ "	FOREIGN KEY (account_src) REFERENCES account(account_id),"
-							+ "	FOREIGN KEY (account_dst) REFERENCES account(account_id)"
+							+ "	FOREIGN KEY (account_src) REFERENCES accounts(account_id),"
+							+ "	FOREIGN KEY (account_dst) REFERENCES accounts(account_id)"
 							+ ");";
 		
 		 try (var conn = DriverManager.getConnection(url)){

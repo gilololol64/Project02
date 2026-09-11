@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bankofcli.database.DatabaseManager;
+import com.bankofcli.exception.ServiceUnavailableException;
 import com.bankofcli.model.Transaction;
 
 
@@ -31,7 +32,7 @@ public class TransactionRepository {
 		try (var conn =db.open();
 			var stmt =conn.prepareStatement(sql)
 		){
-			stmt.setLong(1,tobeSaved.getTransactionID());
+			stmt.setLong(1, nextTransactionID(conn));
 			stmt.setString(2, tobeSaved.getType().name());
 			stmt.setString(3,tobeSaved.getTimeComplete().toString());
 			stmt.setLong(4, tobeSaved.getAmount());
@@ -47,9 +48,17 @@ public class TransactionRepository {
 			} else {
 				stmt.setLong(6, tobeSaved.getAccountDst());
 			}
-			
+			stmt.executeUpdate();
 		} catch (SQLException e) {
-			ErrorLogger.error("Database can not be added", e);
+			ErrorLogger.error("Database transaction could not be saved.", e);
+			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
+		}
+	}
+
+	private long nextTransactionID(java.sql.Connection connection) throws SQLException {
+		try (var statement = connection.createStatement();
+				var results = statement.executeQuery("SELECT COALESCE(MAX(transaction_id), 0) + 1 FROM transactions")) {
+			return results.next() ? results.getLong(1) : 1L;
 		}
 	}
 	
