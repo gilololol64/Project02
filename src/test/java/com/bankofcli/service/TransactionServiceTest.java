@@ -20,7 +20,6 @@ public class TransactionServiceTest {
     public TransactionService transServ;
     public AccountRepository accRepo;
     public TransactionRepository transRepo;
-    public Account accSrc;
 
     @BeforeEach
     public void setup(){

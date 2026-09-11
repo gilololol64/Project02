@@ -1,6 +1,5 @@
 package com.bankofcli.repository;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -78,7 +77,7 @@ public class AccountRepository {
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
 		
 		try(var conn =db.open();
-			var stmt = conn.prepareStatement(sql);
+			var stmt = conn.prepareStatement(sql)
 			) {
 			stmt.setLong(1, toBeSaved.getAccountID());
 			stmt.setInt(2, toBeSaved.getPin());

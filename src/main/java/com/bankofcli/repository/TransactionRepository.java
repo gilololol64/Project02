@@ -29,7 +29,7 @@ public class TransactionRepository {
 				+ "   DO UPDATE SET trans_type=EXCLUDED.trans_type, time_complete=EXCLUDED.time_complete,"
 				+ "   amount=EXCLUDED.amount, account_src=EXCLUDED.account_src, account_dst=EXCLUDED.account_dst";
 		try (var conn =db.open();
-			var stmt =conn.prepareStatement(sql);	
+			var stmt =conn.prepareStatement(sql)
 		){
 			stmt.setLong(1,tobeSaved.getTransactionID());
 			stmt.setString(2, tobeSaved.getType().name());
