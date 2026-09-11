@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bankofcli.database.DatabaseManager;
+import com.bankofcli.exception.ServiceUnavailableException;
 import com.bankofcli.model.Transaction;
 
 
@@ -50,8 +51,15 @@ public class TransactionRepository {
 			}
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println("Issue here: " + e.getMessage());
-			ErrorLogger.error("Database can not be added", e);
+			ErrorLogger.error("Database transaction could not be saved.", e);
+			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
+		}
+	}
+
+	private long nextTransactionID(java.sql.Connection connection) throws SQLException {
+		try (var statement = connection.createStatement();
+				var results = statement.executeQuery("SELECT COALESCE(MAX(transaction_id), 0) + 1 FROM transactions")) {
+			return results.next() ? results.getLong(1) : 1L;
 		}
 	}
 

@@ -4,8 +4,20 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.bankofcli.exception.ServiceUnavailableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DatabaseManager {
-	
+
+	// Dedicated error logger - name must match logback.xml's <logger> element
+	// exactly to route to the SQL error log file instead of falling through to root.
+	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+
+	// General action logger - name doesn't matter, inherits from root and
+	// lands in the AccountAction log file. Only ever used for .info() calls.
+	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
+
 	private static final String url="jdbc:sqlite:BigBankersBank.db";
 	
 
@@ -14,7 +26,8 @@ public class DatabaseManager {
 		try {
 		return DriverManager.getConnection(url);
 		}catch(SQLException e) {
-	        throw new RuntimeException("Could not connect to database.");
+			errorLogger.error("Could not open a connection to the database.", e);
+	        throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
 	public void close(Connection current) {
@@ -22,7 +35,8 @@ public class DatabaseManager {
 		try {
 			current.close();
 		} catch (SQLException e) {
-			 throw new RuntimeException("Could not close connection.");
+			errorLogger.error("Could not close the database connection.", e);
+			 throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		} catch(NullPointerException e){
 			throw new NullPointerException("Could not close empty database connection.");
 		}
@@ -42,8 +56,8 @@ public class DatabaseManager {
 							+ " amount BIGINT NOT NULL,"
 							+ "	account_src BIGINT,"
 							+ "	account_dst BIGINT,"
-							+ "	FOREIGN KEY (account_src) REFERENCES account(account_id),"
-							+ "	FOREIGN KEY (account_dst) REFERENCES account(account_id)"
+							+ "	FOREIGN KEY (account_src) REFERENCES accounts(account_id),"
+							+ "	FOREIGN KEY (account_dst) REFERENCES accounts(account_id)"
 							+ ");";
 		
 		 try (var conn = DriverManager.getConnection(url)){
@@ -51,8 +65,9 @@ public class DatabaseManager {
 			 //create two tables
 			 stmtA.execute(sqlCreateAccount);
 			 stmtA.execute(sqlCreateTransactions);
+			 actionLogger.info("Database tables verified/created successfully.");
 		 }catch(SQLException e){
-			 e.printStackTrace();
+			 errorLogger.error("Could not initialize database tables.", e);
 		 }
 	}
 	
