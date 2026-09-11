@@ -120,12 +120,15 @@ public class Transaction {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return transactionID == that.transactionID;
+
+        return type == that.type && timeComplete.equals(that.timeComplete) &&
+                amount == that.amount && accountSrc == that.accountSrc && accountDst == that.accountDst;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(transactionID);
+
+        return Objects.hash(type, timeComplete, amount, accountSrc, accountDst);
     }
 
     /**

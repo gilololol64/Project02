@@ -28,32 +28,29 @@ public class TransactionRepository {
 	
 	
 	public void save(Transaction tobeSaved) {
-		var sql ="   INSERT INTO transactions (transaction_id, trans_type, time_complete, amount, account_src, account_dst)"
-				+ "   VALUES (?,?,?,?,?,?)"
-				+ "   ON CONFLICT (transaction_id)"
-				+ "   DO UPDATE SET trans_type=EXCLUDED.trans_type, time_complete=EXCLUDED.time_complete,"
-				+ "   amount=EXCLUDED.amount, account_src=EXCLUDED.account_src, account_dst=EXCLUDED.account_dst";
+		var sql ="   INSERT INTO transactions (trans_type, time_complete, amount, account_src, account_dst)"
+				+ "   VALUES (?,?,?,?,?)";
 		try (var conn =db.open();
 			var stmt =conn.prepareStatement(sql)
 		){
-			stmt.setLong(1,tobeSaved.getTransactionID());
-			stmt.setString(2, tobeSaved.getType().name());
-			stmt.setString(3,tobeSaved.getTimeComplete().toString());
-			stmt.setLong(4, tobeSaved.getAmount());
+			stmt.setString(1, tobeSaved.getType().name());
+			stmt.setString(2,tobeSaved.getTimeComplete().toString());
+			stmt.setLong(3, tobeSaved.getAmount());
 			//Check for case that account src is null: Deposits
 			if(tobeSaved.getAccountSrc() == null) {
-				stmt.setNull(5, Types.BIGINT);
+				stmt.setNull(4, Types.BIGINT);
 			} else {
-				stmt.setLong(5, tobeSaved.getAccountSrc());
+				stmt.setLong(4, tobeSaved.getAccountSrc());
 			}
 			//Check for case that account dst is null: Withdraws
 			if(tobeSaved.getAccountDst() == null) {
-				stmt.setNull(6, Types.BIGINT);
+				stmt.setNull(5, Types.BIGINT);
 			} else {
-				stmt.setLong(6, tobeSaved.getAccountDst());
+				stmt.setLong(5, tobeSaved.getAccountDst());
 			}
-			
+			stmt.executeUpdate();
 		} catch (SQLException e) {
+			System.out.println("Issue here: " + e.getMessage());
 			ErrorLogger.error("Database can not be added", e);
 		}
 	}
@@ -68,7 +65,7 @@ public class TransactionRepository {
 				"UNION\n" +
 				"SELECT * FROM transactions\n" +
 				"WHERE account_src = ?)\n" +
-				"ORDER BY date(time_complete) DESC;";
+				"ORDER BY time_complete DESC;";
 
 		try(var con = db.open();
 			var ps = con.prepareStatement(sql)) {
@@ -81,18 +78,17 @@ public class TransactionRepository {
 					String transType = rs.getString("trans_type");
 					Transaction.Type type = Transaction.Type.getTypeFromString(transType);
 					String rawDate = rs.getString("time_complete");
-					LocalDateTime timeComplete = LocalDateTime.parse(rawDate,
-							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					LocalDateTime timeComplete = LocalDateTime.parse(rawDate);
 					long amount = rs.getLong("amount");
-					long accountSrc = (type != Transaction.Type.DEPOSIT) ? rs.getLong("account_src") : null;
-					long accountDst = (type != Transaction.Type.WITHDRAW) ? rs.getLong("account_dst") : null;
+					Long accountSrc = (type != Transaction.Type.DEPOSIT) ? rs.getLong("account_src") : null;
+					Long accountDst = (type != Transaction.Type.WITHDRAW) ? rs.getLong("account_dst") : null;
 					transactions.add(new Transaction(transID, type, timeComplete, amount, accountSrc, accountDst));
 				}
 			}
 		} catch(SQLException ex){
 			throw new SQLException("Could not retrieve transaction history from account id: " + accountID);
 		}
-		return transactions;
+		return (transactions.isEmpty()) ? null : transactions;
 	}
 	
 	
