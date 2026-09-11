@@ -22,7 +22,19 @@ public class Transaction {
     public enum Type {
         DEPOSIT,
         WITHDRAW,
-        TRANSFER
+        TRANSFER;
+
+        public static Type getTypeFromString(String value){
+            String lower = value.toLowerCase();
+            switch(lower){
+                case "deposit":
+                    return DEPOSIT;
+                case "withdraw":
+                    return WITHDRAW;
+                default:
+                    return TRANSFER;
+            }
+        }
     }
 
     private long transactionID;
