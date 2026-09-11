@@ -2,6 +2,7 @@ package com.bankofcli.repository;
 
 
 import java.sql.SQLException;
+import java.sql.Types;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ public class TransactionRepository {
 	Logger ErrorLogger;
 	
 	public TransactionRepository() {
-		DatabaseManager db = new DatabaseManager();
+		db = new DatabaseManager();
 		ErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
 	}
 	
@@ -34,8 +35,18 @@ public class TransactionRepository {
 			stmt.setString(2, tobeSaved.getType().name());
 			stmt.setString(3,tobeSaved.getTimeComplete().toString());
 			stmt.setLong(4, tobeSaved.getAmount());
-			stmt.setLong(5, tobeSaved.getAccountSrc());
-			stmt.setLong(6, tobeSaved.getAccountDst());
+			//Check for case that account src is null: Deposits
+			if(tobeSaved.getAccountSrc() == null) {
+				stmt.setNull(5, Types.BIGINT);
+			} else {
+				stmt.setLong(5, tobeSaved.getAccountSrc());
+			}
+			//Check for case that account dst is null: Withdraws
+			if(tobeSaved.getAccountDst() == null) {
+				stmt.setNull(6, Types.BIGINT);
+			} else {
+				stmt.setLong(6, tobeSaved.getAccountDst());
+			}
 			
 		} catch (SQLException e) {
 			ErrorLogger.error("Database can not be added", e);

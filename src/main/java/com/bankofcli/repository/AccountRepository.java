@@ -1,5 +1,6 @@
 package com.bankofcli.repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,7 +30,7 @@ public class AccountRepository {
 			ResultSet rs = stmt.executeQuery();
 			//Check if there were any results from the query before creating empty Account object
 			if (rs.next()) {
-				Account result = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getInt("balance"));
+				Account result = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getLong("balance"));
 				rs.close();
 				return result;
 			}
@@ -89,7 +90,42 @@ public class AccountRepository {
 		}
 	}
 
+	public void update(List<Account> toBeUpdated) {
+		if (toBeUpdated == null || toBeUpdated.isEmpty()) {
+			throw new NullPointerException("Can not update empty list of accounts");
+		}
+		String sql = "UPDATE accounts SET balance = ?, pin = ? WHERE account_id = ?";
+		try (var conn = db.open();
+			 var ps = conn.prepareStatement(sql)) {
+			conn.setAutoCommit(false);
+			for (Account account : toBeUpdated) {
+				ps.setLong(1, account.getBalanceExtendedCents());
+				ps.setInt(2, account.getPin());
+				ps.setLong(3, account.getAccountID());
+				ps.executeUpdate();
+			}
+			conn.commit();
+
+		} catch (SQLException e) {
+			System.out.print("failure: " + e.getMessage());
+			throw new RuntimeException("Could not connect to database", e);
+		}
+
+	}
+
 
 	public void update(Account account) {
+
+		String sql = "UPDATE accounts SET balance = ?, pin = ? WHERE account_id = ?";
+		try (var conn = db.open();
+			 PreparedStatement ps = conn.prepareStatement(sql)) {
+				ps.setLong(1, account.getBalanceExtendedCents());
+				ps.setInt(2, account.getPin());
+				ps.setLong(3, account.getAccountID());
+				ps.executeUpdate();
+			 }catch (SQLException e) {
+			System.out.print("failure: " + e.getMessage());
+			throw new RuntimeException("Could not connect to database", e);
+		}
 	}
 }

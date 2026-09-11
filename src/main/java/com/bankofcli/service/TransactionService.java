@@ -114,7 +114,7 @@ public class TransactionService {
         accounts.add(source);
         accounts.add(destination);
 
-        accountRepository.save(accounts);
+        accountRepository.update(accounts);
 
         Transaction transaction = new Transaction(
             0,
