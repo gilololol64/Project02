@@ -60,22 +60,27 @@ public class AccountRepository {
 		}
 
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
-		
-		try(var conn =db.open();
-			var stmt = conn.prepareStatement(sql)) {
-			conn.setAutoCommit(false);
-			for (Account account : toBeSaved) {
-				stmt.setLong(1, account.getAccountID());
-				stmt.setInt(2, account.getPin());
-				stmt.setLong(3, account.getBalanceExtendedCents());
-				stmt.executeUpdate();
+		try(var conn =db.open()){
+			try(var stmt = conn.prepareStatement(sql);) {
+				conn.setAutoCommit(false);
+				for (Account account : toBeSaved) {
+					stmt.setLong(1, account.getAccountID());
+					stmt.setInt(2, account.getPin());
+					stmt.setLong(3, account.getBalanceExtendedCents());
+					stmt.executeUpdate();
+				}
+				conn.commit();
+				actionLogger.info("Successfully saved {} account(s).", toBeSaved.size());
+	
+			} catch (SQLException e) {
+				conn.rollback();
+				conn.close();
+				errorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
+				throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 			}
-			conn.commit();
-			actionLogger.info("Successfully saved {} account(s).", toBeSaved.size());
-
-		} catch (SQLException e) {
-			errorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
-			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
+		} catch (SQLException e1) {
+			errorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e1);
+			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e1);
 		}
 		
 	}

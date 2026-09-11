@@ -18,7 +18,7 @@ public class DatabaseManager {
 	// lands in the AccountAction log file. Only ever used for .info() calls.
 	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
 
-	private static final String url="jdbc:sqlite:BigBankersBank.db";
+	private static final String url="jdbc:sqlite:BigBankersBank.db?foreign_keys=true";
 	
 
 	public Connection open() {
