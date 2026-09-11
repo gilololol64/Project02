@@ -3,6 +3,7 @@ package com.bankofcli.service;
 import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
+import java.security.SecureRandom;
 
 public class AccountService {
 
@@ -13,21 +14,20 @@ public class AccountService {
     }
 
     // Registers a new account
-    public Account register(long accountID, int pin) {
-
-        if (accountID <= 0) {
-            throw new InvalidAccountIDException("Account ID must be positive.");
-        }
+    public Account register(int pin) {
 
         if (!isValidPin(pin)) {
             throw new InvalidPinException("PIN must be 4 digits.");
         }
 
-        Account existingAccount = accountRepository.findByID(accountID);
+        SecureRandom random = new SecureRandom();
+        Account existingAccount;
+        long accountID;
 
-        if (existingAccount != null) {
-            throw new DuplicateAccountException("Account ID already exists");
-        }
+        do {
+            accountID = generateNewAccountID(random);
+            existingAccount = accountRepository.findByID(accountID);
+        }while(existingAccount != null);
 
         Account newAccount = new Account(accountID, pin, 0);
 
@@ -66,5 +66,14 @@ public class AccountService {
     // Checks that the pin contains exactly four digits
     private boolean isValidPin(int pin) {
         return pin >= 0 & pin <= 9999;
+    }
+
+    //Generates a random (up to 10 digit) account number given a secure random object
+    private long generateNewAccountID(SecureRandom random){
+        random.setSeed(System.currentTimeMillis()); //Uses the current time as a seed
+        long min = 1L;
+        long max = 9999999999L; //10 digit value for account number
+
+        return random.nextLong(min, max);
     }
 }

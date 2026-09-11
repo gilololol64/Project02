@@ -33,7 +33,7 @@ public class DatabaseManagerIT {
     }
 
     @Test
-    public void closeNullPointerException() throws SQLException{
+    public void closeNullPointerException() {
         Connection con = null;
         String expectedMessage = "Could not close empty database connection.";
         NullPointerException ex = Assertions.assertThrows(NullPointerException.class,
@@ -41,6 +41,7 @@ public class DatabaseManagerIT {
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
+    @Test
     public void positiveInit() throws SQLException {
         String names [] = {"accounts", "transactions"};
         dbm.init();
