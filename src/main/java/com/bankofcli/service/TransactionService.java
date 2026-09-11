@@ -36,7 +36,7 @@ public class TransactionService {
         }
 
         account.setBalanceExtendedCents(newBalance);
-        accountRepository.update(account);
+        accountRepository.save(account);
 
         Transaction transaction = new Transaction(
             0,
@@ -66,7 +66,7 @@ public class TransactionService {
         long newBalance = account.getBalanceExtendedCents() - amount;
 
         account.setBalanceExtendedCents(newBalance);
-        accountRepository.update(account);
+        accountRepository.save(account);
 
         Transaction transaction = new Transaction(
             0,
@@ -114,7 +114,7 @@ public class TransactionService {
         accounts.add(source);
         accounts.add(destination);
 
-        accountRepository.update(accounts);
+        accountRepository.save(accounts);
 
         Transaction transaction = new Transaction(
             0,

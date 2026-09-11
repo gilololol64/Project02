@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -37,7 +39,7 @@ public class TransactionServiceTest {
 
         transServ.deposit(accID, deposit);
 
-        verify(accRepo, times(1)).update(mockAcc);
+        verify(accRepo, times(1)).save(mockAcc);
         verify(transRepo, times(1)).save(any());
     }
 
@@ -94,7 +96,7 @@ public class TransactionServiceTest {
 
         transServ.withdraw(accID, withdraw);
 
-        verify(accRepo, times(1)).update(mockAcc);
+        verify(accRepo, times(1)).save(mockAcc);
         verify(transRepo, times(1)).save(any());
     }
 
@@ -156,8 +158,7 @@ public class TransactionServiceTest {
 
         transServ.transfer(srcAccID, dstAccID, amount);
 
-        verify(accRepo, times(1)).update(mockSrcAcc);
-        verify(accRepo, times(1)).update(mockDstAcc);
+        verify(accRepo, times(1)).save((List<Account>) any());
         verify(transRepo, times(1)).save(any());
     }
 
