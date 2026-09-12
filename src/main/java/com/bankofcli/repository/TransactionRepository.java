@@ -1,8 +1,13 @@
 package com.bankofcli.repository;
 
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,29 +29,25 @@ public class TransactionRepository {
 	
 	
 	public void save(Transaction tobeSaved) {
-		var sql ="   INSERT INTO transactions (transaction_id, trans_type, time_complete, amount, account_src, account_dst)"
-				+ "   VALUES (?,?,?,?,?,?)"
-				+ "   ON CONFLICT (transaction_id)"
-				+ "   DO UPDATE SET trans_type=EXCLUDED.trans_type, time_complete=EXCLUDED.time_complete,"
-				+ "   amount=EXCLUDED.amount, account_src=EXCLUDED.account_src, account_dst=EXCLUDED.account_dst";
+		var sql ="   INSERT INTO transactions (trans_type, time_complete, amount, account_src, account_dst)"
+				+ "   VALUES (?,?,?,?,?)";
 		try (var conn =db.open();
 			var stmt =conn.prepareStatement(sql)
 		){
-			stmt.setLong(1, nextTransactionID(conn));
-			stmt.setString(2, tobeSaved.getType().name());
-			stmt.setString(3,tobeSaved.getTimeComplete().toString());
-			stmt.setLong(4, tobeSaved.getAmount());
+			stmt.setString(1, tobeSaved.getType().name());
+			stmt.setString(2,tobeSaved.getTimeComplete().toString());
+			stmt.setLong(3, tobeSaved.getAmount());
 			//Check for case that account src is null: Deposits
 			if(tobeSaved.getAccountSrc() == null) {
-				stmt.setNull(5, Types.BIGINT);
+				stmt.setNull(4, Types.BIGINT);
 			} else {
-				stmt.setLong(5, tobeSaved.getAccountSrc());
+				stmt.setLong(4, tobeSaved.getAccountSrc());
 			}
 			//Check for case that account dst is null: Withdraws
 			if(tobeSaved.getAccountDst() == null) {
-				stmt.setNull(6, Types.BIGINT);
+				stmt.setNull(5, Types.BIGINT);
 			} else {
-				stmt.setLong(6, tobeSaved.getAccountDst());
+				stmt.setLong(5, tobeSaved.getAccountDst());
 			}
 			stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -60,6 +61,42 @@ public class TransactionRepository {
 				var results = statement.executeQuery("SELECT COALESCE(MAX(transaction_id), 0) + 1 FROM transactions")) {
 			return results.next() ? results.getLong(1) : 1L;
 		}
+	}
+
+	public List<Transaction> getAudit(long accountID) throws SQLException {
+
+        ArrayList<Transaction> transactions = new ArrayList<>();
+
+		String sql = "SELECT *\n" +
+				"FROM (SELECT * FROM transactions\n" +
+				"WHERE account_dst = ? \n" +
+				"UNION\n" +
+				"SELECT * FROM transactions\n" +
+				"WHERE account_src = ?)\n" +
+				"ORDER BY time_complete DESC;";
+
+		try(var con = db.open();
+			var ps = con.prepareStatement(sql)) {
+			ps.setLong(1, accountID);
+			ps.setLong(2, accountID);
+
+			try(ResultSet rs = ps.executeQuery()) {
+				while(rs.next()){
+					long transID = rs.getLong("transaction_id");
+					String transType = rs.getString("trans_type");
+					Transaction.Type type = Transaction.Type.getTypeFromString(transType);
+					String rawDate = rs.getString("time_complete");
+					LocalDateTime timeComplete = LocalDateTime.parse(rawDate);
+					long amount = rs.getLong("amount");
+					Long accountSrc = (type != Transaction.Type.DEPOSIT) ? rs.getLong("account_src") : null;
+					Long accountDst = (type != Transaction.Type.WITHDRAW) ? rs.getLong("account_dst") : null;
+					transactions.add(new Transaction(transID, type, timeComplete, amount, accountSrc, accountDst));
+				}
+			}
+		} catch(SQLException ex){
+			throw new SQLException("Could not retrieve transaction history from account id: " + accountID);
+		}
+		return (transactions.isEmpty()) ? null : transactions;
 	}
 	
 	
