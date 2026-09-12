@@ -11,7 +11,7 @@ import java.util.Set;
 public class DatabaseManagerIT {
 
     public DatabaseManager dbm;
-    private static final String url="jdbc:sqlite:BigBankersBank.db";
+    private static final String url="jdbc:sqlite:BigBankersBank.db?foreign_keys=true";
 
     @BeforeEach
     public void setup(){

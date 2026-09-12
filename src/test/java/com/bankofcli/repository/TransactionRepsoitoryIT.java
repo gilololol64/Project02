@@ -18,6 +18,7 @@ public class TransactionRepsoitoryIT {
     private static final String url="jdbc:sqlite:BigBankersBank.db";
     public List<Transaction> expectedTransList;
     public TransactionRepository transRepo;
+    public AccountRepository accRepo;
 
     @BeforeEach
     public void setup(){
@@ -25,24 +26,33 @@ public class TransactionRepsoitoryIT {
         //Set up testing variables
         expectedTransList = new ArrayList<>();
         transRepo = new TransactionRepository();
+        accRepo = new AccountRepository();
     }
 
     @AfterEach
     public void teardown() throws SQLException {
         // Delete Test transactions from database with foreign keys (0, -1) from Database
+        String removeTestAccounts = "DELETE FROM accounts WHERE account_id <= 0";
         String removeTestTransactionsSrcQry = "DELETE FROM transactions WHERE account_src <= 0";
         String removeTestTransactionsDstQry = "DELETE FROM transactions WHERE account_dst <= 0";
 
         try (Connection con = DriverManager.getConnection(url);
              PreparedStatement stmtSrc = con.prepareStatement(removeTestTransactionsSrcQry);
-             PreparedStatement stmtDst = con.prepareStatement(removeTestTransactionsDstQry)) {
+             PreparedStatement stmtDst = con.prepareStatement(removeTestTransactionsDstQry);
+             PreparedStatement stmtAcc = con.prepareStatement(removeTestAccounts)) {
             stmtSrc.executeUpdate();
             stmtDst.executeUpdate();
+            stmtAcc.executeUpdate();
         }
     }
 
     @Test
     public void savedPositiveTransfer() throws SQLException {
+
+        Account accountSrcO = new Account(-1L, 1111, 1000);
+        accRepo.save(accountSrcO);
+        Account accountDstO = new Account(0L, 1111, 0);
+        accRepo.save(accountDstO);
 
         Transaction expectedTrans = new Transaction(1,
                 Transaction.Type.TRANSFER,
@@ -79,6 +89,9 @@ public class TransactionRepsoitoryIT {
     @Test
     public void savedPositiveWithdraw() throws SQLException {
 
+        Account accountSrcO = new Account(-1L, 1111, 1000);
+        accRepo.save(accountSrcO);
+
         Transaction expectedTrans = new Transaction(1,
                 Transaction.Type.WITHDRAW,
                 LocalDateTime.now(),
@@ -113,6 +126,9 @@ public class TransactionRepsoitoryIT {
 
     @Test
     public void savedPositiveDeposit() throws SQLException {
+
+        Account accountDstO = new Account(0L, 1111, 0);
+        accRepo.save(accountDstO);
 
         Transaction expectedTrans = new Transaction(1,
                 Transaction.Type.DEPOSIT,
@@ -149,6 +165,10 @@ public class TransactionRepsoitoryIT {
     @Test
     public void getAuditPositive() throws SQLException {
         long accountID = -1L;
+        Account accountSrcO = new Account(accountID, 1111, 1000);
+        accRepo.save(accountSrcO);
+        Account accountDstO = new Account(0L, 1111, 0);
+        accRepo.save(accountDstO);
 
         //Add transactions, give time for them to wait so dates are in order by most recent
         expectedTransList.add(new Transaction(1,

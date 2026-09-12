@@ -18,7 +18,6 @@ public class AccountServiceIT {
 
     public AccountService accServ;
     public AccountRepository accRep;
-    private static final String url="jdbc:sqlite:BigBankersBank.db";
 
     @BeforeEach
     public void setup(){

@@ -1,5 +1,6 @@
 package com.bankofcli.database;
 
+import com.bankofcli.exception.ServiceUnavailableException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import static org.mockito.Mockito.times;
 public class DatabaseManagerTest {
 
     public DatabaseManager dbm;
-    private static final String url="jdbc:sqlite:BigBankersBank.db";
+    private static final String url="jdbc:sqlite:BigBankersBank.db?foreign_keys=true";
 
     @BeforeEach
     public void setup(){
@@ -37,15 +38,15 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void openRuntimeException(){
-        String expectedMessage = "Could not connect to database.";
+    public void openServiceUnavailableException(){
+        String expectedMessage = "Service temporarily unavailable, please try again later.";
         SQLException expectedEx = new SQLException("Connection Failed");
 
         //Stub DriverManager
         try(MockedStatic<DriverManager> dm = Mockito.mockStatic(DriverManager.class)) {
             dm.when(() -> DriverManager.getConnection(url)).thenThrow(expectedEx);
 
-            RuntimeException ex = Assertions.assertThrows(RuntimeException.class,
+            ServiceUnavailableException ex = Assertions.assertThrows(ServiceUnavailableException.class,
                     () -> dbm.open());
             Assertions.assertEquals(expectedMessage, ex.getMessage());
         }
@@ -67,12 +68,12 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void closeRuntimeException() throws SQLException {
-        String expectedMessage = "Could not close connection.";
+    public void closeServiceUnavailableException() throws SQLException {
+        String expectedMessage = "Service temporarily unavailable, please try again later.";
         Connection conn = Mockito.mock(Connection.class);
         Mockito.doThrow(new SQLException()).when(conn).close();
 
-        RuntimeException ex = Assertions.assertThrows(RuntimeException.class,
+        ServiceUnavailableException ex = Assertions.assertThrows(ServiceUnavailableException.class,
                 () -> dbm.close(conn));
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
