@@ -132,8 +132,8 @@ public class TransactionService {
 
     // Ensures transaction amount is valid
     private void validateAmount(long amount) {
-        if (amount < 0) {
-            throw new InvalidAmountException("Transaction amount can not be less than zero.");
+        if (amount <= 0) {
+            throw new InvalidAmountException("Transaction amount must be greater than zero.");
 
         }
     }
