@@ -192,7 +192,6 @@ public class BankCLI {
 			output.println("Transfer successful.");
 		} catch (BankException exception) {
 			showError(exception);
-			//
 		}
 	}
 

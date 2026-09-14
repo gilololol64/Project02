@@ -29,7 +29,8 @@ public class AccountRepository {
 	}
 	// Test Account with id 123456 in DB
 	public Account findByID(long accountID) {
-		
+		actionLogger.info("Searching database for account with id: {}.", accountID);
+
 		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
 
 		try(var conn = db.open();
@@ -42,9 +43,11 @@ public class AccountRepository {
 			if (rs.next()) {
 				Account result = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getLong("balance"));
 				rs.close();
+				actionLogger.info("Result found for account id {}", accountID);
 				return result;
 			}
 			rs.close();
+			actionLogger.info("No results found for account id {}", accountID);
 			return null;
 		}catch(SQLException e) {
 			errorLogger.error("Database error while looking up account {}.", accountID, e);
@@ -54,10 +57,13 @@ public class AccountRepository {
 	}
 	
 	public void save(List<Account> toBeSaved) {
-
 		if(toBeSaved == null || toBeSaved.isEmpty()){
-			throw new NullPointerException("Can not insert empty list of accounts");
+			NullPointerException ex = new NullPointerException("Can not insert empty list of accounts");
+			errorLogger.error("Account list provided was empty or null.", ex);
+			throw ex;
 		}
+
+		actionLogger.info("Attempting to save {} account(s) to database", toBeSaved.size());
 
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
 		try(var conn =db.open()){
@@ -86,10 +92,13 @@ public class AccountRepository {
 	}
 	
 	public void save(Account toBeSaved) {
-
 		if(toBeSaved == null){
-			throw new NullPointerException("Can not insert an empty account");
+			NullPointerException ex = new NullPointerException("Can not insert an empty account");
+			errorLogger.error("Account provided was null.", ex);
+			throw ex;
 		}
+
+		actionLogger.info("Attempting to save account: {} to database", toBeSaved.getAccountID());
 
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
 		
