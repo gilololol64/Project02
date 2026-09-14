@@ -1,10 +1,7 @@
 package com.bankofcli.service;
 
 import com.bankofcli.database.DatabaseManager;
-import com.bankofcli.exception.AccountNotFoundException;
-import com.bankofcli.exception.InsufficientFundsException;
-import com.bankofcli.exception.InvalidAmountException;
-import com.bankofcli.exception.SelfTransferException;
+import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
 import com.bankofcli.repository.TransactionRepository;
@@ -277,6 +274,20 @@ public class TransactionServiceIT {
 
         SelfTransferException ex = Assertions.assertThrows(SelfTransferException.class,
                 () -> transServ.transfer(srcAccID, dstAccID, amount));
+        Assertions.assertEquals(expectedMessage, ex.getMessage());
+    }
+
+    public void getTransactionHistoryNoHistory(){
+        long srcAccID = 1111L;
+        long srcBalance = 0;
+        int pin = 1111;
+        String expectedMessage = "No transaction history found for account: " + srcAccID;
+
+        Account expectedAccount = new Account(srcAccID, pin, srcBalance);
+        accRepo.save(expectedAccount);
+
+        NoTransactionHistoryException ex = Assertions.assertThrows(NoTransactionHistoryException.class,
+                () -> transServ.getTransactionHistory(srcAccID, 10));
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
