@@ -50,7 +50,7 @@ public class DatabaseManager {
 						+ "    balance BIGINT NOT NULL"
 						+ ");";
 		var sqlCreateTransactions ="CREATE TABLE IF NOT EXISTS transactions ("
-							+ "	transaction_id BIGINT PRIMARY KEY,"
+							+ "	transaction_id INTEGER PRIMARY KEY,"
 							+ " trans_type TEXT NOT NULL CHECK (trans_type IN ('DEPOSIT', 'WITHDRAW', 'TRANSFER')),"
 							+ "	time_complete TEXT NOT NULL DEFAULT (datetime('now')),"
 							+ " amount BIGINT NOT NULL,"

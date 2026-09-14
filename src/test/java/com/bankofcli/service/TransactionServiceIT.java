@@ -36,7 +36,7 @@ public class TransactionServiceIT {
     @AfterEach
     public void teardown(){
         DatabaseManager db = new DatabaseManager();
-        String deleteAccQry = "DELETE FROM accounts WHERE account_id <= 0";
+        String deleteAccQry = "DELETE FROM accounts";
         String deleteTransQry = "DELETE FROM transactions";
         try(Connection con = db.open();
             PreparedStatement psAcc = con.prepareStatement(deleteAccQry);
