@@ -29,6 +29,11 @@ public class TransactionRepository {
 	
 	
 	public void save(Transaction tobeSaved) {
+
+		if(tobeSaved == null){
+			throw new NullPointerException("Can not save empty transaction.");
+		}
+
 		var sql ="   INSERT INTO transactions (trans_type, time_complete, amount, account_src, account_dst)"
 				+ "   VALUES (?,?,?,?,?)";
 		try (var conn =db.open();
@@ -57,6 +62,10 @@ public class TransactionRepository {
 	}
 
 	public List<Transaction> getAudit(long accountID, int historyLimit) throws SQLException {
+
+		if(historyLimit < 1){
+			throw new IllegalArgumentException("The max transaction history displayed amount must be greater than 1.");
+		}
 
         ArrayList<Transaction> transactions = new ArrayList<>();
 

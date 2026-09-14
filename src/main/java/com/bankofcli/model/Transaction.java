@@ -121,8 +121,13 @@ public class Transaction {
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
 
+        boolean accountSrcEqual = (this.accountSrc == null) ?
+                that.accountSrc == null : this.accountSrc.equals(that.accountSrc);
+        boolean accountDstEqual = (this.accountDst == null) ?
+                that.accountDst == null : this.accountDst.equals(that.accountDst);
+
         return type == that.type && timeComplete.equals(that.timeComplete) &&
-                amount == that.amount && accountSrc == that.accountSrc && accountDst == that.accountDst;
+                amount == that.amount && accountSrcEqual && accountDstEqual;
     }
 
     @Override

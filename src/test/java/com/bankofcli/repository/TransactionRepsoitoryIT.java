@@ -163,6 +163,15 @@ public class TransactionRepsoitoryIT {
     }
 
     @Test
+    public void saveNullPointerException(){
+        String expectedMessage = "Can not save empty transaction.";
+
+        NullPointerException ex = Assertions.assertThrows(NullPointerException.class,
+                () ->transRepo.save(null));
+        Assertions.assertEquals(expectedMessage, ex.getMessage());
+    }
+
+    @Test
     public void getAuditPositive() throws SQLException {
         long accountID = -1L;
         Account accountSrcO = new Account(accountID, 1111, 1000);
@@ -211,8 +220,20 @@ public class TransactionRepsoitoryIT {
     @Test
     public void getAuditNoTransactionHistory() throws SQLException {
         long accountID = -1L;
-        List<Transaction> actualTransList = transRepo.getAudit(accountID, 10);
+        int historyLimit = 10;
+        List<Transaction> actualTransList = transRepo.getAudit(accountID, historyLimit);
         Assertions.assertNull(actualTransList);
+    }
+
+    @Test
+    public void getAuditIllegalArgumentException() {
+        long accountID = -1L;
+        int historyLimit = 0;
+        String expectedMessage = "The max transaction history displayed amount must be greater than 1.";
+
+        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> transRepo.getAudit(accountID, historyLimit));
+        Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
     private void sleep(int sec){
