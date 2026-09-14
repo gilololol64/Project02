@@ -24,6 +24,7 @@ public class BankCLI {
 	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 	private static final String STARTUP_SCREEN = "/text_graphics/startUpScreenText.txt";
 	private static final int HISTORY_LIMIT = 10;
+	private static final Logger transactionLogger = LoggerFactory.getLogger("Bank.Transaction.logback.1");
 
 	private final Scanner scanner;
 	private final PrintStream output;
@@ -158,7 +159,7 @@ public class BankCLI {
 
 		try {
 			transactionService.deposit(loggedInAccountId, amount);
-			actionLogger.info("Deposit completed for account {}: {} cents.", loggedInAccountId, amount);
+			transactionLogger.info("Deposit completed for account {}: {} cents.", loggedInAccountId, amount);
 			output.printf("Deposit successful. New balance: $%,.2f%n",
 					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
@@ -172,7 +173,7 @@ public class BankCLI {
 
 		try {
 			transactionService.withdraw(loggedInAccountId, amount);
-			actionLogger.info("Withdrawal completed for account {}: {} cents.", loggedInAccountId, amount);
+			transactionLogger.info("Withdrawal completed for account {}: {} cents.", loggedInAccountId, amount);
 			output.printf("Withdrawal successful. New balance: $%,.2f%n",
 					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
@@ -189,7 +190,7 @@ public class BankCLI {
 
 		try {
 			transactionService.transfer(loggedInAccountId, destinationId, amount);
-			actionLogger.info("Transfer completed from account {} to account {}: {} cents.",
+			transactionLogger.info("Transfer completed from account {} to account {}: {} cents.",
 					loggedInAccountId, destinationId, amount);
 			output.println("Transfer successful.");
 		} catch (BankException exception) {
