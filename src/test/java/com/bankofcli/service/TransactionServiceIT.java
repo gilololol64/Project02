@@ -277,6 +277,7 @@ public class TransactionServiceIT {
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
+    @Test
     public void getTransactionHistoryNoHistory(){
         long srcAccID = 1111L;
         long srcBalance = 0;
