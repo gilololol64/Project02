@@ -179,8 +179,10 @@ public class BankCLI {
 
 	private void transfer() {
 		Long destinationId = readLong("Destination Account ID: ");
+		if (destinationId == null) return;
+
 		Long amount = readAmount();
-		if (destinationId == null || amount == null) return;
+		if (amount == null) return;
 
 		try {
 			transactionService.transfer(loggedInAccountId, destinationId, amount);
