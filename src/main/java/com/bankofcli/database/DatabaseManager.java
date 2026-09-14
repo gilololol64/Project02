@@ -22,9 +22,12 @@ public class DatabaseManager {
 	
 
 	public Connection open() {
-		//returns a open connection to the SQLite Database
+		actionLogger.info("Attempting to connect to database.");
+		//returns an open connection to the SQLite Database
 		try {
-		return DriverManager.getConnection(url);
+			Connection con = DriverManager.getConnection(url);
+			actionLogger.info("Connection successfully established.");
+		return con;
 		}catch(SQLException e) {
 			errorLogger.error("Could not open a connection to the database.", e);
 	        throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
@@ -32,18 +35,23 @@ public class DatabaseManager {
 	}
 	public void close(Connection current) {
 		//closes the connection to the database
+		actionLogger.info("Attempting to close database connection.");
 		try {
 			current.close();
+			actionLogger.info("Database connection successfully closed");
 		} catch (SQLException e) {
 			errorLogger.error("Could not close the database connection.", e);
 			 throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		} catch(NullPointerException e){
+			errorLogger.error("Null database connection passed into function", e);
 			throw new NullPointerException("Could not close empty database connection.");
 		}
 		
 	}
 	
 	public void init() {
+		actionLogger.info("Attempting to verify or initialize database.");
+
 		var sqlCreateAccount ="CREATE TABLE IF NOT EXISTS accounts ("
 						+ "    account_id BIGINT PRIMARY KEY,"
 						+ "    pin INT NOT NULL,"

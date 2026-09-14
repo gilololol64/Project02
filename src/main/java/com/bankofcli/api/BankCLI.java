@@ -50,6 +50,7 @@ public class BankCLI {
 
 	/** Starts the terminal application. Business rules belong in the service layer. */
 	public void run() {
+		actionLogger.info("Program Starting.");
 		running = true;
 		printStartupScreen();
 		output.println("===============Welcome to Bank of CLI===============");
@@ -63,6 +64,7 @@ public class BankCLI {
 		}
 
 		output.println("Thank you for using Bank of CLI.");
+		actionLogger.info("Program exiting successfully");
 	}
 
 	private void showGuestMenu() {
