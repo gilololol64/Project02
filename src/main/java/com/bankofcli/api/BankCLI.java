@@ -281,9 +281,4 @@ public class BankCLI {
 	private static String formatAccount(Long accountID){
 		return accountID == null ? "-" : accountID.toString();
 	}
-
-	private static String formatAccount(java.sql.ResultSet results, String column) throws SQLException {
-		long account = results.getLong(column);
-		return results.wasNull() ? "-" : Long.toString(account);
-	}
 }

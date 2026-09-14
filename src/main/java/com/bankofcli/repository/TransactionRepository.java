@@ -56,13 +56,6 @@ public class TransactionRepository {
 		}
 	}
 
-	private long nextTransactionID(java.sql.Connection connection) throws SQLException {
-		try (var statement = connection.createStatement();
-				var results = statement.executeQuery("SELECT COALESCE(MAX(transaction_id), 0) + 1 FROM transactions")) {
-			return results.next() ? results.getLong(1) : 1L;
-		}
-	}
-
 	public List<Transaction> getAudit(long accountID, int historyLimit) throws SQLException {
 
         ArrayList<Transaction> transactions = new ArrayList<>();
