@@ -2,7 +2,9 @@ package com.bankofcli.api;
 
 import com.bankofcli.database.DatabaseManager;
 import com.bankofcli.exception.BankException;
+import com.bankofcli.exception.NoTransactionHistoryException;
 import com.bankofcli.model.Account;
+import com.bankofcli.model.Transaction;
 import com.bankofcli.repository.AccountRepository;
 import com.bankofcli.repository.TransactionRepository;
 import com.bankofcli.service.AccountService;
@@ -11,6 +13,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +29,6 @@ public class BankCLI {
 	private final PrintStream output;
 	private final AccountService accountService;
 	private final TransactionService transactionService;
-	private final DatabaseManager databaseManager;
 	private boolean running;
 	private Long loggedInAccountId;
 
@@ -44,7 +46,6 @@ public class BankCLI {
 		this.output = output;
 		this.accountService = new AccountService(accountRepository);
 		this.transactionService = new TransactionService(accountRepository, transactionRepository);
-		this.databaseManager = databaseManager;
 	}
 
 	/** Starts the terminal application. Business rules belong in the service layer. */
@@ -191,33 +192,27 @@ public class BankCLI {
 			output.println("Transfer successful.");
 		} catch (BankException exception) {
 			showError(exception);
+			//
 		}
 	}
 
 	private void showTransactionHistory() {
-		String sql = "SELECT transaction_id, trans_type, time_complete, amount, account_src, account_dst "
-				+ "FROM transactions WHERE account_src = ? OR account_dst = ? "
-				+ "ORDER BY time_complete DESC LIMIT ?";
-
-		try (var connection = databaseManager.open(); var statement = connection.prepareStatement(sql)) {
-			statement.setLong(1, loggedInAccountId);
-			statement.setLong(2, loggedInAccountId);
-			statement.setInt(3, HISTORY_LIMIT);
-			try (var results = statement.executeQuery()) {
-				boolean found = false;
-				while (results.next()) {
-					found = true;
-					output.printf("%s | %s | $%,.2f | from %s to %s | %s%n",
-							results.getLong("transaction_id"), results.getString("trans_type"),
-							toDollars(results.getLong("amount")), formatAccount(results, "account_src"),
-							formatAccount(results, "account_dst"), results.getString("time_complete"));
-				}
-				if (!found) output.println("No transactions found.");
+		try {
+			List<Transaction> transactionList =
+					transactionService.getTransactionHistory(loggedInAccountId, HISTORY_LIMIT);
+			for (Transaction transaction: transactionList) {
+				output.printf("%s | %s | $%,.2f | from %s to %s | %s%n",
+						transaction.getTransactionID(), transaction.getType().toString(),
+						toDollars(transaction.getAmount()), formatAccount(transaction.getAccountSrc()),
+						formatAccount(transaction.getAccountDst()), transaction.getTimeComplete().toString());
 			}
-		} catch (SQLException | BankException exception) {
+		} catch(NoTransactionHistoryException exception) {
+			output.println("No transactions found.");
+		}
+		catch (SQLException exception) {
 			errorLogger.error("Could not read transaction history for account {}.", loggedInAccountId, exception);
 			output.println("Transaction history is temporarily unavailable.");
-		}
+        }
 	}
 
 	private void logOut() {
@@ -281,6 +276,10 @@ public class BankCLI {
 
 	private static double toDollars(long cents) {
 		return cents / 100.0;
+	}
+
+	private static String formatAccount(Long accountID){
+		return accountID == null ? "-" : accountID.toString();
 	}
 
 	private static String formatAccount(java.sql.ResultSet results, String column) throws SQLException {

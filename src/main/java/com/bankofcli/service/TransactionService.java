@@ -8,6 +8,7 @@ import com.bankofcli.repository.TransactionRepository;
 
 import com.bankofcli.exception.*;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,6 +129,26 @@ public class TransactionService {
         transactionRepository.save(transaction);
 
         return transaction;
+    }
+
+    /**
+     * Returns the latest transactions given an accountID and the transaction history entry limit
+     * @param accountID account id that is being queried
+     * @param historyLimit number of transaction records that can be returned.
+     * @return a list of the most recent transactions
+     * @throws SQLException when there is a database connection failure
+     * @throws NoTransactionHistoryException when there is no transaction history found for the given account
+     */
+    public List<Transaction> getTransactionHistory(long accountID, int historyLimit) throws SQLException, NoTransactionHistoryException {
+        try {
+            List<Transaction> results = transactionRepository.getAudit(accountID, historyLimit);
+            if(results == null) {
+                throw new NoTransactionHistoryException("No transaction history found for account: " + accountID);
+            }
+            return results;
+        } catch(SQLException ex){
+            throw ex;
+        }
     }
 
     // Ensures transaction amount is valid

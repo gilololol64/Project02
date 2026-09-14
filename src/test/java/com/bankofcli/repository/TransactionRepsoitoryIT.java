@@ -70,7 +70,7 @@ public class TransactionRepsoitoryIT {
             var stmt = con.prepareStatement(sql)) {
             try(ResultSet rs = stmt.executeQuery()){
                 while(rs.next()){
-                    long transID = rs.getLong("transaction_id");
+                    int transID = rs.getInt("transaction_id");
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
@@ -108,7 +108,7 @@ public class TransactionRepsoitoryIT {
             var stmt = con.prepareStatement(sql)) {
             try(ResultSet rs = stmt.executeQuery()){
                 while(rs.next()){
-                    long transID = rs.getLong("transaction_id");
+                    int transID = rs.getInt("transaction_id");
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
@@ -146,7 +146,7 @@ public class TransactionRepsoitoryIT {
             var stmt = con.prepareStatement(sql)) {
             try(ResultSet rs = stmt.executeQuery()){
                 while(rs.next()){
-                    long transID = rs.getLong("transaction_id");
+                    int transID = rs.getInt("transaction_id");
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
@@ -199,7 +199,7 @@ public class TransactionRepsoitoryIT {
         }
         expectedTransList = expectedTransList.reversed();
 
-        List<Transaction> actualTransList = transRepo.getAudit(accountID);
+        List<Transaction> actualTransList = transRepo.getAudit(accountID, 10);
 
         Assertions.assertEquals(expectedTransList.size(), actualTransList.size());
 
@@ -211,7 +211,7 @@ public class TransactionRepsoitoryIT {
     @Test
     public void getAuditNoTransactionHistory() throws SQLException {
         long accountID = -1L;
-        List<Transaction> actualTransList = transRepo.getAudit(accountID);
+        List<Transaction> actualTransList = transRepo.getAudit(accountID, 10);
         Assertions.assertNull(actualTransList);
     }
 

@@ -63,7 +63,7 @@ public class TransactionRepository {
 		}
 	}
 
-	public List<Transaction> getAudit(long accountID) throws SQLException {
+	public List<Transaction> getAudit(long accountID, int historyLimit) throws SQLException {
 
         ArrayList<Transaction> transactions = new ArrayList<>();
 
@@ -73,16 +73,17 @@ public class TransactionRepository {
 				"UNION\n" +
 				"SELECT * FROM transactions\n" +
 				"WHERE account_src = ?)\n" +
-				"ORDER BY time_complete DESC;";
+				"ORDER BY time_complete DESC LIMIT ?;";
 
 		try(var con = db.open();
 			var ps = con.prepareStatement(sql)) {
 			ps.setLong(1, accountID);
 			ps.setLong(2, accountID);
+			ps.setInt(3, historyLimit);
 
 			try(ResultSet rs = ps.executeQuery()) {
 				while(rs.next()){
-					long transID = rs.getLong("transaction_id");
+					int transID = rs.getInt("transaction_id");
 					String transType = rs.getString("trans_type");
 					Transaction.Type type = Transaction.Type.getTypeFromString(transType);
 					String rawDate = rs.getString("time_complete");

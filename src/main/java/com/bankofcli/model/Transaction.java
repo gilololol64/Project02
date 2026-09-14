@@ -37,7 +37,7 @@ public class Transaction {
         }
     }
 
-    private long transactionID;
+    private int transactionID;
     private Type type;
     private LocalDateTime timeComplete;
     private long amount;
@@ -52,7 +52,7 @@ public class Transaction {
      * @param accountSrc Account funds are leaving, null for a deposit
      * @param accountDst Account funds are landing in, null for a withdraw
      */
-    public Transaction(long transactionID, Type type, LocalDateTime timeComplete, long amount,
+    public Transaction(int transactionID, Type type, LocalDateTime timeComplete, long amount,
                         Long accountSrc, Long accountDst) {
         this.transactionID = transactionID;
         this.type = type;
@@ -62,11 +62,11 @@ public class Transaction {
         this.accountDst = accountDst;
     }
 
-    public long getTransactionID() {
+    public int getTransactionID() {
         return transactionID;
     }
 
-    public void setTransactionID(long transactionID) {
+    public void setTransactionID(int transactionID) {
         this.transactionID = transactionID;
     }
 

@@ -1,10 +1,7 @@
 package com.bankofcli.service;
 
 import com.bankofcli.database.DatabaseManager;
-import com.bankofcli.exception.AccountNotFoundException;
-import com.bankofcli.exception.InsufficientFundsException;
-import com.bankofcli.exception.InvalidAmountException;
-import com.bankofcli.exception.SelfTransferException;
+import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
 import com.bankofcli.repository.TransactionRepository;
@@ -36,7 +33,7 @@ public class TransactionServiceIT {
     @AfterEach
     public void teardown(){
         DatabaseManager db = new DatabaseManager();
-        String deleteAccQry = "DELETE FROM accounts WHERE account_id <= 0";
+        String deleteAccQry = "DELETE FROM accounts";
         String deleteTransQry = "DELETE FROM transactions";
         try(Connection con = db.open();
             PreparedStatement psAcc = con.prepareStatement(deleteAccQry);
@@ -277,6 +274,21 @@ public class TransactionServiceIT {
 
         SelfTransferException ex = Assertions.assertThrows(SelfTransferException.class,
                 () -> transServ.transfer(srcAccID, dstAccID, amount));
+        Assertions.assertEquals(expectedMessage, ex.getMessage());
+    }
+
+    @Test
+    public void getTransactionHistoryNoHistory(){
+        long srcAccID = 1111L;
+        long srcBalance = 0;
+        int pin = 1111;
+        String expectedMessage = "No transaction history found for account: " + srcAccID;
+
+        Account expectedAccount = new Account(srcAccID, pin, srcBalance);
+        accRepo.save(expectedAccount);
+
+        NoTransactionHistoryException ex = Assertions.assertThrows(NoTransactionHistoryException.class,
+                () -> transServ.getTransactionHistory(srcAccID, 10));
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
