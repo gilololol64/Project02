@@ -24,7 +24,7 @@ public class BankCLI {
 	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 	private static final String STARTUP_SCREEN = "/text_graphics/startUpScreenText.txt";
 	private static final int HISTORY_LIMIT = 10;
-	private static final Logger transactionLogger = LoggerFactory.getLogger("Bank.Transaction.logback.1");
+	private static final Logger transactionLogger = LoggerFactory.getLogger("Bank.Transaction.logback");
 
 	private final Scanner scanner;
 	private final PrintStream output;
