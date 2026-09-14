@@ -12,7 +12,10 @@ public class DatabaseManager {
 
 	// Dedicated error logger - name must match logback.xml's <logger> element
 	// exactly to route to the SQL error log file instead of falling through to root.
-	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+	private static final Logger sqlErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+
+	//General error logger
+	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 
 	// General action logger - name doesn't matter, inherits from root and
 	// lands in the AccountAction log file. Only ever used for .info() calls.
@@ -29,7 +32,7 @@ public class DatabaseManager {
 			actionLogger.info("Connection successfully established.");
 		return con;
 		}catch(SQLException e) {
-			errorLogger.error("Could not open a connection to the database.", e);
+			sqlErrorLogger.error("Could not open a connection to the database.", e);
 	        throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
@@ -40,7 +43,7 @@ public class DatabaseManager {
 			current.close();
 			actionLogger.info("Database connection successfully closed");
 		} catch (SQLException e) {
-			errorLogger.error("Could not close the database connection.", e);
+			sqlErrorLogger.error("Could not close the database connection.", e);
 			 throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		} catch(NullPointerException e){
 			errorLogger.error("Null database connection passed into function", e);
@@ -75,7 +78,7 @@ public class DatabaseManager {
 			 stmtA.execute(sqlCreateTransactions);
 			 actionLogger.info("Database tables verified/created successfully.");
 		 }catch(SQLException e){
-			 errorLogger.error("Could not initialize database tables.", e);
+			 sqlErrorLogger.error("Could not initialize database tables.", e);
 		 }
 	}
 	

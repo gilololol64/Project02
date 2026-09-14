@@ -14,11 +14,14 @@ public class AccountRepository {
 
 	// Dedicated error logger - name must match logback.xml's <logger> element
 	// exactly to route to the SQL error log file instead of falling through to root.
-	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+	private static final Logger sqlErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
 
 	// General action logger - name doesn't matter, inherits from root and
 	// lands in the AccountAction log file. Only ever used for .info() calls.
 	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
+
+	//General error logger
+	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 
 	DatabaseManager db;
 	//creates a log
@@ -50,7 +53,7 @@ public class AccountRepository {
 			actionLogger.info("No results found for account id {}", accountID);
 			return null;
 		}catch(SQLException e) {
-			errorLogger.error("Database error while looking up account {}.", accountID, e);
+			sqlErrorLogger.error("Database error while looking up account {}.", accountID, e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 		
@@ -59,7 +62,7 @@ public class AccountRepository {
 	public void save(List<Account> toBeSaved) {
 		if(toBeSaved == null || toBeSaved.isEmpty()){
 			NullPointerException ex = new NullPointerException("Can not insert empty list of accounts");
-			errorLogger.error("Account list provided was empty or null.", ex);
+			sqlErrorLogger.error("Account list provided was empty or null.", ex);
 			throw ex;
 		}
 
@@ -81,11 +84,11 @@ public class AccountRepository {
 			} catch (SQLException e) {
 				conn.rollback();
 				conn.close();
-				errorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
+				sqlErrorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
 				throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 			}
 		} catch (SQLException e1) {
-			errorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e1);
+			sqlErrorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e1);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e1);
 		}
 		
@@ -111,7 +114,7 @@ public class AccountRepository {
 			stmt.executeUpdate();
 			actionLogger.info("Successfully saved account {}.", toBeSaved.getAccountID());
 		} catch (SQLException e) {
-			errorLogger.error("Database error while saving account {}.", toBeSaved.getAccountID(), e);
+			sqlErrorLogger.error("Database error while saving account {}.", toBeSaved.getAccountID(), e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}

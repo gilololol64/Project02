@@ -153,7 +153,7 @@
 			<totalSizeCap>3GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
-			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %method %-5level %logger{36} - %exception </pattern>
+			<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %method %-5level %logger{36} - %exception - %msg%n </pattern>
 		</encoder>
 	</appender>
 

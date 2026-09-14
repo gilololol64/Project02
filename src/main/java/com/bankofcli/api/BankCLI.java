@@ -159,7 +159,8 @@ public class BankCLI {
 
 		try {
 			transactionService.deposit(loggedInAccountId, amount);
-			transactionLogger.info("Deposit completed for account {}: {} cents.", loggedInAccountId, amount);
+			transactionLogger.info("Deposit completed for account {}: ${}.", loggedInAccountId,
+					String.format("%,.2f",toDollars(amount)));
 			output.printf("Deposit successful. New balance: $%,.2f%n",
 					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
@@ -173,7 +174,8 @@ public class BankCLI {
 
 		try {
 			transactionService.withdraw(loggedInAccountId, amount);
-			transactionLogger.info("Withdrawal completed for account {}: {} cents.", loggedInAccountId, amount);
+			transactionLogger.info("Withdrawal completed for account {}: ${}.", loggedInAccountId,
+					String.format("%,.2f",toDollars(amount)));
 			output.printf("Withdrawal successful. New balance: $%,.2f%n",
 					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
@@ -190,8 +192,8 @@ public class BankCLI {
 
 		try {
 			transactionService.transfer(loggedInAccountId, destinationId, amount);
-			transactionLogger.info("Transfer completed from account {} to account {}: {} cents.",
-					loggedInAccountId, destinationId, amount);
+			transactionLogger.info("Transfer completed from account {} to account {}: ${}.",
+					loggedInAccountId, destinationId, String.format("%,.2f",toDollars(amount)));
 			output.println("Transfer successful.");
 		} catch (BankException exception) {
 			showError(exception);

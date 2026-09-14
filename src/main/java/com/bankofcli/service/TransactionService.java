@@ -178,7 +178,7 @@ public class TransactionService {
 
     // Ensures transaction amount is valid
     private void validateAmount(long amount) {
-        actionLogger.info("Attempting to validate amount of ${}", amount);
+        actionLogger.info("Attempting to validate amount of ${}", amount / 100);
         if (amount <= 0) {
             InvalidAmountException ex =
                     new InvalidAmountException("Transaction amount must be greater than zero.");

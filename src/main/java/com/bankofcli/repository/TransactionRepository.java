@@ -20,7 +20,6 @@ import com.bankofcli.model.Transaction;
 
 public class TransactionRepository {
 	DatabaseManager db;
-	Logger ErrorLogger;
 
 	// General action logger - name doesn't matter, inherits from root and
 	// lands in the AccountAction log file. Only ever used for .info() calls.
@@ -28,11 +27,13 @@ public class TransactionRepository {
 
 	// Dedicated error logger - name must match logback.xml's <logger> element
 	// exactly to route to the SQL error log file instead of falling through to root.
-	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
-	
+	private static final Logger sqlErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+
+	//General error logger
+	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
+
 	public TransactionRepository() {
 		db = new DatabaseManager();
-		ErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
 	}
 	
 	
@@ -69,7 +70,7 @@ public class TransactionRepository {
 			stmt.executeUpdate();
 			actionLogger.info("Transaction successfully added to database.");
 		} catch (SQLException e) {
-			ErrorLogger.error("Database transaction could not be saved.", e);
+			sqlErrorLogger.error("Database transaction could not be saved.", e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
@@ -116,7 +117,7 @@ public class TransactionRepository {
 			}
 		} catch(SQLException ex){
 			ex = new SQLException("Could not retrieve transaction history from account id: " + accountID);
-			errorLogger.error("Could not retrieve transaction history due to database error", ex);
+			sqlErrorLogger.error("Could not retrieve transaction history due to database error", ex);
 			throw ex;
 		}
 		actionLogger.info("Transaction history successfully retrieved.");
