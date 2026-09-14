@@ -35,7 +35,8 @@ public class TransactionService {
 
     // Deposits money into an account
     public Transaction deposit(long accountID, long amount) {
-        actionLogger.info("Attempting to deposit ${} into Account {}", amount / 100, accountID);
+        actionLogger.info("Attempting to deposit ${} into Account {}",
+                String.format("%,.2f",amount / 100.0), accountID);
         validateAmount(amount);
 
         Account account = getAccountOrThrow(accountID);
@@ -69,7 +70,8 @@ public class TransactionService {
 
     // Withdraws money from an account
     public Transaction withdraw(long accountID, long amount) {
-        actionLogger.info("Attempting to withdraw ${} into Account {}", amount / 100, accountID);
+        actionLogger.info("Attempting to withdraw ${} into Account {}",
+                String.format("%,.2f",amount / 100.0), accountID);
         validateAmount(amount);
 
         Account account = getAccountOrThrow(accountID);
@@ -77,7 +79,7 @@ public class TransactionService {
         if (account.getBalanceExtendedCents() < amount) {
             InsufficientFundsException ex = new InsufficientFundsException("Insufficient funds.");
             errorLogger.error("Account {} with balance ${} could not withdraw ${}",
-                    accountID, account.getBalance(), amount / 100, ex);
+                    accountID, account.getBalance(), String.format("%,.2f",amount / 100.0), ex);
             throw ex;
         }
 
@@ -104,7 +106,7 @@ public class TransactionService {
     // Transfers money from one account to another
     public Transaction transfer(long sourceAccountID, long destinationAccountID, long amount) {
         actionLogger.info("Attempting to transfer ${} from Account {} to Account {}.",
-                amount / 100, sourceAccountID, destinationAccountID);
+                String.format("%,.2f",amount / 100.0), sourceAccountID, destinationAccountID);
         validateAmount(amount);
 
         if (sourceAccountID == destinationAccountID) {
@@ -178,7 +180,7 @@ public class TransactionService {
 
     // Ensures transaction amount is valid
     private void validateAmount(long amount) {
-        actionLogger.info("Attempting to validate amount of ${}", amount / 100);
+        actionLogger.info("Attempting to validate amount of ${}", String.format("%,.2f",amount / 100.0));
         if (amount <= 0) {
             InvalidAmountException ex =
                     new InvalidAmountException("Transaction amount must be greater than zero.");
