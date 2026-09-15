@@ -22,8 +22,8 @@ public class DatabaseManager {
 	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
 
 	private static final String url="jdbc:sqlite:BigBankersBank.db?foreign_keys=true";
-	
 
+	/* Returns a Connection Object to the location of the Bank's database. */
 	public Connection open() {
 		actionLogger.info("Attempting to connect to database.");
 		//returns an open connection to the SQLite Database
@@ -36,6 +36,8 @@ public class DatabaseManager {
 	        throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
+
+	/* Closes a given Connection Object to the Program's database */
 	public void close(Connection current) {
 		//closes the connection to the database
 		actionLogger.info("Attempting to close database connection.");
@@ -51,7 +53,8 @@ public class DatabaseManager {
 		}
 		
 	}
-	
+
+	/* Initializes and creates database or tables if none previously exist */
 	public void init() {
 		actionLogger.info("Attempting to verify or initialize database.");
 

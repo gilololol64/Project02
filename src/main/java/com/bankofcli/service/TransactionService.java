@@ -190,6 +190,8 @@ public class TransactionService {
         actionLogger.info("Amount successfully verified.");
     }
 
+    //Given an account id attempts to retrieve that, if none can be found
+    // a new AccountNotFoundException is thrown
     private Account getAccountOrThrow(long accountID) {
         actionLogger.info("Attempting to locate Account {}", accountID);
         Account account = accountRepository.findByID(accountID);

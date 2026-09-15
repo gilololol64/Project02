@@ -19,6 +19,7 @@ import java.util.Objects;
  */
 public class Transaction {
 
+    //Enum used to represent the three types of transactions the application accepts
     public enum Type {
         DEPOSIT,
         WITHDRAW,
@@ -62,30 +63,40 @@ public class Transaction {
         this.accountDst = accountDst;
     }
 
+    /* Returns transaction id
+    * Note for newly created transactions in the program disgard this value as transaction ids
+    * are generated in the database. When reading transactions from the database this value should be
+    * appropriate and correct to use. */
     public int getTransactionID() {
         return transactionID;
     }
 
+    /* Returns an enum representing the type of the transaction: Withdrawal, Deposit or Transfer */
     public Type getType() {
         return type;
     }
 
+    /* Gets time this transaction was completed/processed */
     public LocalDateTime getTimeComplete() {
         return timeComplete;
     }
 
+    /* Gets amount of the transaction */
     public long getAmount() {
         return amount;
     }
 
+    /* Given the value in extended cents sets that as new transaction object's amount */
     public void setAmount(long amount) {
         this.amount = amount;
     }
 
+    /* Returns Account Source for transaction, is null for a deposit */
     public Long getAccountSrc() {
         return accountSrc;
     }
 
+    /* Returns Account Destination for transaction, is null for a withdrawal */
     public Long getAccountDst() {
         return accountDst;
     }
@@ -110,6 +121,7 @@ public class Transaction {
                 amount == that.amount && accountSrcEqual && accountDstEqual;
     }
 
+    /* Returns hash code for transaction object */
     @Override
     public int hashCode() {
 

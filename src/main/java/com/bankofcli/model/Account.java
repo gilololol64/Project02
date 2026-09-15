@@ -25,25 +25,28 @@ public class Account {
         this.balanceExtendedCents = balanceExtendedCents;
     }
 
+    /* Return's account object's set account id */
     public long getAccountID() {
         return accountID;
     }
 
+    /* Returns account object's set pin */
     public int getPin() {
         return pin;
     }
 
-    //Ideally would have AccountServices generate a pin hash for account and then
-    //temporary store it in Account Object to be updated in Database as well
+    /* Sets account object's new pin to given value */
     public void setPin(int pin) {
         this.pin = pin;
     }
 
+    /**
+     * Returns account object's current balance in extended cents format (1000 = $10.00) */
     public long getBalanceExtendedCents() {
         return balanceExtendedCents;
     }
 
-    //
+    /* Given the value in extended cents sets that as new account object's balance */
     public void setBalanceExtendedCents(long balanceExtendedCents) {
         this.balanceExtendedCents = balanceExtendedCents;
     }
@@ -64,6 +67,7 @@ public class Account {
         return accountID == account.accountID;
     }
 
+    /* Returns hashcode for account object */
     @Override
     public int hashCode() {
         return Objects.hashCode(accountID);

@@ -36,7 +36,7 @@ public class TransactionRepository {
 		db = new DatabaseManager();
 	}
 	
-	
+	//Given a transaction objects saves that transaction into the database
 	public void save(Transaction tobeSaved) {
 
 		if(tobeSaved == null){
@@ -75,6 +75,8 @@ public class TransactionRepository {
 		}
 	}
 
+	//Given an account id and limit of records returned, returns the most recent transactions
+	//where that user's account was either a source account or a destination account
 	public List<Transaction> getAudit(long accountID, int historyLimit) throws SQLException {
 
 		if(historyLimit < 1){

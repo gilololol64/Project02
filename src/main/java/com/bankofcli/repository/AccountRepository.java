@@ -30,7 +30,7 @@ public class AccountRepository {
 		db.init(); //Added init statement in case database does not exist yet
 		
 	}
-	// Test Account with id 123456 in DB
+	// Given an account id, retrieves that account if it exists, if not returns null
 	public Account findByID(long accountID) {
 		actionLogger.info("Searching database for account with id: {}.", accountID);
 
@@ -58,7 +58,12 @@ public class AccountRepository {
 		}
 		
 	}
-	
+
+	/**
+	 * Given a list of Account it will insert/update all those accounts to the database.
+	 * Should be used to update accounts when preforming a transfer as auto commiting is set to false.
+	 * @param toBeSaved list of account objects to be saved to the database
+	 */
 	public void save(List<Account> toBeSaved) {
 		if(toBeSaved == null || toBeSaved.isEmpty()){
 			NullPointerException ex = new NullPointerException("Can not insert empty list of accounts");
@@ -93,7 +98,11 @@ public class AccountRepository {
 		}
 		
 	}
-	
+
+	/**
+	 * Given an account inserts/updates that account object to the database
+	 * @param toBeSaved account that is going to be saved
+	 */
 	public void save(Account toBeSaved) {
 		if(toBeSaved == null){
 			NullPointerException ex = new NullPointerException("Can not insert an empty account");

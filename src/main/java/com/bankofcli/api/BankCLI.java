@@ -18,6 +18,11 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Command line interface for Bank of CLI application.
+ * Handles displaying information to users and facilitates communication between users and
+ * business logic/respitory layer of application.
+ */
 public class BankCLI {
 
 	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
@@ -33,6 +38,9 @@ public class BankCLI {
 	private boolean running;
 	private Long loggedInAccountId;
 
+	/* ------------------------------------------------------------------------------------
+	 * Constructors
+	 * ------------------------------------------------------------------------------------ */
 	public BankCLI() {
 		this(new Scanner(System.in), System.out, new AccountRepository(), new TransactionRepository(), new DatabaseManager());
 	}
@@ -48,6 +56,8 @@ public class BankCLI {
 		this.accountService = new AccountService(accountRepository);
 		this.transactionService = new TransactionService(accountRepository, transactionRepository);
 	}
+	/* ------------------------------------------------------------------------------------
+	 * ------------------------------------------------------------------------------------ */
 
 	/** Starts the terminal application. Business rules belong in the service layer. */
 	public void run() {
@@ -68,6 +78,10 @@ public class BankCLI {
 		actionLogger.info("Program exiting successfully");
 	}
 
+	/**
+	 * Handles/Shows guest/start menu to user when first launching application
+	 * Is also the screen that is displayed when a user is not logged in
+	 */
 	private void showGuestMenu() {
 		output.println("\n1. Register");
 		output.println("2. Log in");
@@ -81,6 +95,9 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Handles/Shows Account main menu when user is logged into application.
+	 */
 	private void showAccountMenu() {
 		output.println("\nAccount: " + loggedInAccountId);
 		output.println("1. Check balance");
@@ -103,6 +120,11 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Helper method used to read user input when selecting an option from the guest and
+	 * logged in menu
+	 * @return numbered option the user choose or -1 if input was invalid.
+	 */
 	private int readMenuChoice() {
 		output.print("Choose an option: ");
 		if (!scanner.hasNextLine()) {
@@ -113,6 +135,7 @@ public class BankCLI {
 		try {
 			return Integer.parseInt(scanner.nextLine().trim());
 		} catch (NumberFormatException exception) {
+			errorLogger.error("User typed in invalid option selection.", exception);
 			return -1;
 		}
 	}
@@ -130,6 +153,9 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Function used to handle a user logging into program
+	 */
 	private void logIn() {
 		Long accountId = readLong("Account ID: ");
 		Integer pin = readInteger("PIN: ");
@@ -145,6 +171,9 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Function used to display current balance to user
+	 */
 	private void checkBalance() {
 		try {
 			output.printf("Current balance: $%,.2f%n", toDollars(accountService.getBalance(loggedInAccountId)));
@@ -153,6 +182,9 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Function used to preform a deposit in the user's account
+	 */
 	private void deposit() {
 		Long amount = readAmount();
 		if (amount == null) return;
@@ -168,6 +200,9 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Function used to withdraw money from user account, overdrafting is not allowed.
+	 */
 	private void withdraw() {
 		Long amount = readAmount();
 		if (amount == null) return;
@@ -183,6 +218,10 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Function used to handle transfers between two accounts.
+	 * Note if action fails for withdraw/deposit of one of the accounts the transfer is aborted.
+	 */
 	private void transfer() {
 		Long destinationId = readLong("Destination Account ID: ");
 		if (destinationId == null) return;
@@ -200,12 +239,16 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Function used to show last set amount of most recent transactions to the user.
+	 * The number of most recent transactions is determined by the HISTORY_LIMIT constant
+	 */
 	private void showTransactionHistory() {
 		try {
 			List<Transaction> transactionList =
 					transactionService.getTransactionHistory(loggedInAccountId, HISTORY_LIMIT);
 			for (Transaction transaction: transactionList) {
-				output.printf("%s | %s | $%,.2f | from %s to %s | %s%n",
+				output.printf("Trans ID: %s | %s | $%,.2f | from %s to %s | %s%n",
 						transaction.getTransactionID(), transaction.getType().toString(),
 						toDollars(transaction.getAmount()), formatAccount(transaction.getAccountSrc()),
 						formatAccount(transaction.getAccountDst()), transaction.getTimeComplete().toString());
@@ -219,12 +262,18 @@ public class BankCLI {
         }
 	}
 
+	/**
+	 * Handles user logging out of session
+	 */
 	private void logOut() {
 		loggedInAccountId = null;
 		actionLogger.info("User logged out.");
 		output.println("You have been logged out.");
 	}
 
+	/**
+	 * Displays the start/splash screen of application
+	 */
 	private void printStartupScreen() {
 		try (var startupScreen = BankCLI.class.getResourceAsStream(STARTUP_SCREEN)) {
 			if (startupScreen == null) return;
@@ -236,6 +285,11 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * When handling transfers, withdraws and deposits, takes in the user's input,
+	 * verifies it and converts into Long extended cents format ($10.00 = 1000L)
+	 * @return Long extended cents format ($10.00 = 1000L)
+	 */
 	private Long readAmount() {
 		output.print("Amount ($): ");
 		if (!scanner.hasNextLine()) {
@@ -252,12 +306,22 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Reads integer given a user prompt, verifies its within bounds of Max and Min integer value
+	 * @param prompt user input
+	 * @return Integer value of the given input
+	 */
 	private Integer readInteger(String prompt) {
 		Long value = readLong(prompt);
 		if (value == null || value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) return null;
 		return value.intValue();
 	}
 
+	/**
+	 * Reads long given a user prompt, verifies its within bounds of Max and Min integer value
+	 * @param prompt user input
+	 * @return Long value of the given input
+	 */
 	private Long readLong(String prompt) {
 		output.print(prompt);
 		if (!scanner.hasNextLine()) {
@@ -273,15 +337,22 @@ public class BankCLI {
 		}
 	}
 
+	/**
+	 * Displays error message to user as well as logs error message
+	 * @param exception the exception that was caught during running of the application
+	 */
 	private void showError(BankException exception) {
 		errorLogger.error("CLI operation failed: {}", exception.getMessage());
 		output.println("Error: " + exception.getMessage());
 	}
 
+	/** Converts extended cents format to dollars */
 	private static double toDollars(long cents) {
 		return cents / 100.0;
 	}
 
+	/* Used to format how empty accounts are displayed on transaction history for
+	* source or destination accounts. */
 	private static String formatAccount(Long accountID){
 		return accountID == null ? "-" : accountID.toString();
 	}
