@@ -12,10 +12,6 @@ public class SoundPlayer{
 	static URL Success = SoundPlayer.class.getResource("/Sounds/success2.wav");
 	static URL Failure = SoundPlayer.class.getResource("/Sounds/denied.wav");
 	
-	public static void main(String[] args) {
-		playSucess();
-		playFailure();
-	}
 	
 	public static void playSound(URL sound) {
 		CountDownLatch latch = new CountDownLatch(1);
