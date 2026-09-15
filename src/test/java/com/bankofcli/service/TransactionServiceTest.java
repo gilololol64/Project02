@@ -47,7 +47,7 @@ public class TransactionServiceTest {
         long accID = 1111L;
         long balance = 0;
         long deposit = -100;
-        String expectedMessage = "Transaction amount can not be less than zero.";
+        String expectedMessage = "Transaction amount must be greater than zero.";
 
         Account mockAcc = new Account(accID, 1111, balance);
         Mockito.when(accRepo.findByID(accID)).thenReturn(mockAcc);
@@ -119,7 +119,7 @@ public class TransactionServiceTest {
         long accID = 1111L;
         long balance = 0;
         long withdraw = -100;
-        String expectedMessage = "Transaction amount can not be less than zero.";
+        String expectedMessage = "Transaction amount must be greater than zero.";
 
         Account mockAcc = new Account(accID, 1111, balance);
         Mockito.when(accRepo.findByID(accID)).thenReturn(mockAcc);
@@ -148,7 +148,7 @@ public class TransactionServiceTest {
         long srcBalance = 10;
         long dstAccID = 1112L;
         long dstBalance = 0;
-        long amount = 0;
+        long amount = 1;
 
         Account mockSrcAcc = new Account(srcAccID, 1111, srcBalance);
         Account mockDstAcc = new Account(dstAccID, 1111, dstBalance);
@@ -221,8 +221,8 @@ public class TransactionServiceTest {
         long srcBalance = 0;
         long dstAccID = 1112L;
         long dstBalance = 0;
-        long amount = -10;
-        String expectedMessage = "Transaction amount can not be less than zero.";
+        long amount = -1;
+        String expectedMessage = "Transaction amount must be greater than zero.";
 
         Account mockSrcAcc = new Account(srcAccID, 1111, srcBalance);
         Account mockDstAcc = new Account(dstAccID, 1111, dstBalance);
