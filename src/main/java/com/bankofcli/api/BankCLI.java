@@ -24,6 +24,7 @@ public class BankCLI {
 	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 	private static final String STARTUP_SCREEN = "/text_graphics/startUpScreenText.txt";
 	private static final int HISTORY_LIMIT = 10;
+	private static final Logger transactionLogger = LoggerFactory.getLogger("Bank.Transaction.logback");
 
 	private final Scanner scanner;
 	private final PrintStream output;
@@ -50,6 +51,7 @@ public class BankCLI {
 
 	/** Starts the terminal application. Business rules belong in the service layer. */
 	public void run() {
+		actionLogger.info("Program Starting.");
 		running = true;
 		printStartupScreen();
 		output.println("===============Welcome to Bank of CLI===============");
@@ -63,6 +65,7 @@ public class BankCLI {
 		}
 
 		output.println("Thank you for using Bank of CLI.");
+		actionLogger.info("Program exiting successfully");
 	}
 
 	private void showGuestMenu() {
@@ -156,7 +159,8 @@ public class BankCLI {
 
 		try {
 			transactionService.deposit(loggedInAccountId, amount);
-			actionLogger.info("Deposit completed for account {}: {} cents.", loggedInAccountId, amount);
+			transactionLogger.info("Deposit completed for account {}: ${}.", loggedInAccountId,
+					String.format("%,.2f",toDollars(amount)));
 			output.printf("Deposit successful. New balance: $%,.2f%n",
 					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
@@ -170,7 +174,8 @@ public class BankCLI {
 
 		try {
 			transactionService.withdraw(loggedInAccountId, amount);
-			actionLogger.info("Withdrawal completed for account {}: {} cents.", loggedInAccountId, amount);
+			transactionLogger.info("Withdrawal completed for account {}: ${}.", loggedInAccountId,
+					String.format("%,.2f",toDollars(amount)));
 			output.printf("Withdrawal successful. New balance: $%,.2f%n",
 					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
@@ -187,12 +192,11 @@ public class BankCLI {
 
 		try {
 			transactionService.transfer(loggedInAccountId, destinationId, amount);
-			actionLogger.info("Transfer completed from account {} to account {}: {} cents.",
-					loggedInAccountId, destinationId, amount);
+			transactionLogger.info("Transfer completed from account {} to account {}: ${}.",
+					loggedInAccountId, destinationId, String.format("%,.2f",toDollars(amount)));
 			output.println("Transfer successful.");
 		} catch (BankException exception) {
 			showError(exception);
-			//
 		}
 	}
 

@@ -66,24 +66,12 @@ public class Transaction {
         return transactionID;
     }
 
-    public void setTransactionID(int transactionID) {
-        this.transactionID = transactionID;
-    }
-
     public Type getType() {
         return type;
     }
 
-    public void setType(Type type) {
-        this.type = type;
-    }
-
     public LocalDateTime getTimeComplete() {
         return timeComplete;
-    }
-
-    public void setTimeComplete(LocalDateTime timeComplete) {
-        this.timeComplete = timeComplete;
     }
 
     public long getAmount() {
@@ -98,16 +86,8 @@ public class Transaction {
         return accountSrc;
     }
 
-    public void setAccountSrc(Long accountSrc) {
-        this.accountSrc = accountSrc;
-    }
-
     public Long getAccountDst() {
         return accountDst;
-    }
-
-    public void setAccountDst(Long accountDst) {
-        this.accountDst = accountDst;
     }
 
     /**

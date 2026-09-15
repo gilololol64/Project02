@@ -26,9 +26,12 @@ public class AccountService {
     // Registers a new account
     public Account register(int pin) {
 
+        actionLogger.info("Attempting to register new account");
+
         if (!isValidPin(pin)) {
-            errorLogger.error("Registration failed, PIN did not meet format requirements.");
-            throw new InvalidPinException("PIN must be 4 digits.");
+            InvalidPinException ex = new InvalidPinException("PIN must be 4 digits.");
+            errorLogger.error("Registration failed, PIN did not meet format requirements.", ex);
+            throw ex;
         }
 
         SecureRandom random = new SecureRandom();
@@ -52,16 +55,19 @@ public class AccountService {
     // Logs a user into an existing account
     public Account login(long accountID, int pin) {
 
+        actionLogger.info("Attempting to login Account {}", accountID);
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
-            errorLogger.error("Login failed, account ID {} not found.", accountID);
-            throw new AccountNotFoundException("Account not found.");
+            AccountNotFoundException ex = new AccountNotFoundException("Account not found.");
+            errorLogger.error("Login failed, account ID {} not found.", accountID, ex);
+            throw ex;
         }
 
         if (account.getPin() != pin) {
-            errorLogger.error("Login failed for account {}, incorrect PIN entered.", accountID);
-            throw new InvalidPinException("Incorrect PIN.");
+            InvalidPinException ex = new InvalidPinException("Incorrect PIN.");
+            errorLogger.error("Login failed for account {}, incorrect PIN entered.", accountID, ex);
+            throw ex;
         }
 
         actionLogger.info("Account {} successfully logged in.", accountID);
@@ -71,13 +77,16 @@ public class AccountService {
 
     // Returns the current account balance in extended cents
     public long getBalance(long accountID) {
+        actionLogger.info("Attempting to get balance of Account {}.", accountID);
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
-            errorLogger.error("Balance lookup failed, account ID {} not found.", accountID);
-            throw new AccountNotFoundException("Account not found.");
+            AccountNotFoundException ex = new AccountNotFoundException("Account not found.");
+            errorLogger.error("Balance lookup failed, account ID {} not found.", accountID, ex);
+            throw ex;
         }
 
+        actionLogger.info("Balance of Account {} successfully retrieved.", accountID);
         return account.getBalanceExtendedCents();
     }
 

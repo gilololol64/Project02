@@ -14,11 +14,14 @@ public class AccountRepository {
 
 	// Dedicated error logger - name must match logback.xml's <logger> element
 	// exactly to route to the SQL error log file instead of falling through to root.
-	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+	private static final Logger sqlErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
 
 	// General action logger - name doesn't matter, inherits from root and
 	// lands in the AccountAction log file. Only ever used for .info() calls.
 	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
+
+	//General error logger
+	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 
 	DatabaseManager db;
 	//creates a log
@@ -29,7 +32,8 @@ public class AccountRepository {
 	}
 	// Test Account with id 123456 in DB
 	public Account findByID(long accountID) {
-		
+		actionLogger.info("Searching database for account with id: {}.", accountID);
+
 		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
 
 		try(var conn = db.open();
@@ -42,22 +46,27 @@ public class AccountRepository {
 			if (rs.next()) {
 				Account result = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getLong("balance"));
 				rs.close();
+				actionLogger.info("Result found for account id {}", accountID);
 				return result;
 			}
 			rs.close();
+			actionLogger.info("No results found for account id {}", accountID);
 			return null;
 		}catch(SQLException e) {
-			errorLogger.error("Database error while looking up account {}.", accountID, e);
+			sqlErrorLogger.error("Database error while looking up account {}.", accountID, e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 		
 	}
 	
 	public void save(List<Account> toBeSaved) {
-
 		if(toBeSaved == null || toBeSaved.isEmpty()){
-			throw new NullPointerException("Can not insert empty list of accounts");
+			NullPointerException ex = new NullPointerException("Can not insert empty list of accounts");
+			sqlErrorLogger.error("Account list provided was empty or null.", ex);
+			throw ex;
 		}
+
+		actionLogger.info("Attempting to save {} account(s) to database", toBeSaved.size());
 
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
 		try(var conn =db.open()){
@@ -75,21 +84,24 @@ public class AccountRepository {
 			} catch (SQLException e) {
 				conn.rollback();
 				conn.close();
-				errorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
+				sqlErrorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e);
 				throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 			}
 		} catch (SQLException e1) {
-			errorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e1);
+			sqlErrorLogger.error("Database error while saving a batch of {} account(s).", toBeSaved.size(), e1);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e1);
 		}
 		
 	}
 	
 	public void save(Account toBeSaved) {
-
 		if(toBeSaved == null){
-			throw new NullPointerException("Can not insert an empty account");
+			NullPointerException ex = new NullPointerException("Can not insert an empty account");
+			errorLogger.error("Account provided was null.", ex);
+			throw ex;
 		}
+
+		actionLogger.info("Attempting to save account: {} to database", toBeSaved.getAccountID());
 
 		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
 		
@@ -102,7 +114,7 @@ public class AccountRepository {
 			stmt.executeUpdate();
 			actionLogger.info("Successfully saved account {}.", toBeSaved.getAccountID());
 		} catch (SQLException e) {
-			errorLogger.error("Database error while saving account {}.", toBeSaved.getAccountID(), e);
+			sqlErrorLogger.error("Database error while saving account {}.", toBeSaved.getAccountID(), e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
