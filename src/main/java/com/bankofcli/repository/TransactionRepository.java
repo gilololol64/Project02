@@ -20,19 +20,32 @@ import com.bankofcli.model.Transaction;
 
 public class TransactionRepository {
 	DatabaseManager db;
-	Logger ErrorLogger;
-	
+
+	// General action logger - name doesn't matter, inherits from root and
+	// lands in the AccountAction log file. Only ever used for .info() calls.
+	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
+
+	// Dedicated error logger - name must match logback.xml's <logger> element
+	// exactly to route to the SQL error log file instead of falling through to root.
+	private static final Logger sqlErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+
+	//General error logger
+	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
+
 	public TransactionRepository() {
 		db = new DatabaseManager();
-		ErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
 	}
 	
-	
+	//Given a transaction objects saves that transaction into the database
 	public void save(Transaction tobeSaved) {
 
 		if(tobeSaved == null){
-			throw new NullPointerException("Can not save empty transaction.");
+			NullPointerException ex = new NullPointerException("Can not save empty transaction.");
+			errorLogger.error("Transaction provided was null.", ex);
+			throw ex;
 		}
+
+		actionLogger.info("Attempting to add transaction to database.");
 
 		var sql ="   INSERT INTO transactions (trans_type, time_complete, amount, account_src, account_dst)"
 				+ "   VALUES (?,?,?,?,?)";
@@ -55,17 +68,25 @@ public class TransactionRepository {
 				stmt.setLong(5, tobeSaved.getAccountDst());
 			}
 			stmt.executeUpdate();
+			actionLogger.info("Transaction successfully added to database.");
 		} catch (SQLException e) {
-			ErrorLogger.error("Database transaction could not be saved.", e);
+			sqlErrorLogger.error("Database transaction could not be saved.", e);
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
 
+	//Given an account id and limit of records returned, returns the most recent transactions
+	//where that user's account was either a source account or a destination account
 	public List<Transaction> getAudit(long accountID, int historyLimit) throws SQLException {
 
 		if(historyLimit < 1){
-			throw new IllegalArgumentException("The max transaction history displayed amount must be greater than 1.");
+			IllegalArgumentException ex = new IllegalArgumentException("The max transaction history displayed amount must be greater than 1.");
+			errorLogger.error("Invalid value for historyLimit passed in: {}.", historyLimit, ex);
+			throw ex;
 		}
+
+		actionLogger.info("Attempting to retrieve {} record(s) of Account:{} most recent transactions",
+				historyLimit, accountID);
 
         ArrayList<Transaction> transactions = new ArrayList<>();
 
@@ -97,18 +118,12 @@ public class TransactionRepository {
 				}
 			}
 		} catch(SQLException ex){
-			throw new SQLException("Could not retrieve transaction history from account id: " + accountID);
+			ex = new SQLException("Could not retrieve transaction history from account id: " + accountID);
+			sqlErrorLogger.error("Could not retrieve transaction history due to database error", ex);
+			throw ex;
 		}
+		actionLogger.info("Transaction history successfully retrieved.");
 		return (transactions.isEmpty()) ? null : transactions;
-	}
-	
-	
-	public static void logTransaction(Transaction tobeLogged) {
-		int firstDigit = Integer.parseInt(Long.toString(tobeLogged.getAccountSrc()).substring(0, 1));
-		
-		Logger curLogger = LoggerFactory.getLogger("Bank.Transaction.logback."+firstDigit);
-		curLogger.info(tobeLogged.toString());
-		
 	}
 
 }

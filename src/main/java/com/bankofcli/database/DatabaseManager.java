@@ -12,38 +12,52 @@ public class DatabaseManager {
 
 	// Dedicated error logger - name must match logback.xml's <logger> element
 	// exactly to route to the SQL error log file instead of falling through to root.
-	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+	private static final Logger sqlErrorLogger = LoggerFactory.getLogger("Bank.logback.SQLError");
+
+	//General error logger
+	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 
 	// General action logger - name doesn't matter, inherits from root and
 	// lands in the AccountAction log file. Only ever used for .info() calls.
 	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
 
 	private static final String url="jdbc:sqlite:BigBankersBank.db?foreign_keys=true";
-	
 
+	/* Returns a Connection Object to the location of the Bank's database. */
 	public Connection open() {
-		//returns a open connection to the SQLite Database
+		actionLogger.info("Attempting to connect to database.");
+		//returns an open connection to the SQLite Database
 		try {
-		return DriverManager.getConnection(url);
+			Connection con = DriverManager.getConnection(url);
+			actionLogger.info("Connection successfully established.");
+		return con;
 		}catch(SQLException e) {
-			errorLogger.error("Could not open a connection to the database.", e);
+			sqlErrorLogger.error("Could not open a connection to the database.", e);
 	        throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
+
+	/* Closes a given Connection Object to the Program's database */
 	public void close(Connection current) {
 		//closes the connection to the database
+		actionLogger.info("Attempting to close database connection.");
 		try {
 			current.close();
+			actionLogger.info("Database connection successfully closed");
 		} catch (SQLException e) {
-			errorLogger.error("Could not close the database connection.", e);
+			sqlErrorLogger.error("Could not close the database connection.", e);
 			 throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		} catch(NullPointerException e){
+			errorLogger.error("Null database connection passed into function", e);
 			throw new NullPointerException("Could not close empty database connection.");
 		}
 		
 	}
-	
+
+	/* Initializes and creates database or tables if none previously exist */
 	public void init() {
+		actionLogger.info("Attempting to verify or initialize database.");
+
 		var sqlCreateAccount ="CREATE TABLE IF NOT EXISTS accounts ("
 						+ "    account_id BIGINT PRIMARY KEY,"
 						+ "    pin INT NOT NULL,"
@@ -67,7 +81,7 @@ public class DatabaseManager {
 			 stmtA.execute(sqlCreateTransactions);
 			 actionLogger.info("Database tables verified/created successfully.");
 		 }catch(SQLException e){
-			 errorLogger.error("Could not initialize database tables.", e);
+			 sqlErrorLogger.error("Could not initialize database tables.", e);
 		 }
 	}
 	
