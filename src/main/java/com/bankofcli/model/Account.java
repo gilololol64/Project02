@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * Class meant to represent the Data Model for an Account.
- * Holds an account's id, hashed pin and its current balance.
+ * Holds an account's id, pin and its current balance.
  */
 public class Account {
 
@@ -52,7 +52,7 @@ public class Account {
     }
 
     //Method used to get the balance as a double or dollar amount
-    public double getBalance() { return this.balanceExtendedCents / 100; }
+    public double getBalance() { return this.balanceExtendedCents / 100.0; }
 
     /**
      * Method to compare if two Account Objects are the same.
