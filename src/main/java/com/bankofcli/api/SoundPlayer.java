@@ -1,5 +1,6 @@
 package com.bankofcli.api;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.CountDownLatch;
 
@@ -7,6 +8,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SoundPlayer{
 	static URL Success = SoundPlayer.class.getResource("/Sounds/success2.wav");
@@ -28,7 +31,7 @@ public class SoundPlayer{
 			clip.start();
 
 			latch.await();
-		} catch (Exception e) {
+		} catch (InterruptedException | LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			e.printStackTrace();
 		}
 		
@@ -50,9 +53,10 @@ public class SoundPlayer{
 			clip.start();
 
 			latch.await();
-		} catch (Exception e) {
+		} catch (InterruptedException | LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			
 			e.printStackTrace();
-		}
+		} 
 	}
 	
 	public static void playFailure() {
@@ -70,7 +74,7 @@ public class SoundPlayer{
 			clip.start();
 
 			latch.await();
-		} catch (Exception e) {
+		} catch (InterruptedException | LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			e.printStackTrace();
 		}
 	}
