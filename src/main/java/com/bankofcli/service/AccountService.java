@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.login.AccountLockedException;
-
 public class AccountService {
 
     // Dedicated error logger - name must match a <logger> element in logback.xml
