@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * Class meant to represent the Data Model for an Account.
- * Holds an account's id, hashed pin and its current balance.
+ * Holds an account's id, pin and its current balance.
  */
 public class Account {
 
@@ -25,40 +25,35 @@ public class Account {
         this.balanceExtendedCents = balanceExtendedCents;
     }
 
+    /* Return's account object's set account id */
     public long getAccountID() {
         return accountID;
     }
 
-    public void setAccountID(long accountID) {
-        this.accountID = accountID;
-    }
-
+    /* Returns account object's set pin */
     public int getPin() {
         return pin;
     }
 
-    //Ideally would have AccountServices generate a pin hash for account and then
-    //temporary store it in Account Object to be updated in Database as well
+    /* Sets account object's new pin to given value */
     public void setPin(int pin) {
         this.pin = pin;
     }
 
+    /**
+     * Returns account object's current balance in extended cents format (1000 = $10.00) */
     public long getBalanceExtendedCents() {
         return balanceExtendedCents;
     }
 
-    //
+    /* Given the value in extended cents sets that as new account object's balance */
     public void setBalanceExtendedCents(long balanceExtendedCents) {
         this.balanceExtendedCents = balanceExtendedCents;
     }
 
     //Method used to get the balance as a double or dollar amount
-    public double getBalance() { return this.balanceExtendedCents / 100; }
+    public double getBalance() { return this.balanceExtendedCents / 100.0; }
 
-    //Class method to convert normal dollar amount to extended cents
-    public static int balanceToExtendedCents(double balance) {
-        return (int) balance * 100;
-    }
     /**
      * Method to compare if two Account Objects are the same.
      * Only checks if the accountIDs of both objects match
@@ -72,6 +67,7 @@ public class Account {
         return accountID == account.accountID;
     }
 
+    /* Returns hashcode for account object */
     @Override
     public int hashCode() {
         return Objects.hashCode(accountID);

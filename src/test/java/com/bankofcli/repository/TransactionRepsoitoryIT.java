@@ -70,7 +70,7 @@ public class TransactionRepsoitoryIT {
             var stmt = con.prepareStatement(sql)) {
             try(ResultSet rs = stmt.executeQuery()){
                 while(rs.next()){
-                    long transID = rs.getLong("transaction_id");
+                    int transID = rs.getInt("transaction_id");
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
@@ -108,7 +108,7 @@ public class TransactionRepsoitoryIT {
             var stmt = con.prepareStatement(sql)) {
             try(ResultSet rs = stmt.executeQuery()){
                 while(rs.next()){
-                    long transID = rs.getLong("transaction_id");
+                    int transID = rs.getInt("transaction_id");
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
@@ -146,7 +146,7 @@ public class TransactionRepsoitoryIT {
             var stmt = con.prepareStatement(sql)) {
             try(ResultSet rs = stmt.executeQuery()){
                 while(rs.next()){
-                    long transID = rs.getLong("transaction_id");
+                    int transID = rs.getInt("transaction_id");
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
@@ -160,6 +160,15 @@ public class TransactionRepsoitoryIT {
         }
 
         Assertions.assertEquals(expectedTrans, actualTrans);
+    }
+
+    @Test
+    public void saveNullPointerException(){
+        String expectedMessage = "Can not save empty transaction.";
+
+        NullPointerException ex = Assertions.assertThrows(NullPointerException.class,
+                () ->transRepo.save(null));
+        Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
     @Test
@@ -199,7 +208,7 @@ public class TransactionRepsoitoryIT {
         }
         expectedTransList = expectedTransList.reversed();
 
-        List<Transaction> actualTransList = transRepo.getAudit(accountID);
+        List<Transaction> actualTransList = transRepo.getAudit(accountID, 10);
 
         Assertions.assertEquals(expectedTransList.size(), actualTransList.size());
 
@@ -211,8 +220,20 @@ public class TransactionRepsoitoryIT {
     @Test
     public void getAuditNoTransactionHistory() throws SQLException {
         long accountID = -1L;
-        List<Transaction> actualTransList = transRepo.getAudit(accountID);
+        int historyLimit = 10;
+        List<Transaction> actualTransList = transRepo.getAudit(accountID, historyLimit);
         Assertions.assertNull(actualTransList);
+    }
+
+    @Test
+    public void getAuditIllegalArgumentException() {
+        long accountID = -1L;
+        int historyLimit = 0;
+        String expectedMessage = "The max transaction history displayed amount must be greater than 1.";
+
+        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> transRepo.getAudit(accountID, historyLimit));
+        Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
     private void sleep(int sec){

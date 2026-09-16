@@ -19,6 +19,7 @@ import java.util.Objects;
  */
 public class Transaction {
 
+    //Enum used to represent the three types of transactions the application accepts
     public enum Type {
         DEPOSIT,
         WITHDRAW,
@@ -37,7 +38,7 @@ public class Transaction {
         }
     }
 
-    private long transactionID;
+    private int transactionID;
     private Type type;
     private LocalDateTime timeComplete;
     private long amount;
@@ -52,7 +53,7 @@ public class Transaction {
      * @param accountSrc Account funds are leaving, null for a deposit
      * @param accountDst Account funds are landing in, null for a withdraw
      */
-    public Transaction(long transactionID, Type type, LocalDateTime timeComplete, long amount,
+    public Transaction(int transactionID, Type type, LocalDateTime timeComplete, long amount,
                         Long accountSrc, Long accountDst) {
         this.transactionID = transactionID;
         this.type = type;
@@ -62,52 +63,42 @@ public class Transaction {
         this.accountDst = accountDst;
     }
 
-    public long getTransactionID() {
+    /* Returns transaction id
+    * Note for newly created transactions in the program disgard this value as transaction ids
+    * are generated in the database. When reading transactions from the database this value should be
+    * appropriate and correct to use. */
+    public int getTransactionID() {
         return transactionID;
     }
 
-    public void setTransactionID(long transactionID) {
-        this.transactionID = transactionID;
-    }
-
+    /* Returns an enum representing the type of the transaction: Withdrawal, Deposit or Transfer */
     public Type getType() {
         return type;
     }
 
-    public void setType(Type type) {
-        this.type = type;
-    }
-
+    /* Gets time this transaction was completed/processed */
     public LocalDateTime getTimeComplete() {
         return timeComplete;
     }
 
-    public void setTimeComplete(LocalDateTime timeComplete) {
-        this.timeComplete = timeComplete;
-    }
-
+    /* Gets amount of the transaction */
     public long getAmount() {
         return amount;
     }
 
+    /* Given the value in extended cents sets that as new transaction object's amount */
     public void setAmount(long amount) {
         this.amount = amount;
     }
 
+    /* Returns Account Source for transaction, is null for a deposit */
     public Long getAccountSrc() {
         return accountSrc;
     }
 
-    public void setAccountSrc(Long accountSrc) {
-        this.accountSrc = accountSrc;
-    }
-
+    /* Returns Account Destination for transaction, is null for a withdrawal */
     public Long getAccountDst() {
         return accountDst;
-    }
-
-    public void setAccountDst(Long accountDst) {
-        this.accountDst = accountDst;
     }
 
     /**
@@ -121,10 +112,16 @@ public class Transaction {
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
 
+        boolean accountSrcEqual = (this.accountSrc == null) ?
+                that.accountSrc == null : this.accountSrc.equals(that.accountSrc);
+        boolean accountDstEqual = (this.accountDst == null) ?
+                that.accountDst == null : this.accountDst.equals(that.accountDst);
+
         return type == that.type && timeComplete.equals(that.timeComplete) &&
-                amount == that.amount && accountSrc == that.accountSrc && accountDst == that.accountDst;
+                amount == that.amount && accountSrcEqual && accountDstEqual;
     }
 
+    /* Returns hash code for transaction object */
     @Override
     public int hashCode() {
 

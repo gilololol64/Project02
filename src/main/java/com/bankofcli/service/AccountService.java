@@ -7,6 +7,10 @@ import java.security.SecureRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 public class AccountService {
 
     // Dedicated error logger - name must match a <logger> element in logback.xml
@@ -19,6 +23,12 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
 
+    private final Map<Long, Integer> failedAttempts = new HashMap<>();
+    private final Map<Long, LocalDateTime> lockedUntil = new HashMap<>();
+
+    private static final int MAX_ATTEMPTS = 3;
+    private static final int LOCKOUT_MINUTES = 5;
+
     public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
@@ -26,9 +36,12 @@ public class AccountService {
     // Registers a new account
     public Account register(int pin) {
 
+        actionLogger.info("Attempting to register new account");
+
         if (!isValidPin(pin)) {
-            errorLogger.error("Registration failed, PIN did not meet format requirements.");
-            throw new InvalidPinException("PIN must be 4 digits.");
+            InvalidPinException ex = new InvalidPinException("PIN must be 4 digits.");
+            errorLogger.error("Registration failed, PIN did not meet format requirements.", ex);
+            throw ex;
         }
 
         SecureRandom random = new SecureRandom();
@@ -52,17 +65,73 @@ public class AccountService {
     // Logs a user into an existing account
     public Account login(long accountID, int pin) {
 
+        actionLogger.info("Attempting to login Account {}", accountID);
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
-            errorLogger.error("Login failed, account ID {} not found.", accountID);
-            throw new AccountNotFoundException("Account not found.");
+            AccountNotFoundException ex = new AccountNotFoundException("Account not found.");
+            errorLogger.error("Login failed, account ID {} not found.", accountID, ex);
+            throw ex;
         }
 
-        if (account.getPin() != pin) {
-            errorLogger.error("Login failed for account {}, incorrect PIN entered.", accountID);
-            throw new InvalidPinException("Incorrect PIN.");
+        // Check if the account is currently locked
+        LocalDateTime lockExpiration = lockedUntil.get(accountID);
+
+        if (lockExpiration != null) {
+
+            // Account is still locked
+            if (LocalDateTime.now().isBefore(lockExpiration)) {
+                errorLogger.error(
+                    "Login failed for account {}, account is temporarily locked.",
+                    accountID
+                );
+
+                throw new AccountLockedException(
+                    "Account is temporarily locked. Please try again later."
+                );
+            }
+
+            // Lockout time has expired, so reset the account
+            lockedUntil.remove(accountID);
+            failedAttempts.remove(accountID);
         }
+
+        // Check PIN
+        if (account.getPin() != pin) {
+
+            int attempts = failedAttempts.getOrDefault(accountID, 0) + 1;
+            failedAttempts.put(accountID, attempts);
+
+            // Lock account after third incorrect attempt
+            if (attempts >= MAX_ATTEMPTS) {
+                lockedUntil.put(
+                    accountID,
+                    LocalDateTime.now().plusMinutes(LOCKOUT_MINUTES)
+                );
+
+                errorLogger.error("Account {} locked after {} incorrect PIN attempts.",
+                    accountID,
+                    attempts
+                );
+
+                throw new AccountLockedException(
+                    "Too many incorrect PIN attempts. Account locked for 5 minutes."
+                );
+            }
+
+            int attemptsRemaining = MAX_ATTEMPTS - attempts;
+
+            errorLogger.error(
+                "Login failed for account {}, incorrect PIN entered. {} attempt(s) remaining.",
+                accountID,
+                attemptsRemaining
+            );
+
+            throw new InvalidPinException("Incorrect PIN. " + attemptsRemaining + " attempt(s) remaining.");
+        }
+
+        // Correct PIN - reset failed attempts
+        failedAttempts.remove(accountID);
 
         actionLogger.info("Account {} successfully logged in.", accountID);
 
@@ -71,13 +140,16 @@ public class AccountService {
 
     // Returns the current account balance in extended cents
     public long getBalance(long accountID) {
+        actionLogger.info("Attempting to get balance of Account {}.", accountID);
         Account account = accountRepository.findByID(accountID);
 
         if (account == null) {
-            errorLogger.error("Balance lookup failed, account ID {} not found.", accountID);
-            throw new AccountNotFoundException("Account not found.");
+            AccountNotFoundException ex = new AccountNotFoundException("Account not found.");
+            errorLogger.error("Balance lookup failed, account ID {} not found.", accountID, ex);
+            throw ex;
         }
 
+        actionLogger.info("Balance of Account {} successfully retrieved.", accountID);
         return account.getBalanceExtendedCents();
     }
 
