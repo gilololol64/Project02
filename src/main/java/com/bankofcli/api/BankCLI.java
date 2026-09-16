@@ -106,6 +106,7 @@ public class BankCLI {
 		output.println("4. Transfer");
 		output.println("5. Transaction history");
 		output.println("6. Log out");
+		output.println("7. Change PIN");
 		output.println("0. Exit");
 
 		switch (readMenuChoice()) {
@@ -115,6 +116,7 @@ public class BankCLI {
 			case 4 -> transfer();
 			case 5 -> showTransactionHistory();
 			case 6 -> logOut();
+			case 7 -> changePin();
 			case 0 -> running = false;
 			default -> output.println("Please choose one of the listed options.");
 		}
@@ -272,6 +274,25 @@ public class BankCLI {
 		loggedInAccountId = null;
 		actionLogger.info("User logged out.");
 		output.println("\nYou have been logged out.");
+	}
+
+	/**
+	 * Function used to let a logged in user change their PIN, after verifying their current one.
+	 */
+	private void changePin() {
+		Integer currentPin = readInteger("Current PIN: ");
+		if (currentPin == null) return;
+
+		Integer newPin = readInteger("New four-digit PIN: ");
+		if (newPin == null) return;
+
+		try {
+			accountService.changePin(loggedInAccountId, currentPin, newPin);
+			actionLogger.info("PIN successfully changed for account {}.", loggedInAccountId);
+			output.println("\nPIN successfully changed.");
+		} catch (BankException exception) {
+			showError(exception);
+		}
 	}
 
 	/**

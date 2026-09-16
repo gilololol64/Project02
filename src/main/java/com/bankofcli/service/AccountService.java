@@ -153,6 +153,42 @@ public class AccountService {
         return account.getBalanceExtendedCents();
     }
 
+    // Changes an account's PIN after verifying the current one
+    public void changePin(long accountID, int currentPin, int newPin) {
+
+        actionLogger.info("Attempting to change PIN for Account {}.", accountID);
+        Account account = accountRepository.findByID(accountID);
+
+        if (account == null) {
+            AccountNotFoundException ex = new AccountNotFoundException("Account not found.");
+            errorLogger.error("PIN change failed, account ID {} not found.", accountID, ex);
+            throw ex;
+        }
+
+        if (account.getPin() != currentPin) {
+            InvalidPinException ex = new InvalidPinException("Current PIN is incorrect.");
+            errorLogger.error("PIN change failed for account {}, current PIN entered was incorrect.", accountID, ex);
+            throw ex;
+        }
+
+        if (!isValidPin(newPin)) {
+            InvalidPinException ex = new InvalidPinException("New PIN must be 4 digits.");
+            errorLogger.error("PIN change failed for account {}, new PIN did not meet format requirements.", accountID, ex);
+            throw ex;
+        }
+
+        if (newPin == currentPin) {
+            InvalidPinException ex = new InvalidPinException("New PIN must be different from current PIN.");
+            errorLogger.error("PIN change failed for account {}, new PIN matched current PIN.", accountID, ex);
+            throw ex;
+        }
+
+        account.setPin(newPin);
+        accountRepository.save(account);
+
+        actionLogger.info("PIN successfully changed for account {}.", accountID);
+    }
+
     // Checks that the pin contains exactly four digits
     private boolean isValidPin(int pin) {
         return pin >= 0 & pin <= 9999;
