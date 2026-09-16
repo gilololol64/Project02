@@ -74,7 +74,7 @@ public class BankCLI {
 			}
 		}
 
-		output.println("Thank you for using Bank of CLI.");
+		output.println("\nThank you for using Bank of CLI.");
 		actionLogger.info("Program exiting successfully");
 	}
 
@@ -147,7 +147,8 @@ public class BankCLI {
 		try {
 			Account account = accountService.register(pin);
 			actionLogger.info("User successfully registered account {}.", account.getAccountID());
-			output.println("Registration successful. Your Account ID is: " + account.getAccountID());
+			output.println("\nRegistration successful. Your Account ID is: " + account.getAccountID());
+			output.println("Please store your Account ID number in a secure place.");
 		} catch (BankException exception) {
 			showError(exception);
 		}
@@ -165,7 +166,7 @@ public class BankCLI {
 			accountService.login(accountId, pin);
 			loggedInAccountId = accountId;
 			actionLogger.info("User successfully logged in to account {}.", accountId);
-			output.println("Login successful.");
+			output.println("\nLogin successful.");
 		} catch (BankException exception) {
 			showError(exception);
 		}
@@ -176,7 +177,7 @@ public class BankCLI {
 	 */
 	private void checkBalance() {
 		try {
-			output.printf("Current balance: $%,.2f%n", toDollars(accountService.getBalance(loggedInAccountId)));
+			output.printf("\nCurrent balance: $%,.2f%n", toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
 			showError(exception);
 		}
@@ -193,7 +194,7 @@ public class BankCLI {
 			transactionService.deposit(loggedInAccountId, amount);
 			transactionLogger.info("Deposit completed for account {}: ${}.", loggedInAccountId,
 					String.format("%,.2f",toDollars(amount)));
-			output.printf("Deposit successful. New balance: $%,.2f%n",
+			output.printf("\nDeposit successful. New balance: $%,.2f%n",
 					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
 			showError(exception);
@@ -211,7 +212,7 @@ public class BankCLI {
 			transactionService.withdraw(loggedInAccountId, amount);
 			transactionLogger.info("Withdrawal completed for account {}: ${}.", loggedInAccountId,
 					String.format("%,.2f",toDollars(amount)));
-			output.printf("Withdrawal successful. New balance: $%,.2f%n",
+			output.printf("\nWithdrawal successful. New balance: $%,.2f%n",
 					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
 			showError(exception);
@@ -233,7 +234,8 @@ public class BankCLI {
 			transactionService.transfer(loggedInAccountId, destinationId, amount);
 			transactionLogger.info("Transfer completed from account {} to account {}: ${}.",
 					loggedInAccountId, destinationId, String.format("%,.2f",toDollars(amount)));
-			output.println("Transfer successful.");
+			output.printf("%nTransfer successful.New balance: $%,.2f%n",
+					toDollars(accountService.getBalance(loggedInAccountId)));
 		} catch (BankException exception) {
 			showError(exception);
 		}
@@ -247,6 +249,7 @@ public class BankCLI {
 		try {
 			List<Transaction> transactionList =
 					transactionService.getTransactionHistory(loggedInAccountId, HISTORY_LIMIT);
+			output.println("");
 			for (Transaction transaction: transactionList) {
 				output.printf("Trans ID: %s | %s | $%,.2f | from %s to %s | %s%n",
 						transaction.getTransactionID(), transaction.getType().toString(),
@@ -254,7 +257,7 @@ public class BankCLI {
 						formatAccount(transaction.getAccountDst()), transaction.getTimeComplete().toString());
 			}
 		} catch(NoTransactionHistoryException exception) {
-			output.println("No transactions found.");
+			output.println("\nNo transactions found.");
 		}
 		catch (SQLException exception) {
 			errorLogger.error("Could not read transaction history for account {}.", loggedInAccountId, exception);
@@ -268,7 +271,7 @@ public class BankCLI {
 	private void logOut() {
 		loggedInAccountId = null;
 		actionLogger.info("User logged out.");
-		output.println("You have been logged out.");
+		output.println("\nYou have been logged out.");
 	}
 
 	/**
@@ -301,7 +304,7 @@ public class BankCLI {
 			BigDecimal dollars = new BigDecimal(scanner.nextLine().trim()).setScale(2, RoundingMode.UNNECESSARY);
 			return dollars.movePointRight(2).longValueExact();
 		} catch (ArithmeticException | NumberFormatException exception) {
-			output.println("Please enter a valid amount with no more than two decimal places.");
+			output.println("\nPlease enter a valid amount with no more than two decimal places.");
 			return null;
 		}
 	}
@@ -332,7 +335,7 @@ public class BankCLI {
 		try {
 			return Long.parseLong(scanner.nextLine().trim());
 		} catch (NumberFormatException exception) {
-			output.println("Please enter a valid whole number.");
+			output.println("\nPlease enter a valid whole number.");
 			return null;
 		}
 	}
@@ -343,7 +346,7 @@ public class BankCLI {
 	 */
 	private void showError(BankException exception) {
 		errorLogger.error("CLI operation failed: {}", exception.getMessage());
-		output.println("Error: " + exception.getMessage());
+		output.println("\nError: " + exception.getMessage());
 	}
 
 	/** Converts extended cents format to dollars */
