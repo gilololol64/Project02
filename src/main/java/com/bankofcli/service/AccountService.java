@@ -177,6 +177,12 @@ public class AccountService {
             throw ex;
         }
 
+        if (newPin == currentPin) {
+            InvalidPinException ex = new InvalidPinException("New PIN must be different from current PIN.");
+            errorLogger.error("PIN change failed for account {}, new PIN matched current PIN.", accountID, ex);
+            throw ex;
+        }
+
         account.setPin(newPin);
         accountRepository.save(account);
 
