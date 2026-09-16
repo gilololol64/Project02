@@ -11,7 +11,7 @@ import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public class SoundPlayer{
+public class SoundPlayer implements SoundPlayerInterface{
 	static URL Success = SoundPlayer.class.getResource("/Sounds/success2.wav");
 	static URL Failure = SoundPlayer.class.getResource("/Sounds/denied.wav");
 	
@@ -38,7 +38,7 @@ public class SoundPlayer{
 	}
 	
 	
-	public static void playSucess() {
+	public void playSucess() {
 		CountDownLatch latch = new CountDownLatch(1);
 		
 		try(AudioInputStream audioStream = AudioSystem.getAudioInputStream(Success);
@@ -59,7 +59,7 @@ public class SoundPlayer{
 		} 
 	}
 	
-	public static void playFailure() {
+	public void playFailure() {
 		CountDownLatch latch = new CountDownLatch(1);
 		
 		try(AudioInputStream audioStream = AudioSystem.getAudioInputStream(Failure);
