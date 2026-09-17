@@ -272,7 +272,7 @@ public class MainMenu extends BasicWindow{
 			sounds.playSuccess();
 			setComponent(content);
 		} catch (BankException exception) {
-			showError(exception);
+			showErrorAccount(exception);
 		}
 		
 		
