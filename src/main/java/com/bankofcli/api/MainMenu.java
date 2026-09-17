@@ -176,6 +176,7 @@ public class MainMenu extends BasicWindow{
 		contentpane.addComponent(new Label("New Pin:"));
 		contentpane.addComponent(newPin);
 		contentpane.addComponent(new Button("Submit", () -> changePinHelper(newPin.getText(),current.getText())));
+		setComponent(contentpane);
 	}
 	public void changePinHelper(String newPinString, String currentPinString) {
 		int newPin;
