@@ -99,7 +99,7 @@ public class AccountServiceIT {
         int pin1 = 1234;
         int pin2 = 1235;
         long balance = 1000; //$10.00
-        String expectedMessage = "Incorrect PIN.";
+        String expectedMessage = "Incorrect PIN. 2 attempt(s) remaining.";
 
         Account expectedAccount = new Account(accID, pin1, balance);
         accRep.save(expectedAccount);

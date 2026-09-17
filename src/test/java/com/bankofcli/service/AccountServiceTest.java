@@ -90,7 +90,7 @@ public class AccountServiceTest {
         int pin1 = 1234;
         int pin2 = 1235;
         long balance = 1000; //$10.00
-        String expectedMessage = "Incorrect PIN.";
+        String expectedMessage = "Incorrect PIN. 2 attempt(s) remaining.";
         Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, pin1, balance));
         InvalidPinException ex = Assertions.assertThrows(InvalidPinException.class,
                 () -> accServ.login(accID, pin2));
