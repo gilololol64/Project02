@@ -1,5 +1,6 @@
 package com.bankofcli.api;
 
+import java.io.Console;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
@@ -158,9 +159,49 @@ public class MainMenu extends BasicWindow{
 		contentpane.addComponent(new Button("Withdraw", () -> Withdraw()));
 		contentpane.addComponent(new Button("Transfer", () -> transfer()));
 		contentpane.addComponent(new Button("Transaction History", () -> transactionHistory()));
+		contentpane.addComponent(new Button("Change Pin", () -> this.changePin()));
 		contentpane.addComponent(new Button("Logout", () -> this.Guest()));
 		contentpane.addComponent(new Button("Exit",() ->this.close()));
 		setComponent(contentpane);
+		
+	}
+	public void changePin() {
+		this.setTitle("ChangePin");
+		Panel contentpane = new Panel();
+		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		TextBox current = new TextBox(new TerminalSize(30, 1));
+		TextBox newPin = new TextBox(new TerminalSize(30, 1));
+		contentpane.addComponent(new Label("Current Pin:"));
+		contentpane.addComponent(current);
+		contentpane.addComponent(new Label("New Pin:"));
+		contentpane.addComponent(newPin);
+		contentpane.addComponent(new Button("Submit", () -> changePinHelper(newPin.getText(),current.getText())));
+	}
+	public void changePinHelper(String newPinString, String currentPinString) {
+		int newPin;
+		int curPin;
+		Panel contentpane = new Panel();
+		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		try {
+			newPin =Integer.parseInt(newPinString);
+			curPin = Integer.parseInt(currentPinString);
+		} catch (Exception e) {
+			showErrorAccount(new InvalidPinException("Please Provide two valid Pin Numbers"));
+			return;
+		}
+		
+		try {
+			accountService.changePin(curAccount.getAccountID(), curPin, newPin);
+			actionLogger.info("PIN successfully changed for account {}.", curAccount.getAccountID());
+			contentpane.addComponent(new Label("PIN successfully changed."));
+			contentpane.addComponent(new Button("Back", () -> AccountMenu()));
+			setComponent(contentpane);
+			sounds.playSuccess();
+		} catch (BankException exception) {
+			showError(exception);
+		}
+		
 		
 	}
 	
