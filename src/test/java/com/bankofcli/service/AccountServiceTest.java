@@ -87,14 +87,56 @@ public class AccountServiceTest {
     @Test
     public void loginInvalidPinException(){
         long accID = 11111L;
-        int pin1 = 1234;
-        int pin2 = 1235;
-        long balance = 1000; //$10.00
-        String expectedMessage = "Incorrect PIN.";
-        Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, pin1, balance));
-        InvalidPinException ex = Assertions.assertThrows(InvalidPinException.class,
-                () -> accServ.login(accID, pin2));
-        Assertions.assertEquals(expectedMessage, ex.getMessage());
+        int correctPin = 1234;
+        int incorrectPin = 1235;
+        long balance = 1000;
+
+        Mockito.when(accRep.findByID(accID))
+                .thenReturn(new Account(accID, correctPin, balance));
+
+        InvalidPinException ex = Assertions.assertThrows(
+                InvalidPinException.class,
+                () -> accServ.login(accID, incorrectPin)
+        );
+
+        Assertions.assertEquals(
+                "Incorrect PIN. 2 attempt(s) remaining.",
+                ex.getMessage()
+        );
+    }
+
+    @Test
+    public void loginLocksAccountAfterThreeIncorrectPins(){
+        long accID = 11111L;
+        int correctPin = 1234;
+        int incorrectPin = 9999;
+        long balance = 1000;
+
+        Mockito.when(accRep.findByID(accID))
+                .thenReturn(new Account(accID, correctPin, balance));
+
+        // First incorrect attempt
+        Assertions.assertThrows(
+                InvalidPinException.class,
+                () -> accServ.login(accID, incorrectPin)
+        );
+
+        // Second incorrect attempt
+        Assertions.assertThrows(
+                InvalidPinException.class,
+                () -> accServ.login(accID, incorrectPin)
+        );
+
+        // Third incorrect attempt locks the account
+        AccountLockedException ex = Assertions.assertThrows(
+                AccountLockedException.class,
+                () -> accServ.login(accID, incorrectPin)
+        );
+
+        Assertions.assertEquals(
+                "Too many incorrect PIN attempts. Account locked for 5 minutes.",
+                ex.getMessage()
+        );
     }
 
     @Test
