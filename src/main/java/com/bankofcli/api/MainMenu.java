@@ -1,6 +1,5 @@
 package com.bankofcli.api;
 
-import java.io.Console;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
@@ -33,9 +32,9 @@ import com.googlecode.lanterna.gui2.TextBox;
 
 public class MainMenu extends BasicWindow{
 	
-	private final AccountRepository stuff = new AccountRepository();
-	private final AccountService accountService = new AccountService(stuff);
-	private final TransactionService transactionService = new TransactionService(stuff, new TransactionRepository());
+	private final AccountRepository accountRepository = new AccountRepository();
+	private final AccountService accountService = new AccountService(accountRepository);
+	private final TransactionService transactionService = new TransactionService(accountRepository, new TransactionRepository());
 	private static final Logger actionLogger = LoggerFactory.getLogger("AccountAction");
 	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 	private static final Logger transactionLogger = LoggerFactory.getLogger("Bank.Transaction.logback");
@@ -44,7 +43,6 @@ public class MainMenu extends BasicWindow{
 	
 	public MainMenu() {
 		super("Main Menu");
-		//curAccount = new Account();
 	}
 	
 	/*
@@ -85,7 +83,8 @@ public class MainMenu extends BasicWindow{
 	/*
 	 * Method that actually completes Login
 	 * */
-	public void LoginHelper(String accountId, String pin) {			
+	public void LoginHelper(String accountId, String pin) {
+		actionLogger.info("Attempting to login user with Account ID: {}", accountId);
 		long temp;
 		int temppin;
 		if (accountId.equals("")  || pin.equals("")) { 
@@ -110,7 +109,10 @@ public class MainMenu extends BasicWindow{
 			showError(exception);
 		}
 	}
-	
+
+	/**
+	 * Method used to create register screen
+	 */
 	public void register() {
 		this.setTitle("Register");
 		Panel contentpane = new Panel();
@@ -122,6 +124,11 @@ public class MainMenu extends BasicWindow{
 		contentpane.addComponent(new Button("Register", () -> registerConfirm(pin.getText())));
 		setComponent(contentpane);
 	}
+
+	/**
+	 * Method used to handle input of registering account
+	 * @param pin the pin provided in text box
+	 */
 	public void registerConfirm(String pin) {
 		this.setTitle("Register Confirmation");
 		Panel contentpane = new Panel();
@@ -165,6 +172,10 @@ public class MainMenu extends BasicWindow{
 		setComponent(contentpane);
 		
 	}
+
+	/**
+	 * Method used to display the change pin screen
+	 */
 	public void changePin() {
 		this.setTitle("ChangePin");
 		Panel contentpane = new Panel();
@@ -178,6 +189,12 @@ public class MainMenu extends BasicWindow{
 		contentpane.addComponent(new Button("Submit", () -> changePinHelper(newPin.getText(),current.getText())));
 		setComponent(contentpane);
 	}
+
+	/**
+	 * Method used to handle the input of the change pin screen
+	 * @param newPinString current pin that user typed in
+	 * @param currentPinString new pin user wishes to change it to
+	 */
 	public void changePinHelper(String newPinString, String currentPinString) {
 		int newPin;
 		int curPin;
@@ -205,7 +222,10 @@ public class MainMenu extends BasicWindow{
 		
 		
 	}
-	
+
+	/**
+	 * Method used to display transfer screen
+	 */
 	public void transfer() {
 		this.setTitle("Transfer");
 		Panel content = new Panel();
@@ -221,6 +241,8 @@ public class MainMenu extends BasicWindow{
 		content.addComponent(new Button("Send",() -> transferHelper(dest.getText(), amount.getText())));
 		setComponent(content);
 	}
+
+
 	public void transferHelper(String destination, String num) {
 		Long dest;
 		Long amount;
@@ -234,8 +256,8 @@ public class MainMenu extends BasicWindow{
 		}
 		try {
 			amount =parseAmount(num);
-		}catch(NumberFormatException nfe) {
-			showErrorAccount(new InvalidAmountException("Please input a valid numeric for the amount"));
+		}catch(InvalidAmountException iae) {
+			showErrorAccount(iae);
 			return;
 		}
 		
@@ -274,8 +296,8 @@ public class MainMenu extends BasicWindow{
 		Long amount;
 		try {
 			amount =parseAmount(num);
-		}catch(NumberFormatException nfe) {
-			showErrorAccount(new InvalidAmountException("Please input a valid numeric"));
+		}catch(InvalidAmountException iae) {
+			showErrorAccount(iae);
 			return;
 		}
 		try {
@@ -312,8 +334,8 @@ public class MainMenu extends BasicWindow{
 		try {
 			
 			amount =parseAmount(num);
-		}catch(NumberFormatException nfe) {
-			showErrorAccount(new InvalidAmountException("Please input a valid numeric"));
+		}catch(InvalidAmountException iae) {
+			showErrorAccount(iae);
 			return;
 		}
 		try {
@@ -407,9 +429,13 @@ public class MainMenu extends BasicWindow{
 	 * @return Long extended cents format ($10.00 = 1000L)
 	 */
 	private Long parseAmount(String input) {
-	        BigDecimal dollars = new BigDecimal(input.trim()).setScale(2, RoundingMode.UNNECESSARY);
-	        return dollars.movePointRight(2).longValueExact();
-
+		try {
+			BigDecimal dollars = new BigDecimal(input.trim()).setScale(2, RoundingMode.UNNECESSARY);
+			return dollars.movePointRight(2).longValueExact();
+		} catch (ArithmeticException | NumberFormatException exception) {
+			throw new InvalidAmountException(
+					"Please enter a valid amount with no more than two decimal places.");
+		}
 	}
 
 }
