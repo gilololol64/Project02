@@ -25,6 +25,7 @@ public class SplashScreen extends MultiWindowTextGUI {
     private static final List<String> ASCII_ART = new ArrayList<>();
     private final Screen screen;
     private final int LINE_SPEED = 160;
+    private final int PROMPT_WAIT = 550;
     private final SoundPlayer soundPlayer;
 
     public SplashScreen(Screen screen){
@@ -90,7 +91,7 @@ public class SplashScreen extends MultiWindowTextGUI {
 
                 // Append prompt after art finishes rendering
                 artPanel.addComponent(new EmptySpace(new TerminalSize(1, 1)));
-                Thread.sleep(550);
+                Thread.sleep(PROMPT_WAIT);
                 Label prompt = new Label("Press any key to continue...");
                 prompt.setForegroundColor(TextColor.ANSI.WHITE_BRIGHT);
                 artPanel.addComponent(prompt.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center)));
