@@ -2,6 +2,7 @@ package com.bankofcli.api;
 
 import java.io.IOException;
 
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
 import com.googlecode.lanterna.gui2.WindowBasedTextGUI;
 import com.googlecode.lanterna.screen.Screen;
@@ -17,6 +18,8 @@ public class BankGUI {
 	DefaultTerminalFactory terminalFactory;
 	Screen screen;
 	private final String WINDOW_TITLE = "Bank of CLI";
+	private final int COLUMNS = 120;
+	private final int ROWS = 40;
 
 	public BankGUI() {
 		terminalFactory = new DefaultTerminalFactory();
@@ -30,8 +33,14 @@ public class BankGUI {
 		try {
 			actionLogger.info("Starting up GUI view.");
 			//Initial Setup of terminal, screen and Window, with MainMenu object
+			// Sets the initial terminal grid dimensions (columns x rows)
+			terminalFactory.setInitialTerminalSize(new TerminalSize(COLUMNS, ROWS));
 			screen = terminalFactory.createScreen();
 			screen.startScreen();
+
+			// Show Splash Screen
+			SplashScreen splash = new SplashScreen(screen);
+			splash.display();
 
 			final WindowBasedTextGUI WindowManager = new MultiWindowTextGUI(screen);
 

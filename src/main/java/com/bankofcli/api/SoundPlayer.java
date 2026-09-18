@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SoundPlayer implements SoundPlayerInterface{
+	static URL Startup = SoundPlayer.class.getResource("/Sounds/startUpSound.wav");
 	static URL Success = SoundPlayer.class.getResource("/Sounds/success2.wav");
 	static URL Failure = SoundPlayer.class.getResource("/Sounds/denied.wav");
 	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
@@ -49,4 +50,5 @@ public class SoundPlayer implements SoundPlayerInterface{
 	}
 	public void playFailure() { playSound(Failure); }
 	public void playSuccess() { playSound(Success); }
+	public void playStartUp() { playSound(Startup);}
 }

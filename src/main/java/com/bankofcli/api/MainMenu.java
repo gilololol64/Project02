@@ -40,6 +40,8 @@ public class MainMenu extends BasicWindow{
 	private static final Logger transactionLogger = LoggerFactory.getLogger("Bank.Transaction.logback");
 	SoundPlayer sounds= new SoundPlayer();
 	Account curAccount;
+
+	private static final int COLUMNS = 40;
 	
 	public MainMenu() {
 		super("Main Menu");
@@ -68,9 +70,9 @@ public class MainMenu extends BasicWindow{
 		Panel content = new Panel();
 		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 		Label AIDLabel = new Label("Account ID:");
-		TextBox AID = new TextBox(new TerminalSize(30, 1));
+		TextBox AID = new TextBox(new TerminalSize(COLUMNS, 1));
 		Label PinLabel = new Label("Pin:");
-		TextBox Pin = new TextBox(new TerminalSize(30, 1)).setMask('*');
+		TextBox Pin = new TextBox(new TerminalSize(COLUMNS, 1)).setMask('*');
 		content.addComponent(AIDLabel);
 		content.addComponent(AID);
 		content.addComponent(PinLabel);
@@ -117,7 +119,7 @@ public class MainMenu extends BasicWindow{
 		this.setTitle("Register");
 		Panel contentpane = new Panel();
 		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-		TextBox pin = new TextBox(new TerminalSize(30, 1));
+		TextBox pin = new TextBox(new TerminalSize(COLUMNS, 1));
 		Label pinlabel = new Label("Enter a four-digit PIN:");
 		contentpane.addComponent(pinlabel);
 		contentpane.addComponent(pin);
@@ -180,8 +182,8 @@ public class MainMenu extends BasicWindow{
 		this.setTitle("ChangePin");
 		Panel contentpane = new Panel();
 		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-		TextBox current = new TextBox(new TerminalSize(30, 1));
-		TextBox newPin = new TextBox(new TerminalSize(30, 1));
+		TextBox current = new TextBox(new TerminalSize(COLUMNS, 1));
+		TextBox newPin = new TextBox(new TerminalSize(COLUMNS, 1));
 		contentpane.addComponent(new Label("Current Pin:"));
 		contentpane.addComponent(current);
 		contentpane.addComponent(new Label("New Pin:"));
@@ -232,8 +234,8 @@ public class MainMenu extends BasicWindow{
 		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 		Label description = new Label("Destination AccountID:");
 		Label descriptionamount = new Label("Amount to Send:");
-		TextBox dest = new TextBox(new TerminalSize(30, 1));
-		TextBox amount = new TextBox(new TerminalSize(30, 1));
+		TextBox dest = new TextBox(new TerminalSize(COLUMNS, 1));
+		TextBox amount = new TextBox(new TerminalSize(COLUMNS, 1));
 		content.addComponent(description);
 		content.addComponent(dest);
 		content.addComponent(descriptionamount);
@@ -283,7 +285,7 @@ public class MainMenu extends BasicWindow{
 		Panel content = new Panel();
 		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 		Label num = new Label("How Much will you withdraw");
-		TextBox HM= new TextBox(new TerminalSize(30, 1));
+		TextBox HM= new TextBox(new TerminalSize(COLUMNS, 1));
 		content.addComponent(num);
 		content.addComponent(HM);
 		content.addComponent(new Button("Withdraw", ()->withdrawhelper(HM.getText())));
@@ -320,7 +322,7 @@ public class MainMenu extends BasicWindow{
 		Panel content = new Panel();
 		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 		Label num = new Label("How Much will you deposit");
-		TextBox HM= new TextBox(new TerminalSize(30, 1));
+		TextBox HM= new TextBox(new TerminalSize(COLUMNS, 1));
 		content.addComponent(num);
 		content.addComponent(HM);
 		content.addComponent(new Button("Deposit", ()->Deposithelper(HM.getText())));
