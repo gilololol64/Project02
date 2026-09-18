@@ -60,7 +60,7 @@ public class DatabaseManager {
 
 		var sqlCreateAccount ="CREATE TABLE IF NOT EXISTS accounts ("
 						+ "    account_id BIGINT PRIMARY KEY,"
-						+ "    pin INT NOT NULL,"
+						+ "    pin_hash TEXT NOT NULL,"
 						+ "    balance BIGINT NOT NULL"
 						+ ");";
 		var sqlCreateTransactions ="CREATE TABLE IF NOT EXISTS transactions ("

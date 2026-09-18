@@ -40,29 +40,31 @@ public class AccountServiceIT {
     @Test
     public void registerPositive(){
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         long balance = 0;
-        Account expectedAccount = new Account(1, pin, balance);
+        Account expectedAccount = new Account(1, pinHash, balance);
 
         //Attempt to register new account
         Account resultAccount = accServ.register(pin);
 
         //Check if new Account has been successfully saved to database.
         Assertions.assertNotNull(accRep.findByID(resultAccount.getAccountID()));
-        Assertions.assertEquals(expectedAccount.getPin(), resultAccount.getPin());
+        Assertions.assertTrue(AccountService.verifyPinHash(pin, resultAccount.getPinHash()));
         Assertions.assertEquals(expectedAccount.getBalanceExtendedCents(), resultAccount.getBalanceExtendedCents());
     }
 
     @Test
     public void registerPositiveZeroPin(){
         int pin = 0;
+        String pinHash = AccountService.hashPin(pin);
         int balance = 0;
-        Account expectedAccount = new Account(1,pin, balance);
+        Account expectedAccount = new Account(1,pinHash, balance);
 
         Account resultAccount = accServ.register(pin);
 
         //Check if new Account has been successfully saved to database.
         Assertions.assertNotNull(accRep.findByID(resultAccount.getAccountID()));
-        Assertions.assertEquals(expectedAccount.getPin(), resultAccount.getPin());
+        Assertions.assertTrue(AccountService.verifyPinHash(pin, resultAccount.getPinHash()));
         Assertions.assertEquals(expectedAccount.getBalanceExtendedCents(), resultAccount.getBalanceExtendedCents());
     }
 
@@ -70,8 +72,9 @@ public class AccountServiceIT {
     public void loginPositive(){
         long accID = 11111L;
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedAccount = new Account(accID, pin, 0);
+        Account expectedAccount = new Account(accID, pinHash, 0);
         accRep.save(expectedAccount);
 
         Account resultAccount = accServ.login(accID, pin);
@@ -98,10 +101,11 @@ public class AccountServiceIT {
         long accID = 11111L;
         int pin1 = 1234;
         int pin2 = 1235;
+        String pinHash = AccountService.hashPin(pin1);
         long balance = 1000; //$10.00
         String expectedMessage = "Incorrect PIN. 2 attempt(s) remaining.";
 
-        Account expectedAccount = new Account(accID, pin1, balance);
+        Account expectedAccount = new Account(accID, pinHash, balance);
         accRep.save(expectedAccount);
 
         InvalidPinException ex = Assertions.assertThrows(InvalidPinException.class,
@@ -114,7 +118,8 @@ public class AccountServiceIT {
         long accID = 11111L;
         long balance = 1000; //$10.00
         int pin = 1111;
-        Account expectedAccount = new Account(accID, pin, balance);
+        String pinHash = AccountService.hashPin(pin);
+        Account expectedAccount = new Account(accID, pinHash, balance);
 
         accRep.save(expectedAccount);
         Assertions.assertEquals(accServ.getBalance(accID), balance);

@@ -54,11 +54,12 @@ public class TransactionServiceIT {
     public void depositPositive(){
         long accID = 1111L;
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         long balance = 0;
         long deposit = 2500;
         long expectedBalance = balance + deposit;
 
-        Account expectedAccount = new Account(accID, pin, balance);
+        Account expectedAccount = new Account(accID, pinHash, balance);
         accRepo.save(expectedAccount);
 
         transServ.deposit(accID, deposit);
@@ -71,9 +72,10 @@ public class TransactionServiceIT {
         long balance = 0;
         long deposit = -100;
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Transaction amount must be greater than zero.";
 
-        Account expectedAccount = new Account(accID, pin, balance);
+        Account expectedAccount = new Account(accID, pinHash, balance);
         accRepo.save(expectedAccount);
 
         InvalidAmountException ex = Assertions.assertThrows(InvalidAmountException.class,
@@ -87,9 +89,10 @@ public class TransactionServiceIT {
         long balance = 1;
         long deposit = Long.MAX_VALUE;
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Transaction amount too large to process";
 
-        Account expectedAccount = new Account(accID, pin, balance);
+        Account expectedAccount = new Account(accID, pinHash, balance);
         accRepo.save(expectedAccount);
 
         InvalidAmountException ex = Assertions.assertThrows(InvalidAmountException.class,
@@ -115,8 +118,9 @@ public class TransactionServiceIT {
         long withdraw = 2500;
         long expectedBalance = balance - withdraw;
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedAccount = new Account(accID, pin, balance);
+        Account expectedAccount = new Account(accID, pinHash, balance);
         accRepo.save(expectedAccount);
 
         transServ.withdraw(accID, withdraw);
@@ -130,8 +134,9 @@ public class TransactionServiceIT {
         long withdraw = 2501;
         String expectedMessage = "Insufficient funds.";
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedAccount = new Account(accID, pin, balance);
+        Account expectedAccount = new Account(accID, pinHash, balance);
         accRepo.save(expectedAccount);
 
         InsufficientFundsException ex = Assertions.assertThrows(InsufficientFundsException.class,
@@ -146,8 +151,9 @@ public class TransactionServiceIT {
         long withdraw = -100;
         String expectedMessage = "Transaction amount must be greater than zero.";
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedAccount = new Account(accID, pin, balance);
+        Account expectedAccount = new Account(accID, pinHash, balance);
         accRepo.save(expectedAccount);
 
         InvalidAmountException ex = Assertions.assertThrows(InvalidAmountException.class,
@@ -174,12 +180,13 @@ public class TransactionServiceIT {
         long dstBalance = 0;
         long amount = 5;
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
         long expectedSrcBalance = srcBalance - amount;
         long expectedDstBalance = dstBalance + amount;
 
-        Account expectedSrcAccount = new Account(srcAccID, pin, srcBalance);
-        Account expectedDstAccount = new Account(dstAccID, pin, dstBalance);
+        Account expectedSrcAccount = new Account(srcAccID, pinHash, srcBalance);
+        Account expectedDstAccount = new Account(dstAccID, pinHash, dstBalance);
         accRepo.save(expectedSrcAccount);
         accRepo.save(expectedDstAccount);
 
@@ -199,9 +206,10 @@ public class TransactionServiceIT {
         long amount = 10;
         String expectedMessage = "Insufficient funds.";
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedSrcAccount = new Account(srcAccID, pin, srcBalance);
-        Account expectedDstAccount = new Account(dstAccID, pin, dstBalance);
+        Account expectedSrcAccount = new Account(srcAccID, pinHash, srcBalance);
+        Account expectedDstAccount = new Account(dstAccID, pinHash, dstBalance);
         accRepo.save(expectedSrcAccount);
         accRepo.save(expectedDstAccount);
 
@@ -218,8 +226,9 @@ public class TransactionServiceIT {
         long amount = 10;
         String expectedMessage = "Account " + srcAccID + " was not found.";
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedDstAccount = new Account(dstAccID, pin, dstBalance);
+        Account expectedDstAccount = new Account(dstAccID, pinHash, dstBalance);
         accRepo.save(expectedDstAccount);
 
         AccountNotFoundException ex = Assertions.assertThrows(AccountNotFoundException.class,
@@ -235,8 +244,9 @@ public class TransactionServiceIT {
         long amount = 10;
         String expectedMessage = "Account " + dstAccID + " was not found.";
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedSrcAccount = new Account(srcAccID, pin, srcBalance);
+        Account expectedSrcAccount = new Account(srcAccID, pinHash, srcBalance);
         accRepo.save(expectedSrcAccount);
 
         AccountNotFoundException ex = Assertions.assertThrows(AccountNotFoundException.class,
@@ -253,9 +263,10 @@ public class TransactionServiceIT {
         long amount = -10;
         String expectedMessage = "Transaction amount must be greater than zero.";
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedSrcAccount = new Account(srcAccID, pin, srcBalance);
-        Account expectedDstAccount = new Account(dstAccID, pin, dstBalance);
+        Account expectedSrcAccount = new Account(srcAccID, pinHash, srcBalance);
+        Account expectedDstAccount = new Account(dstAccID, pinHash, dstBalance);
         accRepo.save(expectedSrcAccount);
         accRepo.save(expectedDstAccount);
 
@@ -273,8 +284,9 @@ public class TransactionServiceIT {
         long amount = 10;
         String expectedMessage = "Source and destination accounts must be different.";
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account expectedSrcAccount = new Account(srcAccID, pin, srcBalance);
+        Account expectedSrcAccount = new Account(srcAccID, pinHash, srcBalance);
         accRepo.save(expectedSrcAccount);
 
         SelfTransferException ex = Assertions.assertThrows(SelfTransferException.class,
@@ -290,9 +302,10 @@ public class TransactionServiceIT {
         int historyLimit = 10;
         int pin = 1111;
         int balance = 50;
+        String pinHash = AccountService.hashPin(pin);
 
-        accRepo.save(new Account(usrAccID, pin, balance));
-        accRepo.save(new Account(othAccID, pin, balance));
+        accRepo.save(new Account(usrAccID, pinHash, balance));
+        accRepo.save(new Account(othAccID, pinHash, balance));
 
         Transaction otherTransaction = new Transaction(0, Transaction.Type.WITHDRAW,
                 LocalDateTime.now(), amount, othAccID, null);
@@ -330,9 +343,10 @@ public class TransactionServiceIT {
         int historyLimit = 2;
         int pin = 1111;
         int balance = 50;
+        String pinHash = AccountService.hashPin(pin);
 
-        accRepo.save(new Account(usrAccID, pin, balance));
-        accRepo.save(new Account(othAccID, pin, balance));
+        accRepo.save(new Account(usrAccID, pinHash, balance));
+        accRepo.save(new Account(othAccID, pinHash, balance));
 
         Transaction otherTransaction = new Transaction(0, Transaction.Type.WITHDRAW,
                 LocalDateTime.now(), amount, othAccID, null);
@@ -369,9 +383,10 @@ public class TransactionServiceIT {
         long srcAccID = 1111L;
         long srcBalance = 0;
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "No transaction history found for account: " + srcAccID;
 
-        Account expectedAccount = new Account(srcAccID, pin, srcBalance);
+        Account expectedAccount = new Account(srcAccID, pinHash, srcBalance);
         accRepo.save(expectedAccount);
 
         NoTransactionHistoryException ex = Assertions.assertThrows(NoTransactionHistoryException.class,

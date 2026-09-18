@@ -9,18 +9,18 @@ import java.util.Objects;
 public class Account {
 
     private long accountID;
-    private int pin;
+    private String pinHash;
     private long balanceExtendedCents;
 
     /**
      * Constructor for Account Data Class
      * @param accountID Unique Account ID used at login
-     * @param pin Pin/Password for Account
+     * @param pinHash Hashed Pin/Password for Account
      * @param balanceExtendedCents Current balance of account representing as extended cents
      *                             (i.e. $10.00 = 1000)
      */
-    public Account(long accountID, int pin, long balanceExtendedCents) {
-        this.pin = pin;
+    public Account(long accountID, String pinHash, long balanceExtendedCents) {
+        this.pinHash = pinHash;
         this.accountID = accountID;
         this.balanceExtendedCents = balanceExtendedCents;
     }
@@ -30,14 +30,14 @@ public class Account {
         return accountID;
     }
 
-    /* Returns account object's set pin */
-    public int getPin() {
-        return pin;
+    /* Returns account's hashed pin */
+    public String getPinHash() {
+        return pinHash;
     }
 
-    /* Sets account object's new pin to given value */
-    public void setPin(int pin) {
-        this.pin = pin;
+    /* Sets account's hashed pin */
+    public void setPinHash(String pinHash) {
+        this.pinHash = pinHash;
     }
 
     /**

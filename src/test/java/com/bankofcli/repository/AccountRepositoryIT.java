@@ -1,6 +1,7 @@
 package com.bankofcli.repository;
 
 import com.bankofcli.model.Account;
+import com.bankofcli.service.AccountService;
 import org.junit.jupiter.api.*;
 
 import java.sql.*;
@@ -19,6 +20,7 @@ public class AccountRepositoryIT {
     public void setup(){
         //Set up testing variables
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         long balance = 0;
         accRepo = new AccountRepository();
         testAccountIDs = new ArrayList<>();
@@ -29,7 +31,7 @@ public class AccountRepositoryIT {
                 .forEachOrdered(testAccountIDs::add);
         //Create dummy accounts for testing
         for (Long accID : testAccountIDs){
-            accountList.add(new Account(accID, pin, balance));
+            accountList.add(new Account(accID, pinHash, balance));
         }
     }
 
@@ -64,9 +66,9 @@ public class AccountRepositoryIT {
             try(ResultSet rs = stmt.executeQuery()){
                 while(rs.next()){
                     long resultAccID = rs.getLong("account_id");
-                    int resultPin = rs.getInt("pin");
+                    String resultPinHash = rs.getString("pin_hash");
                     long resultBalance = rs.getLong("balance");
-                    result = new Account(resultAccID,resultPin, resultBalance);
+                    result = new Account(resultAccID,resultPinHash, resultBalance);
                 }
             }
         }
@@ -91,9 +93,9 @@ public class AccountRepositoryIT {
             try(ResultSet rs = stmt.executeQuery(verifyAccountsInsertedQry)){
                 while(rs.next()){
                     long resultAccID = rs.getLong("account_id");
-                    int resultPin = rs.getInt("pin");
+                    String resultPinHash = rs.getString("pin_hash");
                     long resultBalance = rs.getLong("balance");
-                    results.add(new Account(resultAccID,resultPin, resultBalance));
+                    results.add(new Account(resultAccID,resultPinHash, resultBalance));
                 }
             }
 
@@ -136,13 +138,13 @@ public class AccountRepositoryIT {
     public void findByIDPositive() throws SQLException {
         Account acc = accountList.getFirst();
         long accId = acc.getAccountID();
-        String insertTestAccountQry = "INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?)";
+        String insertTestAccountQry = "INSERT INTO accounts(account_id,pin_hash,balance) VALUES(?,?,?)";
         Account result = null;
 
         try(Connection con = DriverManager.getConnection(url);
             PreparedStatement stmt = con.prepareStatement(insertTestAccountQry)) {
             stmt.setLong(1, accId);
-            stmt.setInt(2, acc.getPin());
+            stmt.setString(2, acc.getPinHash());
             stmt.setLong(3, acc.getBalanceExtendedCents());
             stmt.executeUpdate();
         }
@@ -165,7 +167,6 @@ public class AccountRepositoryIT {
         //Asserting account is not null and that the accounts inserted has matching fields
         Assertions.assertNotNull(result, "Account not found in database after insertion");
         Assertions.assertEquals(expected, result, "Account IDs do not match.");
-        Assertions.assertEquals(expected.getPin(), result.getPin(), "Account pins do not match");
         Assertions.assertEquals(expected.getBalanceExtendedCents(), result.getBalanceExtendedCents(),
                 "Account balances do not match");
     }
