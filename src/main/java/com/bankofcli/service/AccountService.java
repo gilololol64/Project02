@@ -1,5 +1,6 @@
 package com.bankofcli.service;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
@@ -28,6 +29,7 @@ public class AccountService {
 
     private static final int MAX_ATTEMPTS = 3;
     private static final int LOCKOUT_MINUTES = 5;
+    private static final int COST_FACTOR = 10;
 
     public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
@@ -53,7 +55,9 @@ public class AccountService {
             existingAccount = accountRepository.findByID(accountID);
         }while(existingAccount != null);
 
-        Account newAccount = new Account(accountID, pin, 0);
+        String pinHash = hashPin(pin);
+
+        Account newAccount = new Account(accountID, pinHash, 0);
 
         accountRepository.save(newAccount);
 
@@ -97,7 +101,7 @@ public class AccountService {
         }
 
         // Check PIN
-        if (account.getPin() != pin) {
+        if (!verifyPinHash(pin, account.getPinHash())) {
 
             int attempts = failedAttempts.getOrDefault(accountID, 0) + 1;
             failedAttempts.put(accountID, attempts);
@@ -165,7 +169,7 @@ public class AccountService {
             throw ex;
         }
 
-        if (account.getPin() != currentPin) {
+        if (!verifyPinHash(currentPin, account.getPinHash())) {
             InvalidPinException ex = new InvalidPinException("Current PIN is incorrect.");
             errorLogger.error("PIN change failed for account {}, current PIN entered was incorrect.", accountID, ex);
             throw ex;
@@ -177,13 +181,13 @@ public class AccountService {
             throw ex;
         }
 
-        if (newPin == currentPin) {
+        if (verifyPinHash(newPin, account.getPinHash())) {
             InvalidPinException ex = new InvalidPinException("New PIN must be different from current PIN.");
             errorLogger.error("PIN change failed for account {}, new PIN matched current PIN.", accountID, ex);
             throw ex;
         }
 
-        account.setPin(newPin);
+        account.setPinHash(hashPin(newPin));
         accountRepository.save(account);
 
         actionLogger.info("PIN successfully changed for account {}.", accountID);
@@ -202,4 +206,20 @@ public class AccountService {
 
         return random.nextLong(min, max);
     }
+
+    public static String hashPin(int pin){
+        char [] pinCharArray = Integer.toString(pin).toCharArray();
+
+        String pinHash = BCrypt.withDefaults().hashToString(COST_FACTOR, pinCharArray);
+        return pinHash;
+    }
+
+    public static boolean verifyPinHash(int userInput, String pinHash){
+
+        char [] inputPinCharArray = Integer.toString(userInput).toCharArray();
+
+        BCrypt.Result result = BCrypt.verifyer().verify(inputPinCharArray, pinHash);
+        return result.verified;
+    }
+
 }

@@ -3,6 +3,7 @@ package com.bankofcli.repository;
 import ch.qos.logback.core.rolling.helper.ArchiveRemover;
 import com.bankofcli.model.Account;
 import com.bankofcli.model.Transaction;
+import com.bankofcli.service.AccountService;
 import org.junit.jupiter.api.*;
 
 import java.sql.*;
@@ -49,9 +50,12 @@ public class TransactionRepsoitoryIT {
     @Test
     public void savedPositiveTransfer() throws SQLException {
 
-        Account accountSrcO = new Account(-1L, 1111, 1000);
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
+
+        Account accountSrcO = new Account(-1L, pinHash, 1000);
         accRepo.save(accountSrcO);
-        Account accountDstO = new Account(0L, 1111, 0);
+        Account accountDstO = new Account(0L, pinHash, 0);
         accRepo.save(accountDstO);
 
         Transaction expectedTrans = new Transaction(1,
@@ -89,7 +93,10 @@ public class TransactionRepsoitoryIT {
     @Test
     public void savedPositiveWithdraw() throws SQLException {
 
-        Account accountSrcO = new Account(-1L, 1111, 1000);
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
+
+        Account accountSrcO = new Account(-1L, pinHash, 1000);
         accRepo.save(accountSrcO);
 
         Transaction expectedTrans = new Transaction(1,
@@ -127,7 +134,10 @@ public class TransactionRepsoitoryIT {
     @Test
     public void savedPositiveDeposit() throws SQLException {
 
-        Account accountDstO = new Account(0L, 1111, 0);
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
+
+        Account accountDstO = new Account(0L, pinHash, 0);
         accRepo.save(accountDstO);
 
         Transaction expectedTrans = new Transaction(1,
@@ -174,9 +184,12 @@ public class TransactionRepsoitoryIT {
     @Test
     public void getAuditPositive() throws SQLException {
         long accountID = -1L;
-        Account accountSrcO = new Account(accountID, 1111, 1000);
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
+
+        Account accountSrcO = new Account(accountID, pinHash, 1000);
         accRepo.save(accountSrcO);
-        Account accountDstO = new Account(0L, 1111, 0);
+        Account accountDstO = new Account(0L, pinHash, 0);
         accRepo.save(accountDstO);
 
         //Add transactions, give time for them to wait so dates are in order by most recent

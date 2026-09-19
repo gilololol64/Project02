@@ -88,6 +88,16 @@
 	        <version>3.1.2</version>
 	    </dependency>
 
+        <!-- Hashing -->
+
+        <!-- Source: https://mvnrepository.com/artifact/at.favre.lib/bcrypt -->
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.10.2</version>
+            <scope>compile</scope>
+        </dependency>
+
 
     </dependencies>
 

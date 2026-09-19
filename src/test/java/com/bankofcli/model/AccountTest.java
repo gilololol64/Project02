@@ -9,7 +9,7 @@ public class AccountTest {
     public void getBalancePositive(){
         int balance = 1000; //10.00
         double expectedBalance = 10.00;
-        Account account = new Account(-1L, 0, balance);
+        Account account = new Account(-1L, "", balance);
         Assertions.assertEquals(expectedBalance, account.getBalance());
     }
 }

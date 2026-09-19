@@ -34,7 +34,7 @@ public class AccountRepository {
 	public Account findByID(long accountID) {
 		actionLogger.info("Searching database for account with id: {}.", accountID);
 
-		var sql ="SELECT account_id,pin,balance FROM accounts WHERE account_id = ?";
+		var sql ="SELECT account_id,pin_hash,balance FROM accounts WHERE account_id = ?";
 
 		try(var conn = db.open();
 			var stmt = conn.prepareStatement(sql)){
@@ -44,7 +44,7 @@ public class AccountRepository {
 			ResultSet rs = stmt.executeQuery();
 			//Check if there were any results from the query before creating empty Account object
 			if (rs.next()) {
-				Account result = new Account(rs.getLong("account_id"), rs.getInt("pin"), rs.getLong("balance"));
+				Account result = new Account(rs.getLong("account_id"), rs.getString("pin_hash"), rs.getLong("balance"));
 				rs.close();
 				actionLogger.info("Result found for account id {}", accountID);
 				return result;
@@ -73,13 +73,13 @@ public class AccountRepository {
 
 		actionLogger.info("Attempting to save {} account(s) to database", toBeSaved.size());
 
-		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
+		var sql ="INSERT INTO accounts(account_id,pin_hash,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin_hash = EXCLUDED.pin_hash, balance = EXCLUDED.balance";
 		try(var conn =db.open()){
 			try(var stmt = conn.prepareStatement(sql);) {
 				conn.setAutoCommit(false);
 				for (Account account : toBeSaved) {
 					stmt.setLong(1, account.getAccountID());
-					stmt.setInt(2, account.getPin());
+					stmt.setString(2, account.getPinHash());
 					stmt.setLong(3, account.getBalanceExtendedCents());
 					stmt.executeUpdate();
 				}
@@ -112,13 +112,13 @@ public class AccountRepository {
 
 		actionLogger.info("Attempting to save account: {} to database", toBeSaved.getAccountID());
 
-		var sql ="INSERT INTO accounts(account_id,pin,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin = EXCLUDED.pin, balance = EXCLUDED.balance";
+		var sql ="INSERT INTO accounts(account_id,pin_hash,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin_hash = EXCLUDED.pin_hash, balance = EXCLUDED.balance";
 		
 		try(var conn =db.open();
 			var stmt = conn.prepareStatement(sql)
 			) {
 			stmt.setLong(1, toBeSaved.getAccountID());
-			stmt.setInt(2, toBeSaved.getPin());
+			stmt.setString(2, toBeSaved.getPinHash());
 			stmt.setLong(3, toBeSaved.getBalanceExtendedCents());
 			stmt.executeUpdate();
 			actionLogger.info("Successfully saved account {}.", toBeSaved.getAccountID());
