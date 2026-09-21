@@ -7,7 +7,8 @@ enum TableCreationQueries {
     ACCOUNT("CREATE TABLE IF NOT EXISTS accounts ("
             + "    account_id BIGINT PRIMARY KEY,"
             + "    pin_hash TEXT NOT NULL,"
-            + "    balance BIGINT NOT NULL"
+            + "    balance BIGINT NOT NULL,"
+            + "    account_locked_til TEXT"
             + ");"),
 
     TRANSACTION("CREATE TABLE IF NOT EXISTS transactions ("

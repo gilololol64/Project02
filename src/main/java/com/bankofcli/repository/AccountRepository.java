@@ -1,8 +1,12 @@
 package com.bankofcli.repository;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import com.bankofcli.database.DatabaseManager;
 import com.bankofcli.exception.ServiceUnavailableException;
@@ -44,7 +48,10 @@ public class AccountRepository {
 			ResultSet rs = stmt.executeQuery();
 			//Check if there were any results from the query before creating empty Account object
 			if (rs.next()) {
-				Account result = new Account(rs.getLong("account_id"), rs.getString("pin_hash"), rs.getLong("balance"));
+				String accountLockedTil = rs.getString("account_locked_til");
+				Instant lockedTil = accountLockedTil == null ? null : Instant.parse(accountLockedTil);
+				Account result = new Account(rs.getLong("account_id"), rs.getString("pin_hash"),
+						rs.getLong("balance"), lockedTil);
 				rs.close();
 				actionLogger.info("Result found for account id {}", accountID);
 				return result;
@@ -127,4 +134,38 @@ public class AccountRepository {
 			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
 		}
 	}
+
+	public void lock(Account account, boolean lock){
+		if(account == null){
+			NullPointerException ex = new NullPointerException("Can not update an empty account");
+			errorLogger.error("Account provided was null.", ex);
+			throw ex;
+		}
+
+		String action = lock ? "lock" : "unlock";
+
+		actionLogger.info("Attempting to {} account: {} saving to database",action,
+				account.getAccountID());
+
+		var sql = AccountCRUQueries.LOCK_UNLOCK_ACCOUNT.getQuery();
+
+		try(var conn =db.open();
+			var stmt = conn.prepareStatement(sql)
+		) {
+			if(lock){
+				String lockedStr = account.getAccountLockedTil().toString();
+				stmt.setString(1, lockedStr);
+			}
+			else {
+				stmt.setNull(1, Types.VARCHAR);
+			}
+			stmt.setLong(2, account.getAccountID());
+			stmt.executeUpdate();
+			actionLogger.info("Successfully {}ed account {}.",action, account.getAccountID());
+		} catch (SQLException e) {
+			sqlErrorLogger.error("Database error while {}ing account {}.", action, account.getAccountID(), e);
+			throw new ServiceUnavailableException("Service temporarily unavailable, please try again later.", e);
+		}
+	}
+
 }
