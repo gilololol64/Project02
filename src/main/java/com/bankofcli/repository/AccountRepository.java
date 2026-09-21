@@ -34,7 +34,7 @@ public class AccountRepository {
 	public Account findByID(long accountID) {
 		actionLogger.info("Searching database for account with id: {}.", accountID);
 
-		var sql ="SELECT account_id,pin_hash,balance FROM accounts WHERE account_id = ?";
+		var sql = AccountCRUQueries.FIND_BY_ID.getQuery();
 
 		try(var conn = db.open();
 			var stmt = conn.prepareStatement(sql)){
@@ -73,7 +73,7 @@ public class AccountRepository {
 
 		actionLogger.info("Attempting to save {} account(s) to database", toBeSaved.size());
 
-		var sql ="INSERT INTO accounts(account_id,pin_hash,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin_hash = EXCLUDED.pin_hash, balance = EXCLUDED.balance";
+		var sql = AccountCRUQueries.INSERT_UPDATE.getQuery();
 		try(var conn =db.open()){
 			try(var stmt = conn.prepareStatement(sql);) {
 				conn.setAutoCommit(false);
@@ -112,7 +112,7 @@ public class AccountRepository {
 
 		actionLogger.info("Attempting to save account: {} to database", toBeSaved.getAccountID());
 
-		var sql ="INSERT INTO accounts(account_id,pin_hash,balance) VALUES(?,?,?) ON CONFLICT (account_id) DO UPDATE SET pin_hash = EXCLUDED.pin_hash, balance = EXCLUDED.balance";
+		var sql = AccountCRUQueries.INSERT_UPDATE.getQuery();
 		
 		try(var conn =db.open();
 			var stmt = conn.prepareStatement(sql)
