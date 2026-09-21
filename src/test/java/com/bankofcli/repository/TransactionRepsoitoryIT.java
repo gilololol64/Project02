@@ -1,18 +1,15 @@
 package com.bankofcli.repository;
 
-import ch.qos.logback.core.rolling.helper.ArchiveRemover;
 import com.bankofcli.model.Account;
 import com.bankofcli.model.Transaction;
 import com.bankofcli.service.AccountService;
 import org.junit.jupiter.api.*;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.LongStream;
 
 public class TransactionRepsoitoryIT {
 
@@ -60,7 +57,7 @@ public class TransactionRepsoitoryIT {
 
         Transaction expectedTrans = new Transaction(1,
                 Transaction.Type.TRANSFER,
-                LocalDateTime.now(),
+                Instant.now(),
                 1000,
                 -1L,
                 0L);
@@ -78,7 +75,7 @@ public class TransactionRepsoitoryIT {
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
-                    LocalDateTime timeComplete = LocalDateTime.parse(rawDate);
+                    Instant timeComplete = Instant.parse(rawDate);
                     long amount = rs.getLong("amount");
                     Long accountSrc = (type != Transaction.Type.DEPOSIT) ? rs.getLong("account_src") : null;
                     Long accountDst = (type != Transaction.Type.WITHDRAW) ? rs.getLong("account_dst") : null;
@@ -101,7 +98,7 @@ public class TransactionRepsoitoryIT {
 
         Transaction expectedTrans = new Transaction(1,
                 Transaction.Type.WITHDRAW,
-                LocalDateTime.now(),
+                Instant.now(),
                 1000,
                 -1L,
                 null);
@@ -119,7 +116,7 @@ public class TransactionRepsoitoryIT {
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
-                    LocalDateTime timeComplete = LocalDateTime.parse(rawDate);
+                    Instant timeComplete = Instant.parse(rawDate);
                     long amount = rs.getLong("amount");
                     Long accountSrc = (type != Transaction.Type.DEPOSIT) ? rs.getLong("account_src") : null;
                     Long accountDst = (type != Transaction.Type.WITHDRAW) ? rs.getLong("account_dst") : null;
@@ -142,7 +139,7 @@ public class TransactionRepsoitoryIT {
 
         Transaction expectedTrans = new Transaction(1,
                 Transaction.Type.DEPOSIT,
-                LocalDateTime.now(),
+                Instant.now(),
                 1000,
                 null,
                 0L);
@@ -160,7 +157,7 @@ public class TransactionRepsoitoryIT {
                     String transType = rs.getString("trans_type");
                     Transaction.Type type = Transaction.Type.getTypeFromString(transType);
                     String rawDate = rs.getString("time_complete");
-                    LocalDateTime timeComplete = LocalDateTime.parse(rawDate);
+                    Instant timeComplete = Instant.parse(rawDate);
                     long amount = rs.getLong("amount");
                     Long accountSrc = (type != Transaction.Type.DEPOSIT) ? rs.getLong("account_src") : null;
                     Long accountDst = (type != Transaction.Type.WITHDRAW) ? rs.getLong("account_dst") : null;
@@ -195,7 +192,7 @@ public class TransactionRepsoitoryIT {
         //Add transactions, give time for them to wait so dates are in order by most recent
         expectedTransList.add(new Transaction(1,
                 Transaction.Type.TRANSFER,
-                LocalDateTime.now(),
+                Instant.now(),
                 1000,
                 accountID,
                 0L));
@@ -203,7 +200,7 @@ public class TransactionRepsoitoryIT {
 
         expectedTransList.add(new Transaction(1,
                 Transaction.Type.WITHDRAW,
-                LocalDateTime.now(),
+                Instant.now(),
                 500,
                 accountID,
                 null));
@@ -211,7 +208,7 @@ public class TransactionRepsoitoryIT {
 
         expectedTransList.add(new Transaction(1,
                 Transaction.Type.DEPOSIT,
-                LocalDateTime.now(),
+                Instant.now(),
                 5000,
                 null,
                 accountID));

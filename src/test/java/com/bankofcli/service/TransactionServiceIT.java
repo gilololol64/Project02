@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -308,19 +308,19 @@ public class TransactionServiceIT {
         accRepo.save(new Account(othAccID, pinHash, balance));
 
         Transaction otherTransaction = new Transaction(0, Transaction.Type.WITHDRAW,
-                LocalDateTime.now(), amount, othAccID, null);
+                Instant.now(), amount, othAccID, null);
 
         //Set up test transactions in database
         List<Transaction> expectedTransactions = new ArrayList<>();
         expectedTransactions.add(new Transaction(0, Transaction.Type.DEPOSIT,
-                LocalDateTime.now(), amount, null, usrAccID));
+                Instant.now(), amount, null, usrAccID));
         sleep(1);
         expectedTransactions.add(new Transaction(0, Transaction.Type.WITHDRAW,
-                LocalDateTime.now(), amount, usrAccID, null));
+                Instant.now(), amount, usrAccID, null));
         sleep(1);
         expectedTransactions.add(otherTransaction);
         expectedTransactions.add(new Transaction(0, Transaction.Type.TRANSFER,
-                LocalDateTime.now(), amount, usrAccID, othAccID));
+                Instant.now(), amount, usrAccID, othAccID));
         for(Transaction trans: expectedTransactions) {
             transRepo.save(trans);
         }
@@ -349,20 +349,20 @@ public class TransactionServiceIT {
         accRepo.save(new Account(othAccID, pinHash, balance));
 
         Transaction otherTransaction = new Transaction(0, Transaction.Type.WITHDRAW,
-                LocalDateTime.now(), amount, othAccID, null);
+                Instant.now(), amount, othAccID, null);
         Transaction oldestTransaction = new Transaction(0, Transaction.Type.DEPOSIT,
-                LocalDateTime.now(), amount, null, usrAccID);
+                Instant.now(), amount, null, usrAccID);
 
         //Set up test transactions in database
         List<Transaction> expectedTransactions = new ArrayList<>();
         expectedTransactions.add(oldestTransaction);
         sleep(1);
         expectedTransactions.add(new Transaction(0, Transaction.Type.WITHDRAW,
-                LocalDateTime.now(), amount, usrAccID, null));
+                Instant.now(), amount, usrAccID, null));
         sleep(1);
         expectedTransactions.add(otherTransaction);
         expectedTransactions.add(new Transaction(0, Transaction.Type.TRANSFER,
-                LocalDateTime.now(), amount, usrAccID, othAccID));
+                Instant.now(), amount, usrAccID, othAccID));
         for(Transaction trans: expectedTransactions) {
             transRepo.save(trans);
         }

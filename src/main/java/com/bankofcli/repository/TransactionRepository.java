@@ -4,8 +4,7 @@ package com.bankofcli.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,8 +108,11 @@ public class TransactionRepository {
 					int transID = rs.getInt("transaction_id");
 					String transType = rs.getString("trans_type");
 					Transaction.Type type = Transaction.Type.getTypeFromString(transType);
+
+					//Get time string and parse it into Instant Object
 					String rawDate = rs.getString("time_complete");
-					LocalDateTime timeComplete = LocalDateTime.parse(rawDate);
+					Instant timeComplete = Instant.parse(rawDate);
+
 					long amount = rs.getLong("amount");
 					Long accountSrc = (type != Transaction.Type.DEPOSIT) ? rs.getLong("account_src") : null;
 					Long accountDst = (type != Transaction.Type.WITHDRAW) ? rs.getLong("account_dst") : null;

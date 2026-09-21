@@ -382,7 +382,7 @@ public class MainMenu extends BasicWindow{
 				String message = String.format("Trans ID: %s | %s | $%,.2f | from %s to %s | %s%n",
 						transaction.getTransactionID(), transaction.getType().toString(),
 						toDollars(transaction.getAmount()), formatAccount(transaction.getAccountSrc()),
-						formatAccount(transaction.getAccountDst()), transaction.getTimeComplete().toString());
+						formatAccount(transaction.getAccountDst()), transaction.getTimeCompleteFormatted());
 				contentpane.addComponent(new Label(message));
 			}
 			setComponent(contentpane);
