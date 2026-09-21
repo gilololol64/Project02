@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class TransactionService {
         Transaction transaction = new Transaction(
             0,
             Type.DEPOSIT,
-            LocalDateTime.now(),
+            Instant.now(),
             amount,
             null,
             accountID
@@ -91,7 +91,7 @@ public class TransactionService {
         Transaction transaction = new Transaction(
             0,
             Type.WITHDRAW,
-            LocalDateTime.now(),
+            Instant.now(),
             amount,
             accountID,
             null
@@ -141,7 +141,7 @@ public class TransactionService {
         Transaction transaction = new Transaction(
             0,
             Type.TRANSFER,
-            LocalDateTime.now(),
+            Instant.now(),
             amount,
             sourceAccountID,
             destinationAccountID
