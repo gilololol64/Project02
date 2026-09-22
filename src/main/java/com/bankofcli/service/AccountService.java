@@ -4,6 +4,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
+import com.bankofcli.util.InputValidator;
 import java.security.SecureRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,9 +194,11 @@ public class AccountService {
         actionLogger.info("PIN successfully changed for account {}.", accountID);
     }
 
-    // Checks that the pin contains exactly four digits
+    // Checks that the pin contains exactly four digits.
+    // Delegates to InputValidator so the format rule lives in exactly one place,
+    // shared with MainMenu's client-side validation.
     private boolean isValidPin(int pin) {
-        return pin >= 0 & pin <= 9999;
+        return InputValidator.isValidPinFormat(pin);
     }
 
     //Generates a random (up to 10 digit) account number given a secure random object

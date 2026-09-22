@@ -1,7 +1,5 @@
 package com.bankofcli.api;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -9,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bankofcli.exception.BankException;
-import com.bankofcli.exception.InvalidAccountIDException;
 import com.bankofcli.exception.InvalidAmountException;
-import com.bankofcli.exception.InvalidPinException;
 import com.bankofcli.exception.NoTransactionHistoryException;
 import com.bankofcli.exception.ServiceUnavailableException;
 import com.bankofcli.model.Account;
@@ -20,6 +16,7 @@ import com.bankofcli.repository.AccountRepository;
 import com.bankofcli.repository.TransactionRepository;
 import com.bankofcli.service.AccountService;
 import com.bankofcli.service.TransactionService;
+import com.bankofcli.util.InputValidator;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.Button;
@@ -89,18 +86,12 @@ public class MainMenu extends BasicWindow{
 		actionLogger.info("Attempting to login user with Account ID: {}", accountId);
 		long temp;
 		int temppin;
-		if (accountId.equals("")  || pin.equals("")) { 
-			showError(new InvalidAccountIDException("Please enter valid Account ID and Pin"));
+		try {
+			temp = InputValidator.parseAccountId(accountId);
+			temppin = InputValidator.parsePin(pin);
+		} catch (BankException exception) {
+			showError(exception);
 			return;
-			}
-		else {
-			try {
-				temp =Long.parseLong(accountId);
-				temppin =Integer.parseInt(pin);
-			}catch(Exception e){
-				showError(new InvalidAccountIDException("Please enter valid Account ID and Pin"));
-				return;
-			}
 		}
 		try {
 			curAccount =accountService.login(temp, temppin);
@@ -137,9 +128,9 @@ public class MainMenu extends BasicWindow{
 		int numpin;
 		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 		try {
-			numpin= Integer.parseInt(pin);
-		} catch (Exception e) {
-			showError(new InvalidPinException("Please Enter a four digit Pin number"));
+			numpin = InputValidator.parsePin(pin);
+		} catch (BankException exception) {
+			showError(exception);
 			return;
 		}
 		
@@ -204,10 +195,10 @@ public class MainMenu extends BasicWindow{
 		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 		
 		try {
-			newPin =Integer.parseInt(newPinString);
-			curPin = Integer.parseInt(currentPinString);
-		} catch (Exception e) {
-			showErrorAccount(new InvalidPinException("Please Provide two valid Pin Numbers"));
+			newPin = InputValidator.parsePin(newPinString);
+			curPin = InputValidator.parsePin(currentPinString);
+		} catch (BankException exception) {
+			showErrorAccount(exception);
 			return;
 		}
 		
@@ -251,13 +242,13 @@ public class MainMenu extends BasicWindow{
 		Panel content = new Panel();
 		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 		try {
-			dest =Long.parseLong(destination);
-		} catch (Exception e) {
-			showErrorAccount(new InvalidAccountIDException("Please enter a valid Destination Account"));
+			dest = InputValidator.parseAccountId(destination);
+		} catch (BankException exception) {
+			showErrorAccount(exception);
 			return;
 		}
 		try {
-			amount =parseAmount(num);
+			amount = InputValidator.parseAmount(num);
 		}catch(InvalidAmountException iae) {
 			showErrorAccount(iae);
 			return;
@@ -297,7 +288,7 @@ public class MainMenu extends BasicWindow{
 		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 		Long amount;
 		try {
-			amount =parseAmount(num);
+			amount = InputValidator.parseAmount(num);
 		}catch(InvalidAmountException iae) {
 			showErrorAccount(iae);
 			return;
@@ -335,7 +326,7 @@ public class MainMenu extends BasicWindow{
 		Long amount;
 		try {
 			
-			amount =parseAmount(num);
+			amount = InputValidator.parseAmount(num);
 		}catch(InvalidAmountException iae) {
 			showErrorAccount(iae);
 			return;
@@ -425,20 +416,4 @@ public class MainMenu extends BasicWindow{
 	private static String formatAccount(Long accountID){
 		return accountID == null ? "-" : accountID.toString();
 	}
-	/**
-	 * When handling transfers, withdraws and deposits, takes in the user's input,
-	 * verifies it and converts into Long extended cents format ($10.00 = 1000L)
-	 * @return Long extended cents format ($10.00 = 1000L)
-	 */
-	private Long parseAmount(String input) {
-		try {
-			BigDecimal dollars = new BigDecimal(input.trim()).setScale(2, RoundingMode.UNNECESSARY);
-			return dollars.movePointRight(2).longValueExact();
-		} catch (ArithmeticException | NumberFormatException exception) {
-			throw new InvalidAmountException(
-					"Please enter a valid amount with no more than two decimal places.");
-		}
-	}
-	
-
 }
