@@ -41,31 +41,33 @@ public final class InputValidator {
 
     /**
      * Parses a raw PIN string and confirms it's exactly four digits.
+     * Validates against the raw string, not the parsed number, since an int
+     * can't tell "0102" apart from "102" - the leading zero is gone the
+     * moment it's a number, so this check has to happen before parsing.
      * @param input raw text from a PIN field
      * @return the parsed PIN
-     * @throws InvalidPinException if input isn't parseable or isn't 4 digits
+     * @throws InvalidPinException if input isn't exactly 4 digit characters
      */
     public static int parsePin(String input) {
-        int pin;
-        try {
-            pin = Integer.parseInt(input.trim());
-        } catch (NumberFormatException exception) {
+        String trimmed = input.trim();
+        if (!trimmed.matches("\\d{4}")) {
             throw new InvalidPinException("PIN must be 4 digits.");
         }
-        if (!isValidPinFormat(pin)) {
-            throw new InvalidPinException("PIN must be 4 digits.");
-        }
-        return pin;
+        return Integer.parseInt(trimmed);
     }
 
     /**
-     * Checks whether an already-parsed PIN is exactly four digits. Shared by parsePin()
-     * above and by AccountService, so the format rule only lives in one place.
+     * Sanity-checks an already-parsed PIN falls in the displayable 4-digit
+     * range (0-9999). This is a weaker guarantee than parsePin()'s check -
+     * once a PIN is an int, a leading zero is already lost, so this can't
+     * tell a valid "0102" apart from an invalid "102". Real format
+     * validation belongs in parsePin(), this is just a backstop for values
+     * received directly as ints (e.g. by AccountService).
      * @param pin the PIN to check
-     * @return true if the PIN is between 1000 and 9999 inclusive
+     * @return true if the PIN is between 0 and 9999 inclusive
      */
     public static boolean isValidPinFormat(int pin) {
-        return pin >= 1000 && pin <= 9999;
+        return pin >= 0 && pin <= 9999;
     }
 
     /**
