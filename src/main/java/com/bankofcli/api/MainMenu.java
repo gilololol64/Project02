@@ -267,9 +267,20 @@ public class MainMenu extends BasicWindow{
 			transactionService.transfer(curAccount.getAccountID(), dest, amount);
 			transactionLogger.info("Transfer completed from account {} to account {}: ${}.",
 					curAccount.getAccountID(), dest, String.format("%,.2f",toDollars(amount)));
-			String message = String.format("%nTransfer successful.New balance: $%,.2f%n",
-					toDollars(accountService.getBalance(curAccount.getAccountID())));
+			long newBalance = accountService.getBalance(curAccount.getAccountID());
+
+			String message = String.format(
+					"%nTransfer successful. New balance: $%,.2f%n",
+					toDollars(newBalance)
+			);
+
 			content.addComponent(new Label(message));
+
+			if (transactionService.isLowBalance(newBalance)) {
+				content.addComponent(new Label(
+						"WARNING: Your account balance is below $20.00."
+				));
+			}
 			content.addComponent(new Button("back", () -> AccountMenu()));
 			sounds.playSuccess();
 			setComponent(content);
@@ -306,9 +317,20 @@ public class MainMenu extends BasicWindow{
 			transactionService.withdraw(curAccount.getAccountID(), amount);
 			transactionLogger.info("Withdrawal completed for account {}: ${}.", curAccount.getAccountID(),
 					String.format("%,.2f",toDollars(amount)));
-			String message = String.format("\nWithdrawal successful. New balance: $%,.2f%n",
-					toDollars(accountService.getBalance(curAccount.getAccountID())));
+			long newBalance = accountService.getBalance(curAccount.getAccountID());
+
+			String message = String.format(
+					"\nWithdrawal successful. New balance: $%,.2f%n",
+					toDollars(newBalance)
+			);
+
 			content.addComponent(new Label(message));
+
+			if (transactionService.isLowBalance(newBalance)) {
+				content.addComponent(new Label(
+						"WARNING: Your account balance is below $20.00."
+				));
+			}
 			content.addComponent(new Button("back", () -> AccountMenu()));
 			sounds.playSuccess();
 			setComponent(content);

@@ -280,4 +280,19 @@ public class TransactionServiceTest {
         Assertions.assertEquals(expectedMessage, ex.getMessage());
     }
 
+    @Test
+    public void lowBalanceBelowThreshold() {
+        Assertions.assertTrue(transServ.isLowBalance(1999));
+    }
+
+    @Test
+    public void lowBalanceAtThreshold() {
+        Assertions.assertFalse(transServ.isLowBalance(2000));
+    }
+
+    @Test
+    public void lowBalanceAboveThreshold() {
+        Assertions.assertFalse(transServ.isLowBalance(2001));
+    }
+
 }
