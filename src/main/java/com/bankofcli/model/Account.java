@@ -1,5 +1,6 @@
 package com.bankofcli.model;
 
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -11,18 +12,33 @@ public class Account {
     private long accountID;
     private String pinHash;
     private long balanceExtendedCents;
+    private Instant accountLockedTil = null;
 
     /**
-     * Constructor for Account Data Class
+     * Constructor for newly created Account Data Class
      * @param accountID Unique Account ID used at login
      * @param pinHash Hashed Pin/Password for Account
      * @param balanceExtendedCents Current balance of account representing as extended cents
      *                             (i.e. $10.00 = 1000)
+     * accountLockedTil is set to null.
      */
     public Account(long accountID, String pinHash, long balanceExtendedCents) {
+        this(accountID, pinHash, balanceExtendedCents, null);
+    }
+
+    /**
+     * Constructor for retrieved Account Data Class
+     * @param accountID Unique Account ID used at login
+     * @param pinHash Hashed Pin/Password for Account
+     * @param balanceExtendedCents Current balance of account representing as extended cents
+     *                             (i.e. $10.00 = 1000)
+     * @param accountLockedTil timestamp that represents when account can be unlocked.
+     */
+    public Account(long accountID, String pinHash, long balanceExtendedCents, Instant accountLockedTil) {
         this.pinHash = pinHash;
         this.accountID = accountID;
         this.balanceExtendedCents = balanceExtendedCents;
+        this.accountLockedTil = accountLockedTil;
     }
 
     /* Return's account object's set account id */
@@ -53,6 +69,15 @@ public class Account {
 
     //Method used to get the balance as a double or dollar amount
     public double getBalance() { return this.balanceExtendedCents / 100.0; }
+
+    //Gets the timestamp of when the account can be unlocked
+    public Instant getAccountLockedTil() {
+        return accountLockedTil;
+    }
+
+    public void setAccountLockedTil(Instant accountLockedTil){
+        this.accountLockedTil = accountLockedTil;
+    }
 
     /**
      * Method to compare if two Account Objects are the same.

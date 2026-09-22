@@ -416,5 +416,4 @@ public class MainMenu extends BasicWindow{
 	private static String formatAccount(Long accountID){
 		return accountID == null ? "-" : accountID.toString();
 	}
-
 }
