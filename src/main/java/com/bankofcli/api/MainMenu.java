@@ -439,5 +439,6 @@ public class MainMenu extends BasicWindow{
 					"Please enter a valid amount with no more than two decimal places.");
 		}
 	}
+	
 
 }

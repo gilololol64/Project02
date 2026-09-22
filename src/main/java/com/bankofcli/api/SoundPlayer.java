@@ -20,9 +20,11 @@ public class SoundPlayer implements SoundPlayerInterface{
 	static URL Startup = SoundPlayer.class.getResource("/Sounds/startUpSound.wav");
 	static URL Success = SoundPlayer.class.getResource("/Sounds/success2.wav");
 	static URL Failure = SoundPlayer.class.getResource("/Sounds/denied.wav");
+	static URL tick = SoundPlayer.class.getResource("/Sounds/clickSound.wav");
 	private static final Logger errorLogger = LoggerFactory.getLogger("Bank.logback.Error");
 	
 	private final Set<Clip> activeClips = ConcurrentHashMap.newKeySet();
+	
 
 	public void playSound(URL soundUrl) {
 	    try {
@@ -48,6 +50,7 @@ public class SoundPlayer implements SoundPlayerInterface{
 	        errorLogger.error("Failed to play sound from {}: {}", soundUrl, e.getMessage());
 	    }
 	}
+	public void playClick() {playSound(tick);}
 	public void playFailure() { playSound(Failure); }
 	public void playSuccess() { playSound(Success); }
 	public void playStartUp() { playSound(Startup);}
