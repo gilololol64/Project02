@@ -8,6 +8,7 @@ import java.security.SecureRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,6 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
     private final Map<Long, Integer> failedAttempts = new HashMap<>();
-    private final Map<Long, LocalDateTime> lockedUntil = new HashMap<>();
 
     private static final int MAX_ATTEMPTS = 3;
     private static final int LOCKOUT_MINUTES = 5;
@@ -79,12 +79,12 @@ public class AccountService {
         }
 
         // Check if the account is currently locked
-        LocalDateTime lockExpiration = lockedUntil.get(accountID);
+        Instant lockExpiration = account.getAccountLockedTil();
 
         if (lockExpiration != null) {
 
             // Account is still locked
-            if (LocalDateTime.now().isBefore(lockExpiration)) {
+            if (Instant.now().isBefore(lockExpiration)) {
                 errorLogger.error(
                     "Login failed for account {}, account is temporarily locked.",
                     accountID
@@ -96,7 +96,7 @@ public class AccountService {
             }
 
             // Lockout time has expired, so reset the account
-            lockedUntil.remove(accountID);
+            accountRepository.lock(account, false);
             failedAttempts.remove(accountID);
         }
 
@@ -108,10 +108,10 @@ public class AccountService {
 
             // Lock account after third incorrect attempt
             if (attempts >= MAX_ATTEMPTS) {
-                lockedUntil.put(
-                    accountID,
-                    LocalDateTime.now().plusMinutes(LOCKOUT_MINUTES)
-                );
+                Instant locked = Instant.now().plusSeconds(LOCKOUT_MINUTES * 60);
+
+                account.setAccountLockedTil(locked);
+                accountRepository.lock(account, true);
 
                 errorLogger.error("Account {} locked after {} incorrect PIN attempts.",
                     accountID,

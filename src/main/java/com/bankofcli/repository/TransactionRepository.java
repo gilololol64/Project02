@@ -46,8 +46,7 @@ public class TransactionRepository {
 
 		actionLogger.info("Attempting to add transaction to database.");
 
-		var sql ="   INSERT INTO transactions (trans_type, time_complete, amount, account_src, account_dst)"
-				+ "   VALUES (?,?,?,?,?)";
+		var sql = TransactionCRQueries.INSERT.getQuery();
 		try (var conn =db.open();
 			var stmt =conn.prepareStatement(sql)
 		){
@@ -89,13 +88,7 @@ public class TransactionRepository {
 
         ArrayList<Transaction> transactions = new ArrayList<>();
 
-		String sql = "SELECT *\n" +
-				"FROM (SELECT * FROM transactions\n" +
-				"WHERE account_dst = ? \n" +
-				"UNION\n" +
-				"SELECT * FROM transactions\n" +
-				"WHERE account_src = ?)\n" +
-				"ORDER BY time_complete DESC LIMIT ?;";
+		String sql = TransactionCRQueries.READ.getQuery();
 
 		try(var con = db.open();
 			var ps = con.prepareStatement(sql)) {

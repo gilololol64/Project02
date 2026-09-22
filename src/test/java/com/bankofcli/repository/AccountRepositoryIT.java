@@ -5,6 +5,7 @@ import com.bankofcli.service.AccountService;
 import org.junit.jupiter.api.*;
 
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.LongStream;
@@ -162,6 +163,71 @@ public class AccountRepositoryIT {
         Account result = accRepo.findByID(accId);
         Assertions.assertNull(result);
     }
+
+    @Test
+    public void lockPositive() throws SQLException{
+        Account acc = accountList.getFirst();
+        accRepo.save(acc);
+
+        Instant expected = Instant.now();
+        acc.setAccountLockedTil(expected);
+
+        accRepo.lock(acc, true);
+
+        String selectAccountQry = "SELECT account_locked_til " +
+                "FROM accounts " +
+                "WHERE account_id = ?";
+
+        try(Connection con = DriverManager.getConnection(url);
+            PreparedStatement stmt = con.prepareStatement(selectAccountQry)) {
+            stmt.setLong(1, acc.getAccountID());
+            ResultSet rs = stmt.executeQuery();
+
+            Instant actual = null;
+            while(rs.next()){
+                String rawDate = rs.getString("account_locked_til");
+                actual = Instant.parse(rawDate);
+            }
+            Assertions.assertNotNull(actual);
+            Assertions.assertEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void unlockPositive() throws SQLException{
+        Account acc = accountList.getFirst();
+        Instant expected = Instant.now();
+        acc.setAccountLockedTil(expected);
+        accRepo.save(acc);
+
+        accRepo.lock(acc, false);
+
+        String selectAccountQry = "SELECT account_locked_til " +
+                "FROM accounts " +
+                "WHERE account_id = ?";
+
+        try(Connection con = DriverManager.getConnection(url);
+            PreparedStatement stmt = con.prepareStatement(selectAccountQry)) {
+            stmt.setLong(1, acc.getAccountID());
+            ResultSet rs = stmt.executeQuery();
+
+            Instant actual = null;
+            while(rs.next()){
+                String rawDate = rs.getString("account_locked_til");
+                actual = rawDate == null ? null : Instant.parse(rawDate);
+            }
+            Assertions.assertNull(actual);
+        }
+    }
+
+    @Test
+    public void lockNullAccount() throws SQLException{
+        String expectedMessage = "Can not update an empty account";
+        NullPointerException ex = Assertions.assertThrows(NullPointerException.class,
+                () -> accRepo.lock(null, true));
+        Assertions.assertEquals(expectedMessage, ex.getMessage());
+    }
+
 
     private void assertAccountsEquals(Account expected, Account result){
         //Asserting account is not null and that the accounts inserted has matching fields
