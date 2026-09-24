@@ -27,7 +27,7 @@ public class Patterned_backdrops extends AbstractComponent<Patterned_backdrops> 
 			@Override
 			public void drawComponent(TextGUIGraphics graphics, Patterned_backdrops component) {
                 TerminalSize size = graphics.getSize();
-                TextColor.RGB backgroundColor  = new TextColor.RGB(42, 123, 76);   
+                TextColor.RGB backgroundColor  = new TextColor.RGB(16, 74, 57);
                 TextColor.RGB foregroundColor = new TextColor.RGB(212, 175, 55);
                 graphics.setForegroundColor(blend(backgroundColor,foregroundColor,0.3));
                 graphics.setBackgroundColor(backgroundColor);

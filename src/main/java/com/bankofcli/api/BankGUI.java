@@ -49,7 +49,7 @@ public class BankGUI {
 	private final int COLUMNS = 120;
 	private final int ROWS = 40;
 	private SoundPlayer sounds;
-    private final static TextColor bg= new TextColor.RGB(42, 123, 76);
+	private final static TextColor bg= new TextColor.RGB(16, 74, 57);
     private final TextColor fg =  new TextColor.RGB(212, 175, 55);
     private final TextColor textBg = new TextColor.RGB(163, 169, 166);
     private final TextColor windowColor = new TextColor.RGB(237, 203, 142);

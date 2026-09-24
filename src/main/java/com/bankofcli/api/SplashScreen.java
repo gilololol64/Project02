@@ -27,7 +27,7 @@ public class SplashScreen extends MultiWindowTextGUI {
     private final int LINE_SPEED = 160;
     private final int PROMPT_WAIT = 550;
     private final SoundPlayer soundPlayer;
-    private final static TextColor bg= new TextColor.RGB(42, 123, 76);
+    private final static TextColor bg= new TextColor.RGB(16, 74, 57);
     private final TextColor fg =  new TextColor.RGB(212, 175, 55);
 
     public SplashScreen(Screen screen){
