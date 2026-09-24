@@ -53,7 +53,7 @@ public class MainMenu extends BasicWindow{
 		this.setTitle("Main Menu");
 		curAccount = null;
 		Panel contentpane = new Panel();
-		
+		contentpane.setPreferredSize(avgSize);
 		contentpane.setLayoutManager(new GridLayout(1));
 		contentpane.addComponent(new Label("Welcome to The Bank of CLI"));
 		contentpane.addComponent(new Button("Login",() -> this.Login()));
@@ -160,7 +160,6 @@ public class MainMenu extends BasicWindow{
 	public void AccountMenu() {
 		this.setTitle("AccountMenu");
 		Panel contentpane = new Panel();
-		
 		contentpane.setLayoutManager(new GridLayout(1));
 		contentpane.addComponent(new Button("Balance", ()->this.Balance()));
 		contentpane.addComponent(new Button("Deposit", () -> Deposit()));
