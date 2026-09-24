@@ -188,6 +188,7 @@ public class MainMenu extends BasicWindow{
 		contentpane.addComponent(new Label("New Pin:"));
 		contentpane.addComponent(newPin);
 		contentpane.addComponent(new Button("Submit", () -> changePinHelper(newPin.getText(),current.getText())));
+		contentpane.addComponent(new Button("Back", () -> AccountMenu()));
 		setComponent(contentpane);
 	}
 
@@ -242,6 +243,7 @@ public class MainMenu extends BasicWindow{
 		content.addComponent(descriptionamount);
 		content.addComponent(amount);
 		content.addComponent(new Button("Send",() -> transferHelper(dest.getText(), amount.getText())));
+		content.addComponent(new Button("Back", () -> AccountMenu()));
 		setComponent(content);
 	}
 
@@ -303,7 +305,7 @@ public class MainMenu extends BasicWindow{
 		content.addComponent(num);
 		content.addComponent(HM);
 		content.addComponent(new Button("Withdraw", ()->withdrawhelper(HM.getText())));
-		
+		content.addComponent(new Button("Back", () -> AccountMenu()));
 		setComponent(content);
 	}
 	public void withdrawhelper(String num) {
@@ -353,6 +355,7 @@ public class MainMenu extends BasicWindow{
 		content.addComponent(num);
 		content.addComponent(HM);
 		content.addComponent(new Button("Deposit", ()->Deposithelper(HM.getText())));
+		content.addComponent(new Button("Back", () -> AccountMenu()));
 		
 		setComponent(content);
 	}
