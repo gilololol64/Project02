@@ -1,5 +1,6 @@
 package com.bankofcli.service;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
@@ -25,20 +26,22 @@ public class AccountServiceTest {
     @Test
     public void registerPositive(){
         int pin = 1111;
-        Account expectedAccount = new Account(1, pin, 0);
+        String pinHash = AccountService.hashPin(pin);
+        Account expectedAccount = new Account(1, pinHash, 0);
         Mockito.when(accRep.findByID(anyLong())).thenReturn(null);
         Account resultAccount = accServ.register(pin);
-        Assertions.assertEquals(expectedAccount.getPin(), resultAccount.getPin());
+        Assertions.assertTrue(AccountService.verifyPinHash(pin, resultAccount.getPinHash()));
         Assertions.assertEquals(expectedAccount.getBalanceExtendedCents(), resultAccount.getBalanceExtendedCents());
     }
 
     @Test
     public void registerPositiveZeroPin(){
         int pin = 0;
-        Account expectedAccount = new Account(1,pin, 0);
+        String pinHash = AccountService.hashPin(pin);
+        Account expectedAccount = new Account(1,pinHash, 0);
         Mockito.when(accRep.findByID(anyLong())).thenReturn(null);
         Account resultAccount = accServ.register(pin);
-        Assertions.assertEquals(expectedAccount.getPin(), resultAccount.getPin());
+        Assertions.assertTrue(AccountService.verifyPinHash(pin, resultAccount.getPinHash()));
         Assertions.assertEquals(expectedAccount.getBalanceExtendedCents(), resultAccount.getBalanceExtendedCents());
     }
 
@@ -65,9 +68,10 @@ public class AccountServiceTest {
     public void loginPositive(){
         long accID = 11111L;
         int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         long balance = 1000; //$10.00
-        Account expectedAccount = new Account(accID, pin, balance);
-        Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, pin, balance));
+        Account expectedAccount = new Account(accID, pinHash, balance);
+        Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, pinHash, balance));
         Account resultAccount = accServ.login(accID, pin);
         Assertions.assertEquals(expectedAccount, resultAccount);
         Assertions.assertEquals(expectedAccount.getBalanceExtendedCents(), resultAccount.getBalanceExtendedCents());
@@ -88,11 +92,12 @@ public class AccountServiceTest {
     public void loginInvalidPinException(){
         long accID = 11111L;
         int correctPin = 1234;
+        String pinHash = AccountService.hashPin(correctPin);
         int incorrectPin = 1235;
         long balance = 1000;
 
         Mockito.when(accRep.findByID(accID))
-                .thenReturn(new Account(accID, correctPin, balance));
+                .thenReturn(new Account(accID, pinHash, balance));
 
         InvalidPinException ex = Assertions.assertThrows(
                 InvalidPinException.class,
@@ -109,11 +114,12 @@ public class AccountServiceTest {
     public void loginLocksAccountAfterThreeIncorrectPins(){
         long accID = 11111L;
         int correctPin = 1234;
+        String pinHash = AccountService.hashPin(correctPin);
         int incorrectPin = 9999;
         long balance = 1000;
 
         Mockito.when(accRep.findByID(accID))
-                .thenReturn(new Account(accID, correctPin, balance));
+                .thenReturn(new Account(accID, pinHash, balance));
 
         // First incorrect attempt
         Assertions.assertThrows(
@@ -143,7 +149,7 @@ public class AccountServiceTest {
     public void getBalancePositive(){
         long accID = 11111L;
         long balance = 1000; //$10.00
-        Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, 1111, balance));
+        Mockito.when(accRep.findByID(accID)).thenReturn(new Account(accID, "", balance));
         Assertions.assertEquals(accServ.getBalance(accID), balance);
     }
 
@@ -155,6 +161,40 @@ public class AccountServiceTest {
         AccountNotFoundException ex = Assertions.assertThrows(AccountNotFoundException.class,
                 () -> accServ.getBalance(accID));
         Assertions.assertEquals(expectedMessage, ex.getMessage());
+    }
+
+    @Test
+    public void hashPinPositive(){
+        int pin = 1111;
+        String hashPin = AccountService.hashPin(pin);
+        BCrypt.Result result = BCrypt.verifyer().verify(Integer.toString(pin).toCharArray(), hashPin);
+        Assertions.assertTrue(result.verified);
+    }
+
+    @Test
+    public void hashPinNotMatching(){
+        int correctPin = 1111;
+        int incorrectPin = 1112;
+        String hashPin = AccountService.hashPin(correctPin);
+        BCrypt.Result result = BCrypt.verifyer().verify(Integer.toString(incorrectPin).toCharArray(), hashPin);
+        Assertions.assertFalse(result.verified);
+    }
+
+    @Test
+    public void verifyPinHashPositive(){
+        int pin = 1111;
+        int cost = 10;
+        String hashPin = BCrypt.withDefaults().hashToString(cost, Integer.toString(pin).toCharArray());
+        Assertions.assertTrue(AccountService.verifyPinHash(pin, hashPin));
+    }
+
+    @Test
+    public void verifyPinHashNegative(){
+        int correctPin = 1111;
+        int incorrectPin = 1112;
+        int cost = 10;
+        String hashPin = BCrypt.withDefaults().hashToString(cost, Integer.toString(correctPin).toCharArray());
+        Assertions.assertFalse(AccountService.verifyPinHash(incorrectPin, hashPin));
     }
 
 }

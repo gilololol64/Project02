@@ -4,8 +4,7 @@ package com.bankofcli.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +46,7 @@ public class TransactionRepository {
 
 		actionLogger.info("Attempting to add transaction to database.");
 
-		var sql ="   INSERT INTO transactions (trans_type, time_complete, amount, account_src, account_dst)"
-				+ "   VALUES (?,?,?,?,?)";
+		var sql = TransactionCRQueries.INSERT.getQuery();
 		try (var conn =db.open();
 			var stmt =conn.prepareStatement(sql)
 		){
@@ -90,13 +88,7 @@ public class TransactionRepository {
 
         ArrayList<Transaction> transactions = new ArrayList<>();
 
-		String sql = "SELECT *\n" +
-				"FROM (SELECT * FROM transactions\n" +
-				"WHERE account_dst = ? \n" +
-				"UNION\n" +
-				"SELECT * FROM transactions\n" +
-				"WHERE account_src = ?)\n" +
-				"ORDER BY time_complete DESC LIMIT ?;";
+		String sql = TransactionCRQueries.READ.getQuery();
 
 		try(var con = db.open();
 			var ps = con.prepareStatement(sql)) {
@@ -109,8 +101,11 @@ public class TransactionRepository {
 					int transID = rs.getInt("transaction_id");
 					String transType = rs.getString("trans_type");
 					Transaction.Type type = Transaction.Type.getTypeFromString(transType);
+
+					//Get time string and parse it into Instant Object
 					String rawDate = rs.getString("time_complete");
-					LocalDateTime timeComplete = LocalDateTime.parse(rawDate);
+					Instant timeComplete = Instant.parse(rawDate);
+
 					long amount = rs.getLong("amount");
 					Long accountSrc = (type != Transaction.Type.DEPOSIT) ? rs.getLong("account_src") : null;
 					Long accountDst = (type != Transaction.Type.WITHDRAW) ? rs.getLong("account_dst") : null;

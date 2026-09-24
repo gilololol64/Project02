@@ -33,7 +33,9 @@ public class TransactionServiceTest {
         long accID = 1111L;
         long balance = 0;
         long deposit = 2500;
-        Account mockAcc = new Account(accID, 1111, balance);
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
+        Account mockAcc = new Account(accID, pinHash, balance);
         Mockito.when(accRepo.findByID(accID)).thenReturn(mockAcc);
 
         transServ.deposit(accID, deposit);
@@ -47,9 +49,12 @@ public class TransactionServiceTest {
         long accID = 1111L;
         long balance = 0;
         long deposit = -100;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Transaction amount must be greater than zero.";
 
-        Account mockAcc = new Account(accID, 1111, balance);
+
+        Account mockAcc = new Account(accID, pinHash, balance);
         Mockito.when(accRepo.findByID(accID)).thenReturn(mockAcc);
 
         InvalidAmountException ex = Assertions.assertThrows(InvalidAmountException.class,
@@ -62,9 +67,12 @@ public class TransactionServiceTest {
         long accID = 1111L;
         long balance = 1;
         long deposit = Long.MAX_VALUE;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Transaction amount too large to process";
 
-        Account mockAcc = new Account(accID, 1111, balance);
+
+        Account mockAcc = new Account(accID, pinHash, balance);
         Mockito.when(accRepo.findByID(accID)).thenReturn(mockAcc);
 
         InvalidAmountException ex = Assertions.assertThrows(InvalidAmountException.class,
@@ -90,7 +98,9 @@ public class TransactionServiceTest {
         long accID = 1111L;
         long balance = 2500;
         long withdraw = 2500;
-        Account mockAcc = new Account(accID, 1111, balance);
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
+        Account mockAcc = new Account(accID, pinHash, balance);
         Mockito.when(accRepo.findByID(accID)).thenReturn(mockAcc);
 
         transServ.withdraw(accID, withdraw);
@@ -104,9 +114,12 @@ public class TransactionServiceTest {
         long accID = 1111L;
         long balance = 2500;
         long withdraw = 2501;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Insufficient funds.";
 
-        Account mockAcc = new Account(accID, 1111, balance);
+
+        Account mockAcc = new Account(accID, pinHash, balance);
         Mockito.when(accRepo.findByID(accID)).thenReturn(mockAcc);
 
         InsufficientFundsException ex = Assertions.assertThrows(InsufficientFundsException.class,
@@ -119,9 +132,11 @@ public class TransactionServiceTest {
         long accID = 1111L;
         long balance = 0;
         long withdraw = -100;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Transaction amount must be greater than zero.";
 
-        Account mockAcc = new Account(accID, 1111, balance);
+        Account mockAcc = new Account(accID, pinHash, balance);
         Mockito.when(accRepo.findByID(accID)).thenReturn(mockAcc);
 
         InvalidAmountException ex = Assertions.assertThrows(InvalidAmountException.class,
@@ -149,9 +164,11 @@ public class TransactionServiceTest {
         long dstAccID = 1112L;
         long dstBalance = 0;
         long amount = 1;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
 
-        Account mockSrcAcc = new Account(srcAccID, 1111, srcBalance);
-        Account mockDstAcc = new Account(dstAccID, 1111, dstBalance);
+        Account mockSrcAcc = new Account(srcAccID, pinHash, srcBalance);
+        Account mockDstAcc = new Account(dstAccID, pinHash, dstBalance);
         Mockito.when(accRepo.findByID(srcAccID)).thenReturn(mockSrcAcc);
         Mockito.when(accRepo.findByID(dstAccID)).thenReturn(mockDstAcc);
 
@@ -169,10 +186,12 @@ public class TransactionServiceTest {
         long dstAccID = 1112L;
         long dstBalance = 0;
         long amount = 10;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Insufficient funds.";
 
-        Account mockSrcAcc = new Account(srcAccID, 1111, srcBalance);
-        Account mockDstAcc = new Account(dstAccID, 1111, dstBalance);
+        Account mockSrcAcc = new Account(srcAccID, pinHash, srcBalance);
+        Account mockDstAcc = new Account(dstAccID, pinHash, dstBalance);
         Mockito.when(accRepo.findByID(srcAccID)).thenReturn(mockSrcAcc);
         Mockito.when(accRepo.findByID(dstAccID)).thenReturn(mockDstAcc);
 
@@ -187,9 +206,11 @@ public class TransactionServiceTest {
         long dstAccID = 1112L;
         long dstBalance = 0;
         long amount = 10;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Account " + srcAccID + " was not found.";
 
-        Account mockDstAcc = new Account(dstAccID, 1111, dstBalance);
+        Account mockDstAcc = new Account(dstAccID, pinHash, dstBalance);
         Mockito.when(accRepo.findByID(srcAccID)).thenReturn(null);
         Mockito.when(accRepo.findByID(dstAccID)).thenReturn(mockDstAcc);
 
@@ -204,9 +225,11 @@ public class TransactionServiceTest {
         long srcBalance = 0;
         long dstAccID = 1112L;
         long amount = 10;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Account " + dstAccID + " was not found.";
 
-        Account mockSrcAcc = new Account(srcAccID, 1111, srcBalance);
+        Account mockSrcAcc = new Account(srcAccID, pinHash, srcBalance);
         Mockito.when(accRepo.findByID(srcAccID)).thenReturn(mockSrcAcc);
         Mockito.when(accRepo.findByID(dstAccID)).thenReturn(null);
 
@@ -222,10 +245,12 @@ public class TransactionServiceTest {
         long dstAccID = 1112L;
         long dstBalance = 0;
         long amount = -1;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Transaction amount must be greater than zero.";
 
-        Account mockSrcAcc = new Account(srcAccID, 1111, srcBalance);
-        Account mockDstAcc = new Account(dstAccID, 1111, dstBalance);
+        Account mockSrcAcc = new Account(srcAccID, pinHash, srcBalance);
+        Account mockDstAcc = new Account(dstAccID, pinHash, dstBalance);
         Mockito.when(accRepo.findByID(srcAccID)).thenReturn(mockSrcAcc);
         Mockito.when(accRepo.findByID(dstAccID)).thenReturn(mockDstAcc);
 
@@ -241,16 +266,33 @@ public class TransactionServiceTest {
         long dstAccID = srcAccID;
         long dstBalance = srcBalance;
         long amount = 10;
+        int pin = 1111;
+        String pinHash = AccountService.hashPin(pin);
         String expectedMessage = "Source and destination accounts must be different.";
 
-        Account mockSrcAcc = new Account(srcAccID, 1111, srcBalance);
-        Account mockDstAcc = new Account(dstAccID, 1111, dstBalance);
+        Account mockSrcAcc = new Account(srcAccID, pinHash, srcBalance);
+        Account mockDstAcc = new Account(dstAccID, pinHash, dstBalance);
         Mockito.when(accRepo.findByID(srcAccID)).thenReturn(mockSrcAcc);
         Mockito.when(accRepo.findByID(dstAccID)).thenReturn(mockDstAcc);
 
         SelfTransferException ex = Assertions.assertThrows(SelfTransferException.class,
                 () -> transServ.transfer(srcAccID, dstAccID, amount));
         Assertions.assertEquals(expectedMessage, ex.getMessage());
+    }
+
+    @Test
+    public void lowBalanceBelowThreshold() {
+        Assertions.assertTrue(transServ.isLowBalance(1999));
+    }
+
+    @Test
+    public void lowBalanceAtThreshold() {
+        Assertions.assertFalse(transServ.isLowBalance(2000));
+    }
+
+    @Test
+    public void lowBalanceAboveThreshold() {
+        Assertions.assertFalse(transServ.isLowBalance(2001));
     }
 
 }

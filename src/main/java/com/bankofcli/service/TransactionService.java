@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +19,8 @@ public class TransactionService {
 
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+
+    private static final long LOW_BALANCE_THRESHOLD = 2000;
 
     // Dedicated error logger - name must match a <logger> element in logback.xml
     // to route to the general error log file instead of falling through to root.
@@ -56,7 +58,7 @@ public class TransactionService {
         Transaction transaction = new Transaction(
             0,
             Type.DEPOSIT,
-            LocalDateTime.now(),
+            Instant.now(),
             amount,
             null,
             accountID
@@ -91,7 +93,7 @@ public class TransactionService {
         Transaction transaction = new Transaction(
             0,
             Type.WITHDRAW,
-            LocalDateTime.now(),
+            Instant.now(),
             amount,
             accountID,
             null
@@ -141,7 +143,7 @@ public class TransactionService {
         Transaction transaction = new Transaction(
             0,
             Type.TRANSFER,
-            LocalDateTime.now(),
+            Instant.now(),
             amount,
             sourceAccountID,
             destinationAccountID
@@ -188,6 +190,11 @@ public class TransactionService {
             throw ex;
         }
         actionLogger.info("Amount successfully verified.");
+    }
+
+    // Returns true if the balance is below $20.00
+    public boolean isLowBalance(long balance) {
+        return balance < LOW_BALANCE_THRESHOLD;
     }
 
     //Given an account id attempts to retrieve that, if none can be found

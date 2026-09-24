@@ -1,5 +1,6 @@
 package com.bankofcli.model;
 
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -9,20 +10,35 @@ import java.util.Objects;
 public class Account {
 
     private long accountID;
-    private int pin;
+    private String pinHash;
     private long balanceExtendedCents;
+    private Instant accountLockedTil = null;
 
     /**
-     * Constructor for Account Data Class
+     * Constructor for newly created Account Data Class
      * @param accountID Unique Account ID used at login
-     * @param pin Pin/Password for Account
+     * @param pinHash Hashed Pin/Password for Account
      * @param balanceExtendedCents Current balance of account representing as extended cents
      *                             (i.e. $10.00 = 1000)
+     * accountLockedTil is set to null.
      */
-    public Account(long accountID, int pin, long balanceExtendedCents) {
-        this.pin = pin;
+    public Account(long accountID, String pinHash, long balanceExtendedCents) {
+        this(accountID, pinHash, balanceExtendedCents, null);
+    }
+
+    /**
+     * Constructor for retrieved Account Data Class
+     * @param accountID Unique Account ID used at login
+     * @param pinHash Hashed Pin/Password for Account
+     * @param balanceExtendedCents Current balance of account representing as extended cents
+     *                             (i.e. $10.00 = 1000)
+     * @param accountLockedTil timestamp that represents when account can be unlocked.
+     */
+    public Account(long accountID, String pinHash, long balanceExtendedCents, Instant accountLockedTil) {
+        this.pinHash = pinHash;
         this.accountID = accountID;
         this.balanceExtendedCents = balanceExtendedCents;
+        this.accountLockedTil = accountLockedTil;
     }
 
     /* Return's account object's set account id */
@@ -30,14 +46,14 @@ public class Account {
         return accountID;
     }
 
-    /* Returns account object's set pin */
-    public int getPin() {
-        return pin;
+    /* Returns account's hashed pin */
+    public String getPinHash() {
+        return pinHash;
     }
 
-    /* Sets account object's new pin to given value */
-    public void setPin(int pin) {
-        this.pin = pin;
+    /* Sets account's hashed pin */
+    public void setPinHash(String pinHash) {
+        this.pinHash = pinHash;
     }
 
     /**
@@ -53,6 +69,15 @@ public class Account {
 
     //Method used to get the balance as a double or dollar amount
     public double getBalance() { return this.balanceExtendedCents / 100.0; }
+
+    //Gets the timestamp of when the account can be unlocked
+    public Instant getAccountLockedTil() {
+        return accountLockedTil;
+    }
+
+    public void setAccountLockedTil(Instant accountLockedTil){
+        this.accountLockedTil = accountLockedTil;
+    }
 
     /**
      * Method to compare if two Account Objects are the same.

@@ -101,6 +101,7 @@ public class SplashScreen extends MultiWindowTextGUI {
                 updateScreen();
             } catch (IOException | InterruptedException e) {
                 errorLogger.error("Could not properly draw splash screen.");
+                Thread.currentThread().interrupt();
             }
         });
     }

@@ -58,21 +58,8 @@ public class DatabaseManager {
 	public void init() {
 		actionLogger.info("Attempting to verify or initialize database.");
 
-		var sqlCreateAccount ="CREATE TABLE IF NOT EXISTS accounts ("
-						+ "    account_id BIGINT PRIMARY KEY,"
-						+ "    pin INT NOT NULL,"
-						+ "    balance BIGINT NOT NULL"
-						+ ");";
-		var sqlCreateTransactions ="CREATE TABLE IF NOT EXISTS transactions ("
-							+ "	transaction_id INTEGER PRIMARY KEY,"
-							+ " trans_type TEXT NOT NULL CHECK (trans_type IN ('DEPOSIT', 'WITHDRAW', 'TRANSFER')),"
-							+ "	time_complete TEXT NOT NULL DEFAULT (datetime('now')),"
-							+ " amount BIGINT NOT NULL,"
-							+ "	account_src BIGINT,"
-							+ "	account_dst BIGINT,"
-							+ "	FOREIGN KEY (account_src) REFERENCES accounts(account_id),"
-							+ "	FOREIGN KEY (account_dst) REFERENCES accounts(account_id)"
-							+ ");";
+		var sqlCreateAccount = TableCreationQueries.ACCOUNT.getQuery();
+		var sqlCreateTransactions = TableCreationQueries.TRANSACTION.getQuery();
 		
 		 try (var conn = DriverManager.getConnection(url)){
 			 var stmtA = conn.createStatement();

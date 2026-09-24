@@ -1,6 +1,8 @@
 package com.bankofcli.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -18,6 +20,8 @@ import java.util.Objects;
  * $10.00 is stored as 1000.
  */
 public class Transaction {
+
+    private static final String TIME_FORMAT = "MM-dd-yyyy HH:mm";
 
     //Enum used to represent the three types of transactions the application accepts
     public enum Type {
@@ -40,7 +44,7 @@ public class Transaction {
 
     private int transactionID;
     private Type type;
-    private LocalDateTime timeComplete;
+    private Instant timeComplete;
     private long amount;
     private Long accountSrc;
     private Long accountDst;
@@ -53,7 +57,7 @@ public class Transaction {
      * @param accountSrc Account funds are leaving, null for a deposit
      * @param accountDst Account funds are landing in, null for a withdraw
      */
-    public Transaction(int transactionID, Type type, LocalDateTime timeComplete, long amount,
+    public Transaction(int transactionID, Type type, Instant timeComplete, long amount,
                         Long accountSrc, Long accountDst) {
         this.transactionID = transactionID;
         this.type = type;
@@ -77,8 +81,16 @@ public class Transaction {
     }
 
     /* Gets time this transaction was completed/processed */
-    public LocalDateTime getTimeComplete() {
+    public Instant getTimeComplete() {
         return timeComplete;
+    }
+
+    /* Returns formatted string of when transaction was complete. */
+    public String getTimeCompleteFormatted(){
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern(TIME_FORMAT)
+                        .withZone(ZoneId.systemDefault());
+        return formatter.format(timeComplete);
     }
 
     /* Gets amount of the transaction */
@@ -136,7 +148,7 @@ public class Transaction {
         return "Transaction{" +
                 "transactionID=" + transactionID +
                 ", type=" + type +
-                ", timeComplete=" + timeComplete +
+                ", timeComplete=" + getTimeCompleteFormatted() +
                 ", amount=$" + String.format("%.2f", amount / 100.0) +
                 ", accountSrc=" + accountSrc +
                 ", accountDst=" + accountDst +

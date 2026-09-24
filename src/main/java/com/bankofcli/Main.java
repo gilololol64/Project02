@@ -1,11 +1,12 @@
 package com.bankofcli;
 
-import com.bankofcli.api.BankCLI;
+import com.bankofcli.api.BankGUI;
 
 public class Main {
 
     public static void main(String[] args) {
-        BankCLI bankCLI = new BankCLI();
-        bankCLI.run();
+        BankGUI bankGUI = new BankGUI();
+        bankGUI.run();
+
     }
 }

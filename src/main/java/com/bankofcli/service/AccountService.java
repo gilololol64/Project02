@@ -1,12 +1,15 @@
 package com.bankofcli.service;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.bankofcli.exception.*;
 import com.bankofcli.model.Account;
 import com.bankofcli.repository.AccountRepository;
+import com.bankofcli.util.InputValidator;
 import java.security.SecureRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,10 +27,10 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
     private final Map<Long, Integer> failedAttempts = new HashMap<>();
-    private final Map<Long, LocalDateTime> lockedUntil = new HashMap<>();
 
     private static final int MAX_ATTEMPTS = 3;
     private static final int LOCKOUT_MINUTES = 5;
+    private static final int COST_FACTOR = 10;
 
     public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
@@ -53,7 +56,9 @@ public class AccountService {
             existingAccount = accountRepository.findByID(accountID);
         }while(existingAccount != null);
 
-        Account newAccount = new Account(accountID, pin, 0);
+        String pinHash = hashPin(pin);
+
+        Account newAccount = new Account(accountID, pinHash, 0);
 
         accountRepository.save(newAccount);
 
@@ -75,12 +80,12 @@ public class AccountService {
         }
 
         // Check if the account is currently locked
-        LocalDateTime lockExpiration = lockedUntil.get(accountID);
+        Instant lockExpiration = account.getAccountLockedTil();
 
         if (lockExpiration != null) {
 
             // Account is still locked
-            if (LocalDateTime.now().isBefore(lockExpiration)) {
+            if (Instant.now().isBefore(lockExpiration)) {
                 errorLogger.error(
                     "Login failed for account {}, account is temporarily locked.",
                     accountID
@@ -92,22 +97,22 @@ public class AccountService {
             }
 
             // Lockout time has expired, so reset the account
-            lockedUntil.remove(accountID);
+            accountRepository.lock(account, false);
             failedAttempts.remove(accountID);
         }
 
         // Check PIN
-        if (account.getPin() != pin) {
+        if (!verifyPinHash(pin, account.getPinHash())) {
 
             int attempts = failedAttempts.getOrDefault(accountID, 0) + 1;
             failedAttempts.put(accountID, attempts);
 
             // Lock account after third incorrect attempt
             if (attempts >= MAX_ATTEMPTS) {
-                lockedUntil.put(
-                    accountID,
-                    LocalDateTime.now().plusMinutes(LOCKOUT_MINUTES)
-                );
+                Instant locked = Instant.now().plusSeconds(LOCKOUT_MINUTES * 60);
+
+                account.setAccountLockedTil(locked);
+                accountRepository.lock(account, true);
 
                 errorLogger.error("Account {} locked after {} incorrect PIN attempts.",
                     accountID,
@@ -153,9 +158,47 @@ public class AccountService {
         return account.getBalanceExtendedCents();
     }
 
-    // Checks that the pin contains exactly four digits
+    // Changes an account's PIN after verifying the current one
+    public void changePin(long accountID, int currentPin, int newPin) {
+
+        actionLogger.info("Attempting to change PIN for Account {}.", accountID);
+        Account account = accountRepository.findByID(accountID);
+
+        if (account == null) {
+            AccountNotFoundException ex = new AccountNotFoundException("Account not found.");
+            errorLogger.error("PIN change failed, account ID {} not found.", accountID, ex);
+            throw ex;
+        }
+
+        if (!verifyPinHash(currentPin, account.getPinHash())) {
+            InvalidPinException ex = new InvalidPinException("Current PIN is incorrect.");
+            errorLogger.error("PIN change failed for account {}, current PIN entered was incorrect.", accountID, ex);
+            throw ex;
+        }
+
+        if (!isValidPin(newPin)) {
+            InvalidPinException ex = new InvalidPinException("New PIN must be 4 digits.");
+            errorLogger.error("PIN change failed for account {}, new PIN did not meet format requirements.", accountID, ex);
+            throw ex;
+        }
+
+        if (verifyPinHash(newPin, account.getPinHash())) {
+            InvalidPinException ex = new InvalidPinException("New PIN must be different from current PIN.");
+            errorLogger.error("PIN change failed for account {}, new PIN matched current PIN.", accountID, ex);
+            throw ex;
+        }
+
+        account.setPinHash(hashPin(newPin));
+        accountRepository.save(account);
+
+        actionLogger.info("PIN successfully changed for account {}.", accountID);
+    }
+
+    // Checks that the pin contains exactly four digits.
+    // Delegates to InputValidator so the format rule lives in exactly one place,
+    // shared with MainMenu's client-side validation.
     private boolean isValidPin(int pin) {
-        return pin >= 0 & pin <= 9999;
+        return InputValidator.isValidPinFormat(pin);
     }
 
     //Generates a random (up to 10 digit) account number given a secure random object
@@ -166,4 +209,20 @@ public class AccountService {
 
         return random.nextLong(min, max);
     }
+
+    public static String hashPin(int pin){
+        char [] pinCharArray = Integer.toString(pin).toCharArray();
+
+        String pinHash = BCrypt.withDefaults().hashToString(COST_FACTOR, pinCharArray);
+        return pinHash;
+    }
+
+    public static boolean verifyPinHash(int userInput, String pinHash){
+
+        char [] inputPinCharArray = Integer.toString(userInput).toCharArray();
+
+        BCrypt.Result result = BCrypt.verifyer().verify(inputPinCharArray, pinHash);
+        return result.verified;
+    }
+
 }
