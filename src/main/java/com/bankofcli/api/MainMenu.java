@@ -53,7 +53,7 @@ public class MainMenu extends BasicWindow{
 		this.setTitle("Main Menu");
 		curAccount = null;
 		Panel contentpane = new Panel();
-		contentpane.setPreferredSize(avgSize);
+		
 		contentpane.setLayoutManager(new GridLayout(1));
 		contentpane.addComponent(new Label("Welcome to The Bank of CLI"));
 		contentpane.addComponent(new Button("Login",() -> this.Login()));
@@ -68,7 +68,7 @@ public class MainMenu extends BasicWindow{
 	public void Login() {
 		this.setTitle("Login");
 		Panel content = new Panel();
-		content.setPreferredSize(avgSize);
+		
 		content.setLayoutManager(new GridLayout(1));
 		Label AIDLabel = new Label("Account ID:");
 		TextBox AID = new TextBox(new TerminalSize(COLUMNS, 1));
@@ -113,7 +113,7 @@ public class MainMenu extends BasicWindow{
 	public void register() {
 		this.setTitle("Register");
 		Panel contentpane = new Panel();
-		contentpane.setPreferredSize(avgSize);
+		
 		contentpane.setLayoutManager(new GridLayout(1));
 		TextBox pin = new TextBox(new TerminalSize(COLUMNS, 1));
 		Label pinlabel = new Label("Enter a four-digit PIN:");
@@ -131,7 +131,7 @@ public class MainMenu extends BasicWindow{
 	public void registerConfirm(String pin) {
 		this.setTitle("Register Confirmation");
 		Panel contentpane = new Panel();
-		contentpane.setPreferredSize(avgSize);
+		
 		int numpin;
 		contentpane.setLayoutManager(new GridLayout(1));
 		try {
@@ -160,7 +160,7 @@ public class MainMenu extends BasicWindow{
 	public void AccountMenu() {
 		this.setTitle("AccountMenu");
 		Panel contentpane = new Panel();
-		contentpane.setPreferredSize(avgSize);
+		
 		contentpane.setLayoutManager(new GridLayout(1));
 		contentpane.addComponent(new Button("Balance", ()->this.Balance()));
 		contentpane.addComponent(new Button("Deposit", () -> Deposit()));
@@ -180,7 +180,7 @@ public class MainMenu extends BasicWindow{
 	public void changePin() {
 		this.setTitle("ChangePin");
 		Panel contentpane = new Panel();
-		contentpane.setPreferredSize(avgSize);
+		
 		contentpane.setLayoutManager(new GridLayout(1));
 		TextBox current = new TextBox(new TerminalSize(COLUMNS, 1));
 		TextBox newPin = new TextBox(new TerminalSize(COLUMNS, 1));
@@ -201,7 +201,7 @@ public class MainMenu extends BasicWindow{
 		int newPin;
 		int curPin;
 		Panel contentpane = new Panel();
-		contentpane.setPreferredSize(avgSize);
+		
 		contentpane.setLayoutManager(new GridLayout(1));
 		
 		try {
@@ -232,7 +232,7 @@ public class MainMenu extends BasicWindow{
 	public void transfer() {
 		this.setTitle("Transfer");
 		Panel content = new Panel();
-		content.setPreferredSize(avgSize);
+		
 		content.setLayoutManager(new GridLayout(1));
 		Label description = new Label("Destination AccountID:");
 		Label descriptionamount = new Label("Amount to Send:");
@@ -251,7 +251,7 @@ public class MainMenu extends BasicWindow{
 		Long dest;
 		Long amount;
 		Panel content = new Panel();
-		content.setPreferredSize(avgSize);
+		
 		content.setLayoutManager(new GridLayout(1));
 		try {
 			dest = InputValidator.parseAccountId(destination);
@@ -297,7 +297,7 @@ public class MainMenu extends BasicWindow{
 	public void Withdraw() {
 		this.setTitle("Withdraw");
 		Panel content = new Panel();
-		content.setPreferredSize(avgSize);
+		
 		content.setLayoutManager(new GridLayout(1));
 		Label num = new Label("How Much will you withdraw");
 		TextBox HM= new TextBox(new TerminalSize(COLUMNS, 1));
@@ -309,7 +309,7 @@ public class MainMenu extends BasicWindow{
 	}
 	public void withdrawhelper(String num) {
 		Panel content = new Panel();
-		content.setPreferredSize(avgSize);
+		
 		content.setLayoutManager(new GridLayout(1));
 		Long amount;
 		try {
@@ -347,7 +347,7 @@ public class MainMenu extends BasicWindow{
 	public void Deposit() {
 		this.setTitle("Deposit");
 		Panel content = new Panel();
-		content.setPreferredSize(avgSize);
+		
 		content.setLayoutManager(new GridLayout(1));
 		Label num = new Label("How Much will you deposit");
 		TextBox HM= new TextBox(new TerminalSize(COLUMNS, 1));
@@ -359,7 +359,7 @@ public class MainMenu extends BasicWindow{
 	}
 	public void Deposithelper(String num) {
 		Panel content = new Panel();
-		content.setPreferredSize(avgSize);
+		
 		content.setLayoutManager(new GridLayout(1));
 		Long amount;
 		try {
@@ -390,7 +390,7 @@ public class MainMenu extends BasicWindow{
 	public void Balance() {
 		this.setTitle("Balance");
 		Panel content = new Panel();
-		content.setPreferredSize(avgSize);
+		
 		String message = String.format(
 				"\nCurrent balance: $%,.2f%n", toDollars(accountService.getBalance(curAccount.getAccountID()))
 			);
@@ -404,7 +404,7 @@ public class MainMenu extends BasicWindow{
 	public void transactionHistory() {
 		this.setTitle("Transaction History");
 		Panel contentpane = new Panel();
-		contentpane.setPreferredSize(avgSize);
+		
 		contentpane.setLayoutManager(new GridLayout(1));
 		try {
 			List<Transaction> transactionList =
@@ -435,7 +435,7 @@ public class MainMenu extends BasicWindow{
 		errorLogger.error("CLI operation failed: {}", exception);
 		Panel Errorcontent = new Panel();
 		Errorcontent.setLayoutManager(new GridLayout(1));
-		Errorcontent.setPreferredSize(avgSize);
+
 		Errorcontent.addComponent(new Label(exception.getMessage()));
 		Errorcontent.addComponent(new Button("Back",() -> this.Login()));
 		setComponent(Errorcontent);
