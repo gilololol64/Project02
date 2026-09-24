@@ -20,9 +20,8 @@ import com.bankofcli.util.InputValidator;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.Button;
-import com.googlecode.lanterna.gui2.Direction;
+import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.Label;
-import com.googlecode.lanterna.gui2.LinearLayout;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.TextBox;
 
@@ -37,6 +36,9 @@ public class MainMenu extends BasicWindow{
 	private static final Logger transactionLogger = LoggerFactory.getLogger("Bank.Transaction.logback");
 	SoundPlayer sounds= new SoundPlayer();
 	Account curAccount;
+	private final int avgHeight =40;
+	private final int avgWidth = 5;
+	private final TerminalSize avgSize = new TerminalSize(avgHeight, avgWidth);
 
 	private static final int COLUMNS = 40;
 	
@@ -51,7 +53,8 @@ public class MainMenu extends BasicWindow{
 		this.setTitle("Main Menu");
 		curAccount = null;
 		Panel contentpane = new Panel();
-		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		contentpane.setPreferredSize(avgSize);
+		contentpane.setLayoutManager(new GridLayout(1));
 		contentpane.addComponent(new Label("Welcome to The Bank of CLI"));
 		contentpane.addComponent(new Button("Login",() -> this.Login()));
 		contentpane.addComponent(new Button("Register",() -> this.register()));
@@ -65,7 +68,8 @@ public class MainMenu extends BasicWindow{
 	public void Login() {
 		this.setTitle("Login");
 		Panel content = new Panel();
-		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		content.setLayoutManager(new GridLayout(1));
 		Label AIDLabel = new Label("Account ID:");
 		TextBox AID = new TextBox(new TerminalSize(COLUMNS, 1));
 		Label PinLabel = new Label("Pin:");
@@ -109,12 +113,14 @@ public class MainMenu extends BasicWindow{
 	public void register() {
 		this.setTitle("Register");
 		Panel contentpane = new Panel();
-		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		contentpane.setLayoutManager(new GridLayout(1));
 		TextBox pin = new TextBox(new TerminalSize(COLUMNS, 1));
 		Label pinlabel = new Label("Enter a four-digit PIN:");
 		contentpane.addComponent(pinlabel);
 		contentpane.addComponent(pin);
 		contentpane.addComponent(new Button("Register", () -> registerConfirm(pin.getText())));
+		contentpane.addComponent(new Button("Back", () -> this.Guest()));
 		setComponent(contentpane);
 	}
 
@@ -125,8 +131,9 @@ public class MainMenu extends BasicWindow{
 	public void registerConfirm(String pin) {
 		this.setTitle("Register Confirmation");
 		Panel contentpane = new Panel();
+		
 		int numpin;
-		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		contentpane.setLayoutManager(new GridLayout(1));
 		try {
 			numpin = InputValidator.parsePin(pin);
 		} catch (BankException exception) {
@@ -153,7 +160,7 @@ public class MainMenu extends BasicWindow{
 	public void AccountMenu() {
 		this.setTitle("AccountMenu");
 		Panel contentpane = new Panel();
-		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		contentpane.setLayoutManager(new GridLayout(1));
 		contentpane.addComponent(new Button("Balance", ()->this.Balance()));
 		contentpane.addComponent(new Button("Deposit", () -> Deposit()));
 		contentpane.addComponent(new Button("Withdraw", () -> Withdraw()));
@@ -172,7 +179,8 @@ public class MainMenu extends BasicWindow{
 	public void changePin() {
 		this.setTitle("ChangePin");
 		Panel contentpane = new Panel();
-		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		contentpane.setLayoutManager(new GridLayout(1));
 		TextBox current = new TextBox(new TerminalSize(COLUMNS, 1));
 		TextBox newPin = new TextBox(new TerminalSize(COLUMNS, 1));
 		contentpane.addComponent(new Label("Current Pin:"));
@@ -192,7 +200,8 @@ public class MainMenu extends BasicWindow{
 		int newPin;
 		int curPin;
 		Panel contentpane = new Panel();
-		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		contentpane.setLayoutManager(new GridLayout(1));
 		
 		try {
 			newPin = InputValidator.parsePin(newPinString);
@@ -222,7 +231,8 @@ public class MainMenu extends BasicWindow{
 	public void transfer() {
 		this.setTitle("Transfer");
 		Panel content = new Panel();
-		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		content.setLayoutManager(new GridLayout(1));
 		Label description = new Label("Destination AccountID:");
 		Label descriptionamount = new Label("Amount to Send:");
 		TextBox dest = new TextBox(new TerminalSize(COLUMNS, 1));
@@ -240,7 +250,8 @@ public class MainMenu extends BasicWindow{
 		Long dest;
 		Long amount;
 		Panel content = new Panel();
-		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		content.setLayoutManager(new GridLayout(1));
 		try {
 			dest = InputValidator.parseAccountId(destination);
 		} catch (BankException exception) {
@@ -285,7 +296,8 @@ public class MainMenu extends BasicWindow{
 	public void Withdraw() {
 		this.setTitle("Withdraw");
 		Panel content = new Panel();
-		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		content.setLayoutManager(new GridLayout(1));
 		Label num = new Label("How Much will you withdraw");
 		TextBox HM= new TextBox(new TerminalSize(COLUMNS, 1));
 		content.addComponent(num);
@@ -296,7 +308,8 @@ public class MainMenu extends BasicWindow{
 	}
 	public void withdrawhelper(String num) {
 		Panel content = new Panel();
-		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		content.setLayoutManager(new GridLayout(1));
 		Long amount;
 		try {
 			amount = InputValidator.parseAmount(num);
@@ -333,7 +346,8 @@ public class MainMenu extends BasicWindow{
 	public void Deposit() {
 		this.setTitle("Deposit");
 		Panel content = new Panel();
-		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		content.setLayoutManager(new GridLayout(1));
 		Label num = new Label("How Much will you deposit");
 		TextBox HM= new TextBox(new TerminalSize(COLUMNS, 1));
 		content.addComponent(num);
@@ -344,7 +358,8 @@ public class MainMenu extends BasicWindow{
 	}
 	public void Deposithelper(String num) {
 		Panel content = new Panel();
-		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		content.setLayoutManager(new GridLayout(1));
 		Long amount;
 		try {
 			
@@ -374,10 +389,11 @@ public class MainMenu extends BasicWindow{
 	public void Balance() {
 		this.setTitle("Balance");
 		Panel content = new Panel();
+		
 		String message = String.format(
 				"\nCurrent balance: $%,.2f%n", toDollars(accountService.getBalance(curAccount.getAccountID()))
 			);
-		content.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		content.setLayoutManager(new GridLayout(1));
 		content.addComponent(new Label(message));
 		content.addComponent(new Button("Back", () -> this.AccountMenu()));
 		sounds.playSuccess();
@@ -387,7 +403,8 @@ public class MainMenu extends BasicWindow{
 	public void transactionHistory() {
 		this.setTitle("Transaction History");
 		Panel contentpane = new Panel();
-		contentpane.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		
+		contentpane.setLayoutManager(new GridLayout(1));
 		try {
 			List<Transaction> transactionList =
 					transactionService.getTransactionHistory(curAccount.getAccountID(), 10);
@@ -416,6 +433,8 @@ public class MainMenu extends BasicWindow{
 	public void showError(BankException exception) {
 		errorLogger.error("CLI operation failed: {}", exception);
 		Panel Errorcontent = new Panel();
+		Errorcontent.setLayoutManager(new GridLayout(1));
+
 		Errorcontent.addComponent(new Label(exception.getMessage()));
 		Errorcontent.addComponent(new Button("Back",() -> this.Login()));
 		setComponent(Errorcontent);
@@ -424,6 +443,7 @@ public class MainMenu extends BasicWindow{
 	public void showErrorAccount(BankException exception) {
 		errorLogger.error("CLI operation failed: {}", exception);
 		Panel Errorcontent = new Panel();
+		Errorcontent.setLayoutManager(new GridLayout(1));
 		Errorcontent.addComponent(new Label(exception.getMessage()));
 		Errorcontent.addComponent(new Button("Back",() -> this.AccountMenu()));
 		setComponent(Errorcontent);

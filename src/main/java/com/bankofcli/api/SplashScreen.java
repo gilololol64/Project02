@@ -27,16 +27,18 @@ public class SplashScreen extends MultiWindowTextGUI {
     private final int LINE_SPEED = 160;
     private final int PROMPT_WAIT = 550;
     private final SoundPlayer soundPlayer;
+    private final static TextColor bg= new TextColor.RGB(16, 74, 57);
+    private final TextColor fg =  new TextColor.RGB(212, 175, 55);
 
     public SplashScreen(Screen screen){
-        super(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.BLUE));
+        super(screen, new DefaultWindowManager(), new EmptySpace(bg));
         this.screen = screen;
 
         readStartupScreen();
 
         SimpleTheme theme = SimpleTheme.makeTheme(false,
-                TextColor.ANSI.BLUE, TextColor.ANSI.BLUE, TextColor.ANSI.BLUE, TextColor.ANSI.BLUE,
-                TextColor.ANSI.BLUE, TextColor.ANSI.BLUE, TextColor.ANSI.BLUE);
+                bg, bg, bg, bg,
+                bg, bg, bg);
         setTheme(theme);
 
         soundPlayer = new SoundPlayer();
@@ -83,7 +85,7 @@ public class SplashScreen extends MultiWindowTextGUI {
             try {
                 for (String line : ASCII_ART) {
                     Label label = new Label(line);
-                    label.setForegroundColor(TextColor.ANSI.WHITE);
+                    label.setForegroundColor(fg);
                     artPanel.addComponent(label);
                     updateScreen();
                     Thread.sleep(LINE_SPEED);
@@ -93,7 +95,7 @@ public class SplashScreen extends MultiWindowTextGUI {
                 artPanel.addComponent(new EmptySpace(new TerminalSize(1, 1)));
                 Thread.sleep(PROMPT_WAIT);
                 Label prompt = new Label("Press any key to continue...");
-                prompt.setForegroundColor(TextColor.ANSI.WHITE_BRIGHT);
+                prompt.setForegroundColor(fg);
                 artPanel.addComponent(prompt.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center)));
 
                 updateScreen();

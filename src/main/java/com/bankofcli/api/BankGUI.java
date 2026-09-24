@@ -2,12 +2,26 @@ package com.bankofcli.api;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.bundle.LanternaThemes;
+import com.googlecode.lanterna.graphics.PropertyTheme;
+import com.googlecode.lanterna.graphics.SimpleTheme;
+import com.googlecode.lanterna.graphics.Theme;
+import com.googlecode.lanterna.gui2.Border;
+import com.googlecode.lanterna.gui2.Button;
+import com.googlecode.lanterna.gui2.DefaultWindowDecorationRenderer;
+import com.googlecode.lanterna.gui2.DefaultWindowManager;
+import com.googlecode.lanterna.gui2.Label;
+import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
+import com.googlecode.lanterna.gui2.Panel;
+import com.googlecode.lanterna.gui2.TextBox;
 import com.googlecode.lanterna.bundle.LanternaThemes;
 import com.googlecode.lanterna.graphics.DelegatingTheme;
 import com.googlecode.lanterna.graphics.Theme;
@@ -21,6 +35,9 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 
+import ComponentThemeDefinitions.Patterned_backdrops;
+import ComponentThemeDefinitions.gorgonDelegatingTheme;
+
 //Main window for GUI of application
 public class BankGUI {
 
@@ -32,6 +49,10 @@ public class BankGUI {
 	private final int COLUMNS = 120;
 	private final int ROWS = 40;
 	private SoundPlayer sounds;
+	private final static TextColor bg= new TextColor.RGB(16, 74, 57);
+    private final TextColor fg =  new TextColor.RGB(212, 175, 55);
+    private final TextColor textBg = new TextColor.RGB(163, 169, 166);
+    private final TextColor windowColor = new TextColor.RGB(237, 203, 142);
 	
 	public BankGUI() {
 		terminalFactory = new DefaultTerminalFactory();
@@ -55,8 +76,7 @@ public class BankGUI {
 			SplashScreen splash = new SplashScreen(screen);
 			splash.display();
 
-			final WindowBasedTextGUI WindowManager = new MultiWindowTextGUI(screen);
-
+			final WindowBasedTextGUI WindowManager = new MultiWindowTextGUI(screen, new DefaultWindowManager(),new Patterned_backdrops());
 
 			final MainMenu mainWindow = new MainMenu();
 			//Adds a window listener to the window to intercept every key pressed before it is handled by the GUI
@@ -69,12 +89,52 @@ public class BankGUI {
 					}
 				}
 			});
-			Theme theme =LanternaThemes.getRegisteredTheme("blaster");
+			Theme theme =LanternaThemes.getRegisteredTheme("conqueror");
 			//wrapper for predefined Theme to make individual adjustments to the Theme
-			DelegatingTheme modifiedTheme = new DelegatingTheme(theme);
+			gorgonDelegatingTheme modifiedTheme = new gorgonDelegatingTheme(theme);
+			
+			//Space for overidding individual component themes
+			SimpleTheme buttonStyle = SimpleTheme.makeTheme(
+					true,TextColor.ANSI.BLACK,new TextColor.RGB(237, 203, 142),fg,new TextColor.RGB(0, 0, 0),fg,TextColor.ANSI.WHITE,bg
+					);
+			
+			SimpleTheme panelStyle = SimpleTheme.makeTheme(
+				    true,
+				    textBg,             
+				    windowColor,    
+				    textBg,             
+				    windowColor,    
+				    textBg,            
+				    windowColor,              
+				    TextColor.ANSI.RED                
+				);
+			SimpleTheme textBoxStyle = SimpleTheme.makeTheme(true, TextColor.ANSI.BLACK, fg, TextColor.ANSI.BLACK, windowColor, TextColor.ANSI.WHITE, textBg, TextColor.ANSI.BLACK);
+			
+			SimpleTheme borderStyle = SimpleTheme.makeTheme(
+				    true,
+				    TextColor.ANSI.BLACK,             
+				    windowColor,    
+				    textBg,             
+				    windowColor,    
+				    TextColor.ANSI.BLACK,            
+				    windowColor,              
+				    TextColor.ANSI.RED   
+				);
+			SimpleTheme labelStyle= SimpleTheme.makeTheme(true, TextColor.ANSI.BLACK, windowColor, TextColor.ANSI.BLACK, windowColor, TextColor.ANSI.WHITE, textBg, bg);
+			
+			modifiedTheme.override(Label.class, labelStyle.getDefaultDefinition());
+			modifiedTheme.override(Border.class, borderStyle.getDefaultDefinition());
+			modifiedTheme.override(Panel.class, panelStyle.getDefaultDefinition());
+			modifiedTheme.override(DefaultWindowDecorationRenderer.class, borderStyle.getDefaultDefinition());
+			modifiedTheme.override(Button.class,buttonStyle.getDefaultDefinition());
+			modifiedTheme.override(TextBox.class, textBoxStyle.getDefaultDefinition());
+
+			
+			
+			
 			WindowManager.setTheme(modifiedTheme);
 			
-			mainWindow.setHints(Arrays.asList(Window.Hint.CENTERED));
+			mainWindow.setHints(Arrays.asList(Window.Hint.CENTERED,Window.Hint.NO_POST_RENDERING));
 			mainWindow.Guest();
 			WindowManager.addWindowAndWait(mainWindow);
 
