@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TransactionRepsoitoryIT {
 
-    private static final String url="jdbc:sqlite:BigBankersBank.db";
+    private static final String url="jdbc:sqlite:StoneVaultBank.db";
     public List<Transaction> expectedTransList;
     public TransactionRepository transRepo;
     public AccountRepository accRepo;

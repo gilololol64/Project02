@@ -15,7 +15,7 @@ public class AccountRepositoryIT {
     public AccountRepository accRepo;
     public List<Account> accountList;
     public List<Long> testAccountIDs;
-    private static final String url="jdbc:sqlite:BigBankersBank.db";
+    private static final String url="jdbc:sqlite:StoneVaultBank.db";
 
     @BeforeEach
     public void setup(){

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.times;
 public class DatabaseManagerTest {
 
     public DatabaseManager dbm;
-    private static final String url="jdbc:sqlite:BigBankersBank.db?foreign_keys=true";
+    private static final String url="jdbc:sqlite:StoneVaultBank.db?foreign_keys=true";
 
     @BeforeEach
     public void setup(){
